@@ -1,0 +1,66 @@
+# 배포
+
+## 지금 상태
+
+| 무엇 | 어디 | 데이터 |
+|---|---|---|
+| 진짜 앱 | 내 컴퓨터 (`npm start`) | `data/todo.db`에 저장, 껐다 켜도 남음 |
+| 데모 화면 | https://eple-lab.github.io/task-hive/ | 브라우저 메모리. 새로고침하면 예시 데이터로 초기화 |
+| 코드 | https://github.com/eple-lab/task-hive | |
+
+## GitHub Pages 데모
+
+### 왜 진짜 앱을 Pages에 못 올리나
+GitHub Pages는 HTML·CSS·JS 파일을 그대로 보여 주기만 하는 **정적 호스팅**이다. `server.js`를 실행하지 않으므로 API도 DB도 없다.
+그냥 올리면 화면 틀만 나오고 "목록을 불러오지 못했습니다"가 뜬다.
+
+### 데모 모드
+`public/demo-api.js`가 브라우저 안에서 서버 역할을 대신한다.
+
+```mermaid
+flowchart LR
+    A["app.js"] -- "isDemo?" --> C{github.io 주소<br/>또는 ?demo}
+    C -- 예 --> D["demo-api.js<br/>메모리 속 예시 데이터"]
+    C -- 아니요 --> S["server.js → todo.db"]
+```
+
+- 주소가 `github.io`로 끝나거나 `?demo`가 붙으면 `app.js`의 API 호출이 `demo-api.js`로 간다.
+- `demo-api.js`는 `server.js`와 **같은 주소, 같은 규칙, 같은 응답 모양**으로 답한다. 그래서 `app.js`는 데모인지 모르고 똑같이 동작한다.
+- 예시 데이터의 마감일은 방문한 날을 기준으로 만든다(언제 열어도 "오늘 마감"이 있다).
+- 화면 위에 "데모 화면이에요…" 안내가 뜬다.
+- 내 컴퓨터에서 데모 모드를 보려면: http://localhost:3000/?demo
+
+> 규칙을 바꿀 때는 `server.js`와 `demo-api.js`를 **둘 다** 고쳐야 한다. 한쪽만 고치면 데모와 진짜 앱이 다르게 동작한다.
+
+### 자동 배포
+[.github/workflows/pages.yml](../.github/workflows/pages.yml)
+
+- `main`에 push했을 때 `public/` 또는 이 설정 파일이 바뀌었으면 GitHub Actions가 `public/` 폴더를 Pages에 올린다.
+- 진행 상황: 저장소의 **Actions** 탭. 1분 안팎이면 끝난다.
+- 수동 실행: Actions → "Deploy demo to GitHub Pages" → Run workflow.
+- 저장소 Settings → Pages의 Source는 **GitHub Actions**로 설정되어 있다.
+
+## 길 C: 진짜 앱을 인터넷에 올리려면 (준비물 노트)
+
+강의 필수 과제는 "배포 준비물을 안내받아 기록"하는 것까지이고, 실제 배포는 선택이다.
+
+### SQLite로는 왜 어렵나
+Render 같은 무료 서버는 재시작·재배포할 때 디스크를 초기화하는 경우가 많다. `todo.db`가 통째로 사라질 수 있다.
+그래서 여러 사람이 쓰는 배포는 길 B의 **Supabase(클라우드 DB)**를 쓴 뒤에 한다.
+
+### Render에 백엔드를 올릴 때 필요한 것
+| 준비물 | 이 프로젝트에서 |
+|---|---|
+| 코드 보관 위치 | GitHub 저장소 `eple-lab/task-hive` |
+| 서비스 종류 | Web Service (Node) |
+| 설치 명령 (Build Command) | `npm install` |
+| 시작 명령 (Start Command) | `npm start` |
+| Node 버전 | 24 이상 (`package.json`의 `engines`) |
+| 환경변수 | `SUPABASE_URL`, `SUPABASE_KEY` 등 길 B에서 정할 값. **Render 대시보드의 Environment 화면에 입력**하고 코드·Git에는 넣지 않는다 |
+| 포트 | Render가 `PORT` 환경변수를 넣어 준다. `server.js`가 이미 `process.env.PORT`를 읽는다 |
+| 확인 방법 | 배포 후 받은 `https://….onrender.com` 주소로 접속 → 할 일 추가 → 새로고침 |
+
+### 알아 둘 점
+- Render 무료 서버는 한동안 요청이 없으면 잠들고, 다음 접속 때 깨어나느라 첫 응답이 느리다.
+- Supabase 무료 프로젝트는 1주일 동안 안 쓰면 일시정지된다. 시연 전에 미리 접속해 둔다.
+- 무료 요금제 한도와 정책은 바뀔 수 있으니 가입 직전에 공식 가격 페이지를 확인한다.

@@ -65,31 +65,10 @@
 - 길 B: 저장소를 Supabase로 전환 + Supabase Auth 로그인 + RLS(자기 할 일만 접근)
 - 길 C(선택): 백엔드를 Render 등에 실제 배포
 
+## [데모]
+- GitHub Pages에 서버 없이 도는 데모 화면을 둔다(예시 데이터, 새로고침하면 초기화). 자세한 내용은 [deployment.md](deployment.md).
+
 ## [DB 구조]
-상세 정의는 [db/schema.sql](db/schema.sql).
-
-```mermaid
-erDiagram
-    todos ||--o{ tasks : "has"
-    todos {
-        INTEGER id PK
-        TEXT title "NOT NULL"
-        TEXT due_date "YYYY-MM-DD, 선택"
-        INTEGER completed "0 or 1"
-        TEXT completed_at "90일 자동 삭제 기준"
-        TEXT created_at
-        TEXT updated_at
-    }
-    tasks {
-        INTEGER id PK
-        INTEGER todo_id FK "NOT NULL, Todo 삭제 시 함께 삭제"
-        TEXT title "NOT NULL"
-        INTEGER completed "0 or 1"
-        TEXT completed_at
-        TEXT created_at
-        TEXT updated_at
-    }
-```
-
-- todos 1 : N tasks (일대다). 태스크는 `todo_id`가 NOT NULL이라 Todo 없이 존재할 수 없다.
+- 표 2개: todos 1 : N tasks (일대다). 태스크는 `todo_id`가 NOT NULL이라 Todo 없이 존재할 수 없다.
 - 태스크 아래에 또 태스크는 없다(한 단계만).
+- 구조도와 열 설명은 [database.md](database.md), 실제 정의는 [db/schema.sql](../db/schema.sql).
