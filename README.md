@@ -5,6 +5,9 @@
 
 만들 기능과 조건은 [PRD.md](PRD.md)에 있다.
 
+**데모:** https://eple-lab.github.io/task-hive/
+GitHub Pages는 서버를 실행하지 않아서, 데모는 브라우저 안의 가짜 백엔드([public/demo-api.js](public/demo-api.js))가 예시 데이터로 응답한다. 규칙은 진짜 서버와 같지만 데이터는 저장되지 않고 새로고침하면 처음 상태로 돌아간다. 실제로 저장되는 앱은 아래처럼 내 컴퓨터에서 실행한다.
+
 ## 실행 방법
 
 필요한 것: Node.js 24 이상 (SQLite가 Node에 내장되어 있어 따로 설치할 DB가 없다)
@@ -36,6 +39,8 @@ server.js        백엔드: API 창구(엔드포인트)와 규칙 검사
 db.js            DB 접근 코드는 전부 여기에만 있다 (길 B에서 이 파일을 Supabase용으로 바꾼다)
 db/schema.sql    표를 만드는 SQL
 public/          화면(프론트): 백엔드 API에만 요청한다
+public/demo-api.js  GitHub Pages 데모용 가짜 백엔드 (주소가 github.io이거나 ?demo가 붙으면 사용)
+.github/workflows/  push하면 public/을 GitHub Pages에 올리는 설정
 docs/            README용 화면 캡처
 data/todo.db     실제 데이터 (자동 생성, Git 제외)
 ```

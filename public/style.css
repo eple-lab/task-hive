@@ -84,6 +84,14 @@ button {
 
 .toggle { display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; color: var(--muted); }
 
+.demo-banner {
+  max-width: 720px;
+  margin: 0 auto 4px;
+  padding: 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* 아래쪽 등록창이 목록을 가리지 않게 여백 */
 main { padding: 0 16px 200px; }
 

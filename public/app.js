@@ -1,4 +1,5 @@
 // 화면 코드는 백엔드 API에만 요청한다. DB에는 직접 접근하지 않는다.
+import { isDemo, demoFetch } from './demo-api.js';
 
 const $ = (id) => document.getElementById(id);
 const list = $('todo-list');
@@ -26,7 +27,8 @@ function resetDueDate() {
 }
 
 async function api(method, url, body) {
-  const res = await fetch(url, {
+  // 데모 모드(GitHub Pages)에서는 서버 대신 브라우저 안의 가짜 백엔드가 응답한다
+  const res = isDemo ? await demoFetch(method, url, body) : await fetch(url, {
     method,
     headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body ? JSON.stringify(body) : undefined,
@@ -264,6 +266,13 @@ searchInput.addEventListener('input', () => {
   searchTimer = setTimeout(refresh, 200);
 });
 todayOnly.addEventListener('change', refresh);
+
+if (isDemo) {
+  document.querySelector('.top-wrap').after(el('p', {
+    className: 'demo-banner',
+    textContent: '데모 화면이에요. 서버 없이 브라우저 안에서만 동작하고, 새로고침하면 예시 데이터로 돌아가요.',
+  }));
+}
 
 resetDueDate();
 refresh();
