@@ -64,7 +64,7 @@ erDiagram
 |---|---|---|
 | `id` | INTEGER PK | 자동 증가 번호 |
 | `title` | TEXT NOT NULL | 할 일 제목. 빈 글자 금지 |
-| `due_date` | TEXT | 마감일 `YYYY-MM-DD`. 없어도 된다 |
+| `due_date` | TEXT | 마감일 `YYYY-MM-DD`. 새로 등록할 때는 필수이고 오늘 이후만 가능(백엔드 검사) |
 | `completed` | INTEGER | 0 = 미완료, 1 = 완료 |
 | `completed_at` | TEXT | 완료한 시각(UTC). 미완료면 NULL. **이 시각부터 90일 뒤 자동 삭제** |
 | `created_at` | TEXT | 만든 시각(UTC) |
@@ -95,6 +95,8 @@ erDiagram
 
 화면에서도 막지만, 화면은 조작될 수 있으므로 백엔드에서 다시 검사한다.
 
+- Todo 마감일은 필수이고 지난 날짜는 거절한다.
+- 미완료 Todo끼리 같은 제목은 거절한다(대소문자 무시). 같은 Todo 안의 태스크끼리도 같은 제목은 거절한다.
 - 완료된 Todo에는 태스크를 추가할 수 없다.
 - 안 끝난 태스크가 있는 Todo를 완료하려면 확인(`force`)이 필요하다. 확인하면 남은 태스크도 함께 완료된다.
 - 완료된 Todo의 태스크를 미완료로 되돌리면 Todo도 미완료로 돌아간다.
@@ -106,10 +108,10 @@ erDiagram
 | 메서드 | 주소 | 하는 일 |
 |---|---|---|
 | GET | `/api/todos?q=검색어&today=1` | Todo 목록(태스크 포함). `q`는 Todo·태스크 제목 검색, `today=1`은 마감일이 오늘인 것만 |
-| POST | `/api/todos` | Todo 추가 `{ "title", "due_date" }` |
+| POST | `/api/todos` | Todo 추가 `{ "title", "due_date" }`. 날짜 없음·지난 날짜는 400, 중복 제목은 409 |
 | PATCH | `/api/todos/:id` | 완료/미완료 `{ "completed": true, "force": false }`. 안 끝난 태스크가 있으면 409 |
 | DELETE | `/api/todos/:id` | Todo 삭제(태스크도 함께) |
-| POST | `/api/todos/:id/tasks` | 태스크 추가 `{ "title" }`. 완료된 Todo면 409 |
+| POST | `/api/todos/:id/tasks` | 태스크 추가 `{ "title" }`. 완료된 Todo거나 같은 이름의 태스크가 있으면 409 |
 | PATCH | `/api/tasks/:id` | 태스크 완료/미완료 `{ "completed": true }` |
 | DELETE | `/api/tasks/:id` | 태스크 삭제 |
 

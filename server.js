@@ -33,13 +33,15 @@ function parseTitle(value) {
   return title;
 }
 
+// 마감일은 필수이고 오늘 이후만 가능
 function parseDueDate(value) {
-  if (value === undefined || value === null || value === '') return null;
+  if (value === undefined || value === null || value === '') throw new HttpError(400, '날짜를 등록해주세요.');
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)
     || Number.isNaN(Date.parse(value + 'T00:00:00Z'))
     || new Date(value + 'T00:00:00Z').toISOString().slice(0, 10) !== value) {
     throw new HttpError(400, '마감일 형식이 올바르지 않습니다.');
   }
+  if (value < localToday()) throw new HttpError(400, '지난 날짜는 등록할 수 없습니다.');
   return value;
 }
 
@@ -66,6 +68,7 @@ app.get('/api/todos', (req, res) => {
 app.post('/api/todos', (req, res) => {
   const title = parseTitle(req.body?.title);
   const dueDate = parseDueDate(req.body?.due_date);
+  if (db.hasOpenTodoWithTitle(title)) throw new HttpError(409, '같은 이름의 할 일이 이미 있습니다.');
   const id = db.createTodo({ title, dueDate });
   res.status(201).json({ id });
 });
@@ -73,8 +76,13 @@ app.post('/api/todos', (req, res) => {
 app.patch('/api/todos/:id', (req, res) => {
   const id = parseId(req.params.id);
   const completed = parseCompleted(req.body?.completed);
-  if (!db.getTodo(id)) throw new HttpError(404, '할 일을 찾을 수 없습니다.');
+  const todo = db.getTodo(id);
+  if (!todo) throw new HttpError(404, '할 일을 찾을 수 없습니다.');
 
+  // 완료된 Todo를 되살릴 때 같은 이름의 미완료 Todo가 있으면 중복이 된다
+  if (!completed && db.hasOpenTodoWithTitle(todo.title, id)) {
+    throw new HttpError(409, '같은 이름의 할 일이 이미 있어서 되돌릴 수 없습니다.');
+  }
   if (completed && req.body?.force !== true) {
     const openTasks = db.countOpenTasks(id);
     if (openTasks > 0) {
@@ -96,6 +104,7 @@ app.post('/api/todos/:id/tasks', (req, res) => {
   const todo = db.getTodo(todoId);
   if (!todo) throw new HttpError(404, '할 일을 찾을 수 없습니다.');
   if (todo.completed === 1) throw new HttpError(409, '완료된 할 일에는 태스크를 추가할 수 없습니다.');
+  if (db.hasTaskWithTitle(todoId, title)) throw new HttpError(409, '이 할 일에 같은 이름의 태스크가 이미 있습니다.');
   const id = db.createTask({ todoId, title });
   res.status(201).json({ id });
 });
@@ -103,7 +112,16 @@ app.post('/api/todos/:id/tasks', (req, res) => {
 app.patch('/api/tasks/:id', (req, res) => {
   const id = parseId(req.params.id);
   const completed = parseCompleted(req.body?.completed);
-  if (!db.getTask(id)) throw new HttpError(404, '태스크를 찾을 수 없습니다.');
+  const task = db.getTask(id);
+  if (!task) throw new HttpError(404, '태스크를 찾을 수 없습니다.');
+
+  // 태스크를 되돌리면 완료된 Todo도 되살아나므로 같은 중복 검사를 한다
+  if (!completed) {
+    const todo = db.getTodo(task.todo_id);
+    if (todo.completed === 1 && db.hasOpenTodoWithTitle(todo.title, todo.id)) {
+      throw new HttpError(409, '같은 이름의 할 일이 이미 있어서 되돌릴 수 없습니다.');
+    }
+  }
   db.setTaskCompleted(id, completed);
   res.status(204).end();
 });

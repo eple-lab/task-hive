@@ -8,6 +8,9 @@
   --accent-text: #ffffff;
   --danger: #c0392b;
   --today: #fff4d6;
+  --header-bg: #000000;
+  --header-text: #ffffff;
+  --header-muted: #c9c5bb;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,8 +62,16 @@ button {
   margin-right: auto;
 }
 
-.top { padding: 20px 16px 8px; }
+/* 위쪽 머리 영역: 제목~검색창까지 검은 배경 (화면 폭 전체) */
+.top-wrap {
+  background: var(--header-bg);
+  color: var(--header-text);
+  margin-bottom: 12px;
+}
+.top { padding: 20px 16px 16px; }
 .top h1 { margin: 0 0 12px; font-size: 22px; }
+.top .toggle { color: var(--header-muted); }
+.top input[type="search"] { border-color: transparent; }
 
 .filters, .add-row {
   display: flex;
@@ -119,6 +130,8 @@ main { padding: 0 16px 200px; }
   border-top: 1px solid var(--line);
   padding: 12px 16px;
 }
+
+.add-row + .add-row { margin-top: 6px; }
 
 .parent-picker {
   border: 1px solid var(--line);

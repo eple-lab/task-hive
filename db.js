@@ -94,6 +94,19 @@ export function getTask(id) {
   return db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
 }
 
+// 중복 확인: 미완료 Todo 중 같은 제목(대소문자 무시)이 있는지. excludeId는 자기 자신 제외용
+export function hasOpenTodoWithTitle(title, excludeId = 0) {
+  return db.prepare(`
+    SELECT 1 FROM todos WHERE completed = 0 AND lower(title) = lower(?) AND id <> ?
+  `).get(title, excludeId) !== undefined;
+}
+
+// 중복 확인: 같은 Todo 안에 같은 제목의 태스크가 있는지
+export function hasTaskWithTitle(todoId, title) {
+  return db.prepare('SELECT 1 FROM tasks WHERE todo_id = ? AND lower(title) = lower(?)')
+    .get(todoId, title) !== undefined;
+}
+
 export function countOpenTasks(todoId) {
   return db.prepare('SELECT count(*) AS n FROM tasks WHERE todo_id = ? AND completed = 0')
     .get(todoId).n;

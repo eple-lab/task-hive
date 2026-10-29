@@ -12,6 +12,19 @@ const dueDateInput = $('due-date');
 const parentPicker = $('parent-picker');
 const parentOptions = $('parent-options');
 
+// 이 컴퓨터 기준 오늘 날짜 (YYYY-MM-DD)
+function localToday() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+// 마감일 입력: 기본값은 오늘, 지난 날짜는 달력에서 고를 수 없게
+function resetDueDate() {
+  dueDateInput.min = localToday();
+  dueDateInput.value = localToday();
+}
+
 async function api(method, url, body) {
   const res = await fetch(url, {
     method,
@@ -127,7 +140,9 @@ async function refresh() {
     renderParentOptions((all ?? view).todos);
 
     if (view.todos.length === 0) {
-      statusEl.textContent = filtered ? '조건에 맞는 할 일이 없습니다.' : '아직 할 일이 없습니다. 아래에서 추가해 보세요.';
+      if (todayOnly.checked && !q) statusEl.textContent = '오늘은 할일이 없어요 ^^';
+      else if (filtered) statusEl.textContent = '조건에 맞는 할 일이 없습니다.';
+      else statusEl.textContent = '아직 할 일이 없습니다. 아래에서 추가해 보세요.';
     } else {
       statusEl.textContent = '';
     }
@@ -202,6 +217,19 @@ form.addEventListener('submit', async (event) => {
   const title = titleInput.value.trim();
   if (!title || saving) return;
 
+  if (!asTask.checked) {
+    if (!dueDateInput.value) {
+      alert('날짜를 등록해주세요.');
+      dueDateInput.focus();
+      return;
+    }
+    if (dueDateInput.value < localToday()) {
+      alert('지난 날짜는 등록할 수 없습니다.');
+      resetDueDate();
+      return;
+    }
+  }
+
   // 저장이 끝나기 전에 다시 입력·전송되지 않게 잠근다
   saving = true;
   titleInput.readOnly = true;
@@ -214,8 +242,8 @@ form.addEventListener('submit', async (event) => {
       }
       await api('POST', `/api/todos/${parentId}/tasks`, { title });
     } else {
-      await api('POST', '/api/todos', { title, due_date: dueDateInput.value || null });
-      dueDateInput.value = '';
+      await api('POST', '/api/todos', { title, due_date: dueDateInput.value });
+      resetDueDate();
     }
     titleInput.value = '';
   } catch (err) {
@@ -237,4 +265,5 @@ searchInput.addEventListener('input', () => {
 });
 todayOnly.addEventListener('change', refresh);
 
+resetDueDate();
 refresh();

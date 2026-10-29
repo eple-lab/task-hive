@@ -7,16 +7,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="top">
-    <h1>Task Hive</h1>
-    <div class="filters">
-      <input id="search" type="search" placeholder="할 일·태스크 검색" autocomplete="off" aria-label="검색">
-      <label class="toggle">
-        <input id="today-only" type="checkbox">
-        오늘 할 일만
-      </label>
-    </div>
-  </header>
+  <div class="top-wrap">
+    <header class="top">
+      <h1>Task Hive</h1>
+      <div class="filters">
+        <input id="search" type="search" placeholder="할 일·태스크 검색" autocomplete="off" aria-label="검색">
+        <label class="toggle">
+          <input id="today-only" type="checkbox">
+          오늘 할 일만
+        </label>
+      </div>
+    </header>
+  </div>
 
   <main>
     <p id="status" class="status" role="status"></p>
@@ -25,13 +27,15 @@
 
   <form id="add-form" class="add-form" autocomplete="off">
     <div class="add-row">
+      <input id="title" type="text" maxlength="200" placeholder="할 일을 입력하세요" aria-label="제목" required>
+      <input id="due-date" type="date" aria-label="마감일">
+      <button type="submit">추가</button>
+    </div>
+    <div class="add-row">
       <label class="toggle">
         <input id="as-task" type="checkbox">
         태스크로 등록
       </label>
-      <input id="title" type="text" maxlength="200" placeholder="할 일을 입력하세요" aria-label="제목" required>
-      <input id="due-date" type="date" aria-label="마감일">
-      <button type="submit">추가</button>
     </div>
     <fieldset id="parent-picker" class="parent-picker" hidden>
       <legend>어느 할 일에 넣을까요?</legend>
