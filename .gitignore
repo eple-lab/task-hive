@@ -1,0 +1,11 @@
+# 비밀값
+.env
+
+# 로컬 DB (보조 파일 포함)
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# 의존성
+node_modules/
