@@ -10,7 +10,8 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "dev": "node --watch --env-file-if-exists=.env server.js"
+    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "check:rls": "node --env-file-if-exists=.env scripts/rls-check.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
