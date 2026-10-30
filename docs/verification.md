@@ -7,8 +7,22 @@
 | 항목 | 결과 |
 |---|---|
 | 길 A - 로컬 SQLite 저장 | ✅ 서버를 껐다 켜도 할 일·태스크가 그대로 남음 (2026-10-30) |
-| 길 B - Supabase 저장 | ⏳ 진행 예정 |
-| 길 B - RLS (다른 계정 접근 차단) | ⏳ 진행 예정 |
+| 길 B - 클라우드 전환 | ✅ 코드 전환 완료: 저장소 SQLite → Supabase, 로그인 추가 (커밋 B-1~B-4) |
+| 길 B - RLS 정책 | ✅ 메모리 Postgres에서 두 사용자로 검증 ([testing.md](testing.md#supabase-스키마rls-테스트-기록-길-b)) |
+| 길 B - Supabase 실제 저장 | ⏳ 실제 프로젝트 연결 후 기록 |
+| 길 B - 실제 계정 두 개 RLS | ⏳ 실제 프로젝트 연결 후 기록 |
+
+## 길 B - Supabase
+
+> 실제 Supabase 프로젝트를 연결한 뒤 채운다. 순서는 [supabase-setup.md](supabase-setup.md).
+
+### 1. 저장 확인
+- [ ] 할 일 추가 → Table Editor의 `todos`에 행, `user_id` 채워짐
+- [ ] 서버 재시작 후에도 그대로
+
+### 2. RLS 확인
+- [ ] 계정 B에서 계정 A의 할 일이 안 보임
+- [ ] `npm run check:rls` 결과
 
 ## 길 A - 로컬 SQLite
 

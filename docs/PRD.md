@@ -8,8 +8,15 @@
 - 태스크도 추가 / 보기 / 완료 표시 / 삭제
 
 ## [저장]
-- 데이터는 내 컴퓨터의 무료 DB(SQLite, `data/todo.db`)에 저장 - 껐다 켜도 남는다.
-- 화면은 백엔드 API에만 요청하고, DB 접근 코드는 백엔드에만 둔다.
+- 길 A: 데이터는 내 컴퓨터의 무료 DB(SQLite, `data/todo.db`)에 저장 - 껐다 켜도 남는다.
+- 길 B: 저장소를 무료 클라우드 DB(Supabase)로 옮긴다. 앱은 계속 내 컴퓨터에서 실행한다.
+- 화면은 백엔드 API에만 요청하고, DB 접근 코드와 접속 키는 백엔드에만 둔다.
+
+## [로그인과 접근 (길 B)]
+- 로그인은 직접 만들지 않고 Supabase Auth(이메일·비밀번호)를 쓴다.
+- 할 일마다 주인(사용자)을 기록한다.
+- RLS로 로그인한 사용자가 **자기 할 일만** 조회·추가·수정·삭제하게 한다.
+- 계정 두 개로 서로의 할 일이 안 보이고, 수정·삭제도 거절되는지 확인한다.
 
 ## [내가 넣고 싶은 기능]
 
@@ -71,4 +78,4 @@
 ## [DB 구조]
 - 표 2개: todos 1 : N tasks (일대다). 태스크는 `todo_id`가 NOT NULL이라 Todo 없이 존재할 수 없다.
 - 태스크 아래에 또 태스크는 없다(한 단계만).
-- 구조도와 열 설명은 [database.md](database.md), 실제 정의는 [db/schema.sql](../db/schema.sql).
+- 구조도와 열 설명은 [database.md](database.md), 실제 정의는 [db/supabase/01_schema.sql](../db/supabase/01_schema.sql) (길 A SQLite 버전은 `path-a` 태그의 `db/schema.sql`).

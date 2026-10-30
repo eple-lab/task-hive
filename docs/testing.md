@@ -4,19 +4,24 @@
 
 ## 테스트할 때 진짜 데이터를 지키는 법
 
-`DB_PATH`를 바꿔서 임시 DB로 서버를 켜면 `data/todo.db`를 건드리지 않는다.
-```bash
-PORT=3999 DB_PATH=./data/test.db node server.js
-```
-PowerShell이라면:
-```powershell
-$env:PORT=3999; $env:DB_PATH="./data/test.db"; node server.js
-```
-끝나면 `data/test.db`를 지우면 된다.
+길 B에서는 계정마다 데이터가 나뉜다. **테스트용 계정**으로 로그인해서 시험하면 내 진짜 할 일과 섞이지 않는다.
+(길 A에서는 `DB_PATH`로 임시 DB 파일을 지정했다.)
 
-## 과제 확인 체크리스트 (길 A)
+## 과제 확인 체크리스트 (길 B - Supabase)
 
-과제 평가 기준 "CRUD가 동작하고 앱을 껐다 켜도 데이터가 남는 장면"을 위한 순서.
+결과와 캡처는 [verification.md](verification.md)에 기록한다.
+
+- [ ] `.env` 설정 후 `npm start` → 로그인 화면
+- [ ] 계정 A 회원가입 → 할 일·태스크 추가, 완료, 삭제가 길 A처럼 동작
+- [ ] Supabase **Table Editor → todos**에 행이 쌓이고 `user_id`가 채워짐 ← 캡처
+- [ ] 새로고침 → 그대로 / 서버 `Ctrl + C` 후 다시 `npm start` → 그대로 ← 캡처
+- [ ] 로그아웃 → 계정 B 회원가입 → **A의 할 일이 안 보임** ← 캡처
+- [ ] `.env`에 두 계정을 적고 `npm run check:rls` → `15/15 통과` ← 캡처
+- [ ] 계정 A로 다시 로그인 → 할 일이 그대로
+
+## 과제 확인 체크리스트 (길 A - SQLite, `path-a` 태그)
+
+과제 평가 기준 "CRUD가 동작하고 앱을 껐다 켜도 데이터가 남는 장면"을 위한 순서. 결과는 [verification.md](verification.md)에 캡처로 남겼다.
 
 - [ ] `npm start` → http://localhost:3000 열림
 - [ ] 할 일 추가 → 목록에 나타남 (Create)
@@ -40,7 +45,7 @@ $env:PORT=3999; $env:DB_PATH="./data/test.db"; node server.js
 
 ## API 테스트 기록
 
-임시 DB로 서버를 켜고 Node 스크립트로 요청을 보내 확인했다.
+(길 A) 임시 DB로 서버를 켜고 Node 스크립트로 요청을 보내 확인했다. 같은 규칙을 길 B 서버도 그대로 쓴다.
 
 | 시나리오 | 기대 | 결과 |
 |---|---|---|
@@ -68,13 +73,35 @@ $env:PORT=3999; $env:DB_PATH="./data/test.db"; node server.js
 
 브라우저에서 확인한 것: 등록·태스크 등록·완료 확인창·삭제 확인창·검색·오늘 필터·빈 목록 문구·새로고침 후 유지·XSS·연속 전송 방지(저장 중 두 번째 전송 무시)·좁은 화면(420px).
 
-## DB 스키마 테스트 기록
+## DB 스키마 테스트 기록 (길 A)
 
 메모리 DB에 `schema.sql`을 실행해 확인: 없는 할 일에 태스크(FK 거절), 빈 제목(CHECK 거절), 완료인데 완료 시각 없음(CHECK 거절), 잘못된 날짜 형식(CHECK 거절), CASCADE 삭제, 90일 삭제 쿼리, `schema.sql` 두 번 실행해도 에러 없음.
 
-## 길 B에서 추가할 테스트
+## Supabase 스키마·RLS 테스트 기록 (길 B)
 
-- [ ] Supabase Table Editor에서 행이 쌓이는지
-- [ ] 계정 A로 만든 할 일이 계정 B에서 안 보이는지
-- [ ] 계정 B가 계정 A의 할 일 id로 수정·삭제 요청 → 거절되고 원래 할 일은 그대로인지
-- [ ] 로그아웃 상태에서 API 요청 → 거절되는지
+Docker가 없어 로컬 Supabase를 띄울 수 없었다. 대신 메모리 Postgres(PGlite 0.3, Postgres 17)에 Supabase와 같은 `anon`/`authenticated` 역할, `auth.users`, `auth.uid()`를 흉내 내 만들고 `01_schema.sql`을 실행해 두 사용자로 시험했다.
+
+| 시나리오 | 기대 | 결과 |
+|---|---|---|
+| `01_schema.sql` 두 번 실행 | 에러 없음 | ✅ |
+| A가 할 일 추가 | `user_id`가 A로 자동 기록 | ✅ |
+| A가 `a의 할 일` (대소문자만 다름) | UNIQUE 위반 | ✅ |
+| A가 같은 할 일에 같은 태스크 | UNIQUE 위반 | ✅ |
+| B가 A와 같은 제목 | 허용 (사람이 다르면 OK) | ✅ |
+| B가 할 일 조회 | 자기 것만 | ✅ |
+| B가 태스크 조회 | 0행 | ✅ |
+| B가 A의 할 일 수정 / 삭제 | 0행 | ✅ |
+| B가 A의 할 일에 태스크 추가 | RLS 위반 에러 | ✅ |
+| B가 `user_id`를 A로 넣어 추가 | RLS 위반 에러 | ✅ |
+| B가 자기 할 일의 주인을 A로 변경 | RLS 위반 에러 | ✅ |
+| B가 완료 함수로 A의 할 일 완료 | 0행 (효과 없음), A의 할 일 그대로 | ✅ |
+| 로그인 안 한 사용자 조회 / 함수 호출 | 권한 없음 | ✅ |
+| A가 할 일 완료 | 남은 태스크도 완료 | ✅ |
+| 완료 후 같은 제목 재등록 → 옛 것 되돌리기 | UNIQUE 위반, 함수 전체 취소 | ✅ |
+| 태스크 되돌리기 | 할 일도 미완료, `updated_at` 갱신 | ✅ |
+| 완료인데 완료 시각 없음 | CHECK 위반 | ✅ |
+| 할 일 삭제 | 태스크도 삭제 (CASCADE) | ✅ |
+
+서버 쪽은 가짜 Supabase 주소로 켜서 로그인 없이 할 일 API 호출 → 401, 이메일 형식·비밀번호 길이 → 400, Supabase 연결 실패 → 503, 로그인 화면 전환, 데모 모드(로그인 없이 동작)를 확인했다.
+
+**실제 Supabase 프로젝트에서의 확인**(회원가입, 저장, 계정 두 개 RLS)은 [verification.md](verification.md)에 기록한다.
