@@ -1,183 +1,92 @@
 // DB 접근 코드는 전부 이 파일에만 둔다.
-// 길 B(Supabase 전환)에서는 이 파일의 함수 내용만 바꾸면 된다.
-import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync, readFileSync } from 'node:fs';
-import path from 'node:path';
-
-const projectDir = import.meta.dirname;
-const dbPath = path.resolve(projectDir, process.env.DB_PATH || 'data/todo.db');
-
-mkdirSync(path.dirname(dbPath), { recursive: true });
-const db = new DatabaseSync(dbPath);
-db.exec(readFileSync(path.join(projectDir, 'db', 'schema.sql'), 'utf8'));
+// 길 B: Supabase(Postgres). 모든 함수는 "로그인한 사용자의 Supabase 클라이언트"(sb)를 받는다.
+// 그래서 RLS가 그 사용자 기준으로 적용되어, 남의 행은 보이지도 바뀌지도 않는다.
+// 표와 규칙 정의는 db/supabase/01_schema.sql. (길 A의 SQLite 버전은 path-a 태그)
 
 const AUTO_DELETE_DAYS = 90;
 
-// 여러 쿼리를 "전부 되거나, 전부 안 되거나"로 묶는다
-function transaction(fn) {
-  db.exec('BEGIN');
-  try {
-    const result = fn();
-    db.exec('COMMIT');
-    return result;
-  } catch (err) {
-    db.exec('ROLLBACK');
-    throw err;
+// Supabase 에러에 Postgres 에러 코드(code)를 붙여서 던진다 (예: 23505 = UNIQUE 위반)
+export class DbError extends Error {
+  constructor(error) {
+    super(error.message);
+    this.code = error.code;
   }
 }
 
-// LIKE 검색에서 %, _ 를 글자 그대로 찾도록 이스케이프
-function likePattern(text) {
-  return `%${text.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
+function unwrap({ data, error, count }) {
+  if (error) throw new DbError(error);
+  return count ?? data;
 }
 
-function toTodo(row) {
-  return {
-    id: row.id,
-    title: row.title,
-    due_date: row.due_date,
-    completed: row.completed === 1,
-    completed_at: row.completed_at,
-    delete_on: row.delete_on,
-    created_at: row.created_at,
-    tasks: [],
-  };
+function deleteOn(completedAt) {
+  if (!completedAt) return null;
+  const d = new Date(completedAt);
+  d.setUTCDate(d.getUTCDate() + AUTO_DELETE_DAYS);
+  return d.toISOString().slice(0, 10);
 }
 
-function toTask(row) {
-  return {
-    id: row.id,
-    todo_id: row.todo_id,
-    title: row.title,
-    completed: row.completed === 1,
-  };
+export async function listTodos(sb, { q = '', dueDate = null } = {}) {
+  // 미완료 먼저, 그다음 마감일 빠른 순(마감일 없는 건 뒤로), 최신 등록 순. 태스크는 등록 순
+  let query = sb.from('todos')
+    .select('id, title, due_date, completed, completed_at, created_at, tasks (id, todo_id, title, completed)')
+    .order('completed')
+    .order('due_date', { nullsFirst: false })
+    .order('id', { ascending: false })
+    .order('id', { referencedTable: 'tasks' });
+  if (dueDate) query = query.eq('due_date', dueDate);
+  const todos = unwrap(await query);
+
+  // 검색: 할 일 제목 또는 태스크 제목. RLS로 자기 할 일만 받아 왔으므로 서버에서 거른다
+  const needle = q.toLowerCase();
+  return todos
+    .filter((t) => !needle || t.title.toLowerCase().includes(needle)
+      || t.tasks.some((s) => s.title.toLowerCase().includes(needle)))
+    .map((t) => ({ ...t, delete_on: deleteOn(t.completed_at) }));
 }
 
-export function listTodos({ q = '', dueDate = null } = {}) {
-  const where = [];
-  const params = [];
-  if (q) {
-    where.push(`(t.title LIKE ? ESCAPE '\\'
-      OR EXISTS (SELECT 1 FROM tasks s WHERE s.todo_id = t.id AND s.title LIKE ? ESCAPE '\\'))`);
-    params.push(likePattern(q), likePattern(q));
-  }
-  if (dueDate) {
-    where.push('t.due_date = ?');
-    params.push(dueDate);
-  }
-
-  // 미완료 먼저, 그다음 마감일 빠른 순(마감일 없는 건 뒤로), 최신 등록 순
-  const todos = db.prepare(`
-    SELECT t.*, date(t.completed_at, '+${AUTO_DELETE_DAYS} days') AS delete_on
-    FROM todos t
-    ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
-    ORDER BY t.completed, t.due_date IS NULL, t.due_date, t.id DESC
-  `).all(...params).map(toTodo);
-
-  if (todos.length === 0) return todos;
-
-  const byId = new Map(todos.map((t) => [t.id, t]));
-  const placeholders = todos.map(() => '?').join(',');
-  const tasks = db.prepare(`
-    SELECT * FROM tasks WHERE todo_id IN (${placeholders}) ORDER BY id
-  `).all(...byId.keys());
-  for (const row of tasks) byId.get(row.todo_id).tasks.push(toTask(row));
-
-  return todos;
+export async function getTodo(sb, id) {
+  return unwrap(await sb.from('todos').select('id, title, completed').eq('id', id).maybeSingle());
 }
 
-export function getTodo(id) {
-  return db.prepare('SELECT * FROM todos WHERE id = ?').get(id);
+export async function getTask(sb, id) {
+  return unwrap(await sb.from('tasks').select('id, todo_id, completed').eq('id', id).maybeSingle());
 }
 
-export function getTask(id) {
-  return db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+export async function countOpenTasks(sb, todoId) {
+  return unwrap(await sb.from('tasks')
+    .select('id', { count: 'exact', head: true })
+    .eq('todo_id', todoId)
+    .eq('completed', false));
 }
 
-// 중복 확인: 미완료 Todo 중 같은 제목(대소문자 무시)이 있는지. excludeId는 자기 자신 제외용
-export function hasOpenTodoWithTitle(title, excludeId = 0) {
-  return db.prepare(`
-    SELECT 1 FROM todos WHERE completed = 0 AND lower(title) = lower(?) AND id <> ?
-  `).get(title, excludeId) !== undefined;
+// user_id는 DB가 로그인한 사용자(auth.uid())로 채운다
+export async function createTodo(sb, { title, dueDate }) {
+  return unwrap(await sb.from('todos').insert({ title, due_date: dueDate }).select('id').single()).id;
 }
 
-// 중복 확인: 같은 Todo 안에 같은 제목의 태스크가 있는지
-export function hasTaskWithTitle(todoId, title) {
-  return db.prepare('SELECT 1 FROM tasks WHERE todo_id = ? AND lower(title) = lower(?)')
-    .get(todoId, title) !== undefined;
+export async function createTask(sb, { todoId, title }) {
+  return unwrap(await sb.from('tasks').insert({ todo_id: todoId, title }).select('id').single()).id;
 }
 
-export function countOpenTasks(todoId) {
-  return db.prepare('SELECT count(*) AS n FROM tasks WHERE todo_id = ? AND completed = 0')
-    .get(todoId).n;
+// 할 일과 태스크를 함께 바꾸는 작업은 DB 함수 안에서 한 번에 처리한다 (01_schema.sql)
+export async function setTodoCompleted(sb, id, completed) {
+  unwrap(await sb.rpc('set_todo_completed', { p_todo_id: id, p_completed: completed }));
 }
 
-export function createTodo({ title, dueDate }) {
-  const { lastInsertRowid } = db.prepare('INSERT INTO todos (title, due_date) VALUES (?, ?)')
-    .run(title, dueDate);
-  return Number(lastInsertRowid);
+export async function setTaskCompleted(sb, id, completed) {
+  unwrap(await sb.rpc('set_task_completed', { p_task_id: id, p_completed: completed }));
 }
 
-export function createTask({ todoId, title }) {
-  const { lastInsertRowid } = db.prepare('INSERT INTO tasks (todo_id, title) VALUES (?, ?)')
-    .run(todoId, title);
-  return Number(lastInsertRowid);
+export async function deleteTodo(sb, id) {
+  return unwrap(await sb.from('todos').delete().eq('id', id).select('id')).length > 0;
 }
 
-// Todo 완료 시 남은 태스크도 함께 완료한다
-export function setTodoCompleted(id, completed) {
-  transaction(() => {
-    if (completed) {
-      db.prepare(`
-        UPDATE todos SET completed = 1, completed_at = datetime('now'), updated_at = datetime('now')
-        WHERE id = ? AND completed = 0
-      `).run(id);
-      db.prepare(`
-        UPDATE tasks SET completed = 1, completed_at = datetime('now'), updated_at = datetime('now')
-        WHERE todo_id = ? AND completed = 0
-      `).run(id);
-    } else {
-      db.prepare(`
-        UPDATE todos SET completed = 0, completed_at = NULL, updated_at = datetime('now')
-        WHERE id = ?
-      `).run(id);
-    }
-  });
+export async function deleteTask(sb, id) {
+  return unwrap(await sb.from('tasks').delete().eq('id', id).select('id')).length > 0;
 }
 
-// 태스크를 미완료로 되돌리면 완료돼 있던 Todo도 미완료로 돌아간다
-export function setTaskCompleted(id, completed) {
-  transaction(() => {
-    if (completed) {
-      db.prepare(`
-        UPDATE tasks SET completed = 1, completed_at = datetime('now'), updated_at = datetime('now')
-        WHERE id = ? AND completed = 0
-      `).run(id);
-    } else {
-      db.prepare(`
-        UPDATE tasks SET completed = 0, completed_at = NULL, updated_at = datetime('now')
-        WHERE id = ?
-      `).run(id);
-      db.prepare(`
-        UPDATE todos SET completed = 0, completed_at = NULL, updated_at = datetime('now')
-        WHERE id = (SELECT todo_id FROM tasks WHERE id = ?) AND completed = 1
-      `).run(id);
-    }
-  });
-}
-
-export function deleteTodo(id) {
-  return db.prepare('DELETE FROM todos WHERE id = ?').run(id).changes > 0;
-}
-
-export function deleteTask(id) {
-  return db.prepare('DELETE FROM tasks WHERE id = ?').run(id).changes > 0;
-}
-
-// 완료 후 90일 지난 Todo 삭제 (태스크는 CASCADE로 함께 삭제)
-export function deleteExpiredTodos() {
-  return db.prepare(`
-    DELETE FROM todos
-    WHERE completed = 1 AND completed_at <= datetime('now', '-${AUTO_DELETE_DAYS} days')
-  `).run().changes;
+// 완료 후 90일 지난 할 일 삭제 (태스크는 CASCADE로 함께). RLS 때문에 이 사용자의 것만 지워진다
+export async function deleteExpiredTodos(sb) {
+  const cutoff = new Date(Date.now() - AUTO_DELETE_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  return unwrap(await sb.from('todos').delete().eq('completed', true).lte('completed_at', cutoff).select('id')).length;
 }
