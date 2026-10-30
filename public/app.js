@@ -12,6 +12,10 @@ const titleInput = $('title');
 const dueDateInput = $('due-date');
 const parentPicker = $('parent-picker');
 const parentOptions = $('parent-options');
+const userBox = $('user-box');
+const userEmail = $('user-email');
+const authForm = $('auth-form');
+const authMessage = $('auth-message');
 
 // 이 컴퓨터 기준 오늘 날짜 (YYYY-MM-DD)
 function localToday() {
@@ -34,6 +38,8 @@ async function api(method, url, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = res.status === 204 ? null : await res.json();
+  // 로그인이 풀렸으면(쿠키 만료 등) 로그인 화면으로
+  if (res.status === 401 && !url.startsWith('/api/auth/')) showAuth('로그인이 필요해요. 다시 로그인하세요.');
   if (!res.ok) {
     const err = new Error(data?.error || '요청에 실패했습니다.');
     err.status = res.status;
@@ -52,8 +58,62 @@ function el(tag, props = {}, children = []) {
 }
 
 function showError(err) {
+  if (err.status === 401) return;   // 이미 로그인 화면으로 바뀌었다
   alert(err.message);
 }
+
+// --- 로그인 화면 ↔ 할 일 화면 ---
+
+function showAuth(message = '') {
+  document.body.dataset.view = 'auth';
+  userBox.hidden = true;
+  list.replaceChildren();
+  authMessage.className = 'auth-message';
+  authMessage.textContent = message;
+  $('auth-email').focus();
+}
+
+function showApp(email) {
+  document.body.dataset.view = 'app';
+  userBox.hidden = !email;
+  userEmail.textContent = email ?? '';
+  $('auth-password').value = '';
+  refresh();
+}
+
+authForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const action = event.submitter?.value === 'signup' ? 'signup' : 'login';
+  const email = $('auth-email').value.trim();
+  const password = $('auth-password').value;
+  const buttons = authForm.querySelectorAll('button');
+  buttons.forEach((b) => { b.disabled = true; });
+  authMessage.className = 'auth-message';
+  authMessage.textContent = '';
+  try {
+    const result = await api('POST', `/api/auth/${action}`, { email, password });
+    if (action === 'signup' && result.needs_confirmation) {
+      authMessage.className = 'auth-message ok';
+      authMessage.textContent = '인증 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인하세요.';
+      return;
+    }
+    showApp(result.email);
+  } catch (err) {
+    authMessage.textContent = err.message;
+  } finally {
+    buttons.forEach((b) => { b.disabled = false; });
+  }
+});
+
+$('logout').addEventListener('click', async () => {
+  try {
+    await api('POST', '/api/auth/logout');
+  } catch (err) {
+    showError(err);
+  }
+  showAuth('로그아웃했어요.');
+  authMessage.className = 'auth-message ok';
+});
 
 // --- 목록 그리기 ---
 
@@ -267,12 +327,22 @@ searchInput.addEventListener('input', () => {
 });
 todayOnly.addEventListener('change', refresh);
 
+// --- 시작: 로그인돼 있으면 할 일 화면, 아니면 로그인 화면 ---
+
+resetDueDate();
+
 if (isDemo) {
+  // 데모는 로그인 없이 예시 데이터로 바로 보여 준다
   document.querySelector('.top-wrap').after(el('p', {
     className: 'demo-banner',
     textContent: '데모 화면이에요. 서버 없이 브라우저 안에서만 동작하고, 새로고침하면 예시 데이터로 돌아가요.',
   }));
+  showApp(null);
+} else {
+  try {
+    const me = await api('GET', '/api/auth/me');
+    showApp(me.email);
+  } catch (err) {
+    showAuth(err.status === 401 ? '' : '서버에 연결하지 못했습니다: ' + err.message);
+  }
 }
-
-resetDueDate();
-refresh();

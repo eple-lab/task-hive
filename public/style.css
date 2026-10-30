@@ -73,6 +73,42 @@ button {
 .top .toggle { color: var(--header-muted); }
 .top input[type="search"] { border-color: transparent; }
 
+.title-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.user-box { display: flex; gap: 8px; align-items: baseline; font-size: 13px; color: var(--header-muted); min-width: 0; }
+.user-box[hidden] { display: none; }
+#user-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link-btn { background: none; color: var(--header-text); padding: 0; text-decoration: underline; }
+
+/* 화면 전환: 확인 중(아무것도 안 보임) → 로그인 화면 또는 할 일 화면 */
+body:not([data-view="app"]) .filters,
+body:not([data-view="app"]) main,
+body:not([data-view="app"]) .add-form,
+body:not([data-view="auth"]) .auth-view { display: none; }
+
+.auth-view { padding: 24px 16px; }
+.auth-card {
+  max-width: 380px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-card h2 { margin: 0; font-size: 18px; }
+.auth-help { margin: 0; font-size: 13px; color: var(--muted); }
+.auth-card label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.auth-hint { color: var(--muted); font-size: 12px; }
+.auth-card input { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 8px 10px; }
+.auth-message { margin: 0; min-height: 1.4em; font-size: 13px; color: var(--danger); }
+.auth-message.ok { color: var(--muted); }
+.auth-actions { display: flex; gap: 8px; }
+.auth-actions button { flex: 1; padding: 9px 16px; }
+button.secondary { background: none; color: var(--text); border: 1px solid var(--line); }
+button:disabled { opacity: 0.6; cursor: default; }
+
 .filters, .add-row {
   display: flex;
   gap: 8px;

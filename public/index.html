@@ -9,7 +9,13 @@
 <body>
   <div class="top-wrap">
     <header class="top">
-      <h1>Task Hive</h1>
+      <div class="title-row">
+        <h1>Task Hive</h1>
+        <div id="user-box" class="user-box" hidden>
+          <span id="user-email"></span>
+          <button id="logout" type="button" class="link-btn">로그아웃</button>
+        </div>
+      </div>
       <div class="filters">
         <input id="search" type="search" placeholder="할 일·태스크 검색" autocomplete="off" aria-label="검색">
         <label class="toggle">
@@ -19,6 +25,24 @@
       </div>
     </header>
   </div>
+
+  <section id="auth-view" class="auth-view">
+    <form id="auth-form" class="auth-card">
+      <h2>로그인</h2>
+      <p class="auth-help">내 할 일은 나만 볼 수 있어요. 처음이면 이메일과 비밀번호를 정하고 회원가입을 누르세요.</p>
+      <label>이메일
+        <input id="auth-email" type="email" autocomplete="email" required>
+      </label>
+      <label><span>비밀번호 <span class="auth-hint">(8자 이상)</span></span>
+        <input id="auth-password" type="password" autocomplete="current-password" minlength="8" maxlength="72" required>
+      </label>
+      <p id="auth-message" class="auth-message" role="alert"></p>
+      <div class="auth-actions">
+        <button type="submit" value="login">로그인</button>
+        <button type="submit" value="signup" class="secondary">회원가입</button>
+      </div>
+    </form>
+  </section>
 
   <main>
     <p id="status" class="status" role="status"></p>

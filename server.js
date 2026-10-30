@@ -99,6 +99,10 @@ function authError(error) {
     over_email_send_rate_limit: [429, '인증 메일을 너무 많이 보냈습니다. 잠시 후 다시 시도하세요.'],
   }[error.code];
   if (known) return new HttpError(...known);
+  // 네트워크 문제나 Supabase 프로젝트 일시정지(1주 미사용)
+  if (error.name === 'AuthRetryableFetchError') {
+    return new HttpError(503, 'Supabase에 연결하지 못했습니다. 프로젝트가 일시정지됐는지 대시보드에서 확인하세요.');
+  }
   console.error('Supabase Auth 에러:', error.code, error.message);
   return new HttpError(400, '요청을 처리하지 못했습니다.');
 }
