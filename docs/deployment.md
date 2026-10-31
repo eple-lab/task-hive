@@ -75,6 +75,20 @@ Render 같은 무료 서버는 재시작·재배포할 때 디스크를 초기�
 
 명세: https://render.com/docs/blueprint-spec
 
+### 실제 배포 화면
+![Render 서비스 화면: Blueprint managed, Free, Live, 배포 기록 3건 (서비스 ID·주소·저장소는 가림)](images/render-dashboard.png)
+
+2026-10-31 캡처. 서비스 ID, 주소, 저장소 이름은 모자이크로 가렸다.
+
+| 화면에서 확인할 것 | 의미 |
+|---|---|
+| **Blueprint managed** | 이 서비스가 `render.yaml`로 관리된다. 파일에 적힌 항목을 대시보드에서 바꿔도 다음 Blueprint 동기화 때 파일 값으로 맞춰진다. 설정은 파일에서 고친다 |
+| **Free** | `plan: free`가 적용됐다 |
+| **Live** + 커밋 해시 | 그 커밋이 지금 서비스 중이다 |
+| 배포 기록 TRIGGER `Blueprint` | 처음 Blueprint로 만들 때의 배포 (`b76066d`) |
+| 배포 기록 TRIGGER `Auto-Deploy` | 이후 `main`에 push할 때마다 자동 배포 (`autoDeployTrigger: commit`). 배포 1회에 30~50초 |
+| 보라색 안내 | Free 인스턴스는 한동안 요청이 없으면 잠들고, 다음 요청이 50초 이상 걸릴 수 있다 |
+
 ### 개발(dev)과 서비스(prod)의 차이
 | | 내 컴퓨터 | Render |
 |---|---|---|

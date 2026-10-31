@@ -18,11 +18,21 @@
 > 실제 서비스라면 켜 두는 게 맞다. 켜 두면 가입 후 받은 메일의 링크를 눌러야 로그인할 수 있고, 앱은 "인증 메일을 보냈어요"라고 안내한다.
 > 켠 상태에서 테스트 계정 두 개가 필요하면 `내아이디+a@gmail.com`, `내아이디+b@gmail.com`처럼 `+`를 붙이면 같은 메일함으로 받을 수 있다.
 
+![Supabase Authentication → Sign In / Providers 화면: User Signups 설정](images/supabase-auth-settings.png)
+
+- 이 프로젝트의 설정 화면 (2026-10-31 캡처). **Allow new users to sign up** 켜짐, **Confirm email**은 캡처 시점에 **켜짐**.
+- 테스트 계정 두 개(`aaa@`, `bbb@email.com`)는 Confirm email을 **끈 상태에서** 만들었다. 켜 둔 지금은 새로 가입하면 메일 인증을 마쳐야 로그인할 수 있고, `@email.com` 같은 받을 수 없는 주소로는 가입을 끝낼 수 없다.
+- Anonymous sign-ins(익명 로그인)는 꺼져 있다. 켜면 가입 없이도 `authenticated` 역할의 사용자가 만들어진다. RLS는 `auth.uid()` 기준이라 익명 사용자도 자기 것만 보지만, 가입하지 않은 사람이 데이터를 쓸 수 있게 된다. 이 앱은 익명 로그인 화면이 없으므로 꺼 둔다.
+
 ## 3. 표 만들기
 1. 왼쪽 **SQL Editor** → New query
 2. 이 저장소의 [db/supabase/01_schema.sql](../db/supabase/01_schema.sql) 내용을 전부 붙여 넣고 **Run**
 3. "Success. No rows returned"가 나오면 성공
 4. **Table Editor**에 `todos`, `tasks` 표가 생겼는지 확인. 표 이름 옆에 RLS가 켜져 있다는 표시가 있다.
+
+![Supabase SQL Editor에서 01_schema.sql 실행 결과: Success. No rows returned](images/supabase-sql-editor.png)
+
+이 프로젝트에서 실제로 실행한 화면 (2026-10-31 캡처). 저장한 쿼리 이름은 `todo create table`, 결과는 `Success. No rows returned`.
 
 (선택) 완료 후 90일 지난 할 일을 매일 지우는 예약 작업: [db/supabase/02_cron.sql](../db/supabase/02_cron.sql)을 같은 방법으로 실행.
 실행하지 않아도 앱이 목록을 불러올 때 그 사용자의 지난 항목을 지운다.
