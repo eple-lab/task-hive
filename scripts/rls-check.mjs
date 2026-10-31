@@ -11,6 +11,9 @@
 //   - 우리 서버(API)를 통해서: 서버 규칙 + RLS
 //   - Supabase에 직접: 서버를 거치지 않아도 RLS가 막는지 (진짜 방어선)
 // 확인용으로 A 계정에 할 일 하나를 만들고, 끝나면 지운다.
+// 2026-10-31 보강: B도 자기 할 일을 하나 만들어 대조군으로 쓴다.
+//   "B는 자기 것은 보고 A의 것은 못 본다" + 반대 방향 "A는 B의 것을 못 본다"까지 확인한다.
+//   (B의 목록이 비어 있기만 하면 "아무것도 못 보는 고장"과 구분되지 않기 때문)
 import { createClient } from '@supabase/supabase-js';
 
 const BASE = `http://localhost:${process.env.PORT || 3000}`;
@@ -72,15 +75,29 @@ if (created.status !== 201) throw new Error(`A의 할 일 만들기 실패: ${cr
 const todoId = created.data.id;
 const task = await apiA('POST', `/api/todos/${todoId}/tasks`, { title: 'A의 태스크' });
 const taskId = task.data.id;
-console.log(`A가 할 일 #${todoId}, 태스크 #${taskId} 생성\n`);
+console.log(`A가 할 일 #${todoId}, 태스크 #${taskId} 생성`);
 
+let todoIdB;
 try {
+  // 대조군: B도 자기 할 일을 만든다
+  // 2026-10-31 BUG-002: 제목에 A의 marker를 넣지 않는다. 넣으면 B가 marker로 검색할 때 자기 할 일이 잡혀 거짓 FAIL이 난다.
+  //                     생성도 try 안에서 해서, 실패해도 finally가 A의 할 일을 지운다.
+  const createdB = await apiB('POST', '/api/todos', { title: `RLS 대조군 B ${Date.now()}`, due_date: today });
+  if (createdB.status !== 201) throw new Error(`B의 할 일 만들기 실패: ${createdB.status} ${JSON.stringify(createdB.data)}`);
+  todoIdB = createdB.data.id;
+  console.log(`B가 할 일 #${todoIdB} 생성 (대조군)\n`);
+
   // --- 우리 서버를 통해서 ---
   const listB = await apiB('GET', '/api/todos');
-  check('[서버] B의 목록에 A의 할 일이 없다', !listB.data.todos.some((t) => t.id === todoId), `B가 받은 할 일 ${listB.data.todos.length}개`);
+  check('[서버] B의 목록에 B의 할 일은 있다 (대조군)', listB.data.todos.some((t) => t.id === todoIdB), `B가 받은 할 일 ${listB.data.todos.length}개`);
+  check('[서버] B의 목록에 A의 할 일이 없다', !listB.data.todos.some((t) => t.id === todoId), `A의 #${todoId} 없음`);
+
+  const listA0 = await apiA('GET', '/api/todos');
+  check('[서버] A의 목록에 B의 할 일이 없다 (반대 방향)', !listA0.data.todos.some((t) => t.id === todoIdB), `A가 받은 할 일 ${listA0.data.todos.length}개`);
 
   const searchB = await apiB('GET', `/api/todos?q=${encodeURIComponent(marker)}`);
-  check('[서버] B가 A의 제목으로 검색해도 안 나온다', searchB.data.todos.length === 0, `${searchB.data.todos.length}건`);
+  check('[서버] B가 A의 제목으로 검색해도 안 나온다', searchB.data.todos.length === 0,
+    `${searchB.data.todos.length}건${searchB.data.todos.length ? ` (id: ${searchB.data.todos.map((t) => t.id).join(', ')})` : ''}`);
 
   const patchB = await apiB('PATCH', `/api/todos/${todoId}`, { completed: true, force: true });
   check('[서버] B가 A의 할 일 완료 처리 → 거절', patchB.status === 404, `HTTP ${patchB.status}`);
@@ -100,8 +117,15 @@ try {
   // --- Supabase에 직접 (서버를 거치지 않는 공격 흉내) ---
   const sbB = await directClient(B);
 
+  const own = await sbB.from('todos').select('id').eq('id', todoIdB);
+  check('[직접] B가 자기 할 일 조회 → 1행 (대조군)', !own.error && own.data.length === 1, own.error?.message ?? `${own.data.length}행`);
+
   const sel = await sbB.from('todos').select('id').eq('id', todoId);
   check('[직접] B가 A의 할 일 조회 → 0행', !sel.error && sel.data.length === 0, sel.error?.message ?? `${sel.data.length}행`);
+
+  const sbA = await directClient(A);
+  const selA = await sbA.from('todos').select('id').eq('id', todoIdB);
+  check('[직접] A가 B의 할 일 조회 → 0행 (반대 방향)', !selA.error && selA.data.length === 0, selA.error?.message ?? `${selA.data.length}행`);
 
   const upd = await sbB.from('todos').update({ title: 'B가 바꾼 제목' }).eq('id', todoId).select('id');
   check('[직접] B가 A의 할 일 제목 수정 → 0행', !upd.error && upd.data.length === 0, upd.error?.message ?? `${upd.data.length}행`);
@@ -128,7 +152,8 @@ try {
     mine ? `태스크 ${mine.tasks.length}개` : '-');
 } finally {
   await apiA('DELETE', `/api/todos/${todoId}`);
-  console.log(`\nA의 확인용 할 일 #${todoId} 삭제(정리)`);
+  if (todoIdB) await apiB('DELETE', `/api/todos/${todoIdB}`);
+  console.log(`\n확인용 할 일 A #${todoId}${todoIdB ? `, B #${todoIdB}` : ''} 삭제(정리)`);
 }
 
 const failed = results.filter((r) => !r.pass).length;

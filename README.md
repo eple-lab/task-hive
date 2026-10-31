@@ -158,7 +158,7 @@ erDiagram
 - [x] 길 A: 로컬 SQLite로 구현 (`path-a` 태그)
 - [x] 길 B: Supabase로 저장소 전환 + 로그인 + RLS (코드 완료)
 - [x] 길 A·B 합치기: `.env` 설정에 따라 SQLite / Supabase 중 하나로 동작
-- [ ] 길 B: 실제 Supabase 프로젝트에서 저장·RLS 확인
+- [x] 길 B: 실제 Supabase 프로젝트에서 저장·RLS 확인 (`npm run check:rls` 19/19, [확인 기록](docs/verification.md))
 - [x] 길 C(선택): Render 배포 (https://todo-0vru.onrender.com/)
 
 자세한 내용은 [docs/roadmap.md](docs/roadmap.md).
