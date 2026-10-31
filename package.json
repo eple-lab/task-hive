@@ -2,7 +2,7 @@
   "name": "todo",
   "version": "1.0.0",
   "private": true,
-  "description": "하위 태스크가 있는 Todo 앱 (Express + SQLite)",
+  "description": "하위 태스크가 있는 Todo 앱 (Express + Supabase)",
   "type": "module",
   "main": "server.js",
   "engines": {
@@ -10,9 +10,12 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "dev": "node --watch --env-file-if-exists=.env server.js"
+    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "check:rls": "node --env-file-if-exists=.env scripts/rls-check.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "express": "^5.3.0"
   }
 }
