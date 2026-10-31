@@ -30,6 +30,30 @@ function resetDueDate() {
   dueDateInput.value = localToday();
 }
 
+// 등록창을 "할 일" 또는 "태스크" 입력 상태로 바꾼다. 태스크 상태를 끌 때는 라디오 선택도 지운다
+function setTaskMode(on) {
+  asTask.checked = on;
+  parentPicker.hidden = !on;
+  dueDateInput.hidden = on;
+  titleInput.placeholder = on ? '태스크를 입력하세요' : '할 일을 입력하세요';
+  if (!on) parentOptions.querySelectorAll('input:checked').forEach((r) => { r.checked = false; });
+}
+
+// 2026-10-31 BUG-003: 사용자가 바뀌면(로그아웃·세션 만료) 화면에 남은 입력·검색·필터를 모두 처음으로 되돌린다.
+// 안 하면 A가 쓰다 만 제목과 검색어가 B에게 보이고, A의 검색·필터 조건이 B의 목록에 적용된다 (docs/bugfix.md BUG-003)
+let searchTimer;
+function resetView() {
+  clearTimeout(searchTimer);
+  searchInput.value = '';
+  todayOnly.checked = false;
+  titleInput.value = '';
+  setTaskMode(false);
+  resetDueDate();
+  list.replaceChildren();
+  parentOptions.replaceChildren();
+  statusEl.textContent = '';
+}
+
 async function api(method, url, body) {
   // 데모 모드(GitHub Pages)에서는 서버 대신 브라우저 안의 가짜 백엔드가 응답한다
   const res = isDemo ? await demoFetch(method, url, body) : await fetch(url, {
@@ -67,7 +91,7 @@ function showError(err) {
 function showAuth(message = '') {
   document.body.dataset.view = 'auth';
   userBox.hidden = true;
-  list.replaceChildren();
+  resetView();
   authMessage.className = 'auth-message';
   authMessage.textContent = message;
   $('auth-email').focus();
@@ -268,11 +292,7 @@ async function removeTask(task) {
 
 // --- 등록창 ---
 
-asTask.addEventListener('change', () => {
-  parentPicker.hidden = !asTask.checked;
-  dueDateInput.hidden = asTask.checked;
-  titleInput.placeholder = asTask.checked ? '태스크를 입력하세요' : '할 일을 입력하세요';
-});
+asTask.addEventListener('change', () => setTaskMode(asTask.checked));
 
 let saving = false;
 
@@ -305,6 +325,8 @@ form.addEventListener('submit', async (event) => {
         return;
       }
       await api('POST', `/api/todos/${parentId}/tasks`, { title });
+      // 2026-10-31 BUG-003: 등록에 성공하면 할 일 입력 상태로 돌아간다 (실패하면 그대로 두어 다시 시도할 수 있게)
+      setTaskMode(false);
     } else {
       await api('POST', '/api/todos', { title, due_date: dueDateInput.value });
       resetDueDate();
@@ -322,7 +344,6 @@ form.addEventListener('submit', async (event) => {
 
 // --- 검색·필터 ---
 
-let searchTimer;
 searchInput.addEventListener('input', () => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(refresh, 200);
@@ -331,7 +352,8 @@ todayOnly.addEventListener('change', refresh);
 
 // --- 시작: 로그인돼 있으면 할 일 화면, 아니면 로그인 화면 ---
 
-resetDueDate();
+// 브라우저가 새로고침 때 체크박스·입력값을 되살리는 경우가 있어 처음 상태로 맞춘다
+resetView();
 
 if (isDemo) {
   // 데모는 로그인 없이 예시 데이터로 바로 보여 준다
