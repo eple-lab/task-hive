@@ -153,5 +153,5 @@ cleanup();
 setInterval(cleanup, CLEANUP_INTERVAL_MS).unref();
 
 app.listen(PORT, () => {
-  console.log(`Task Hive: http://localhost:${PORT}`);
+  console.log(`TODO: http://localhost:${PORT}`);
 });

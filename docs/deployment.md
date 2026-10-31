@@ -5,8 +5,8 @@
 | 무엇 | 어디 | 데이터 |
 |---|---|---|
 | 진짜 앱 | 내 컴퓨터 (`npm start`) | `data/todo.db`에 저장, 껐다 켜도 남음 |
-| 데모 화면 | https://eple-lab.github.io/task-hive/ | 브라우저 메모리. 새로고침하면 예시 데이터로 초기화 |
-| 코드 | https://github.com/eple-lab/task-hive | |
+| 데모 화면 | https://eple-lab.github.io/todo/ | 브라우저 메모리. 새로고침하면 예시 데이터로 초기화 |
+| 코드 | https://github.com/eple-lab/todo | |
 
 ## GitHub Pages 데모
 
@@ -51,7 +51,7 @@ Render 같은 무료 서버는 재시작·재배포할 때 디스크를 초기�
 ### Render에 백엔드를 올릴 때 필요한 것
 | 준비물 | 이 프로젝트에서 |
 |---|---|
-| 코드 보관 위치 | GitHub 저장소 `eple-lab/task-hive` |
+| 코드 보관 위치 | GitHub 저장소 `eple-lab/todo` |
 | 서비스 종류 | Web Service (Node) |
 | 설치 명령 (Build Command) | `npm install` |
 | 시작 명령 (Start Command) | `npm start` |

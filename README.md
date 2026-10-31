@@ -1,15 +1,15 @@
-# Task Hive
+# TODO
 
 큰 할 일(Todo) 아래에 하위 태스크(Task)를 두고 하나씩 체크하는 Todo 앱.
 데이터는 내 컴퓨터의 SQLite 파일에 저장되어 껐다 켜도 남는다.
 
-- **데모:** https://eple-lab.github.io/task-hive/ (서버 없이 브라우저에서만 동작, 새로고침하면 초기화)
+- **데모:** https://eple-lab.github.io/todo/ (서버 없이 브라우저에서만 동작, 새로고침하면 초기화)
 - **기획서:** [docs/PRD.md](docs/PRD.md)
 - **문서 전체:** [docs/](docs/README.md)
 
 ## 화면
 
-![Task Hive 화면: 위쪽 검은 머리 영역에 검색창과 오늘 할 일만 보기, 가운데 할 일과 하위 태스크 목록, 아래쪽 등록창](docs/images/screenshot.png)
+![TODO 화면: 위쪽 검은 머리 영역에 검색창과 오늘 할 일만 보기, 가운데 할 일과 하위 태스크 목록, 아래쪽 등록창](docs/images/screenshot.png)
 
 - 위쪽: 검색창(할 일·태스크 제목), "오늘 할 일만" 보기
 - 가운데: 할 일과 하위 태스크. 진행률(2/4), 마감일, 완료한 할 일의 자동 삭제 날짜가 오른쪽에 표시된다. 오늘 마감인 할 일은 노란 배경

@@ -1,4 +1,4 @@
--- Task Hive DB 구조 (SQLite)
+-- TODO DB 구조 (SQLite)
 -- 앱 시작 시 매번 실행해도 안전하도록 IF NOT EXISTS 사용.
 -- 날짜/시각은 TEXT로 저장: 날짜는 'YYYY-MM-DD', 시각은 'YYYY-MM-DD HH:MM:SS'(UTC).
 

@@ -24,7 +24,7 @@
 | 데이터가 남는 Todo 앱 (CRUD + 껐다 켜도 남음) | 40 | 길 A 앱 + [testing.md](testing.md) 체크리스트 캡처 |
 | 로컬·클라우드 저장과 보안 확인 | 30 | 길 A 확인 기록 + 길 B 전환·RLS 확인 기록 (예정) |
 
-마감: 2026년 11월 5일 23:59. 제출: https://github.com/eple-lab/task-hive
+마감: 2026년 11월 5일 23:59. 제출: https://github.com/eple-lab/todo
 
 ## 길 B 계획: Supabase로 전환
 
