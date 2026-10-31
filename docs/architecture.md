@@ -1,7 +1,7 @@
 # 구조 (Architecture)
 
 TODO 앱이 어떤 조각으로 이뤄져 있고, 요청 하나가 어떻게 흘러가는지 정리한 문서.
-지금은 **길 B (Supabase)** 구조다. 길 A(SQLite) 구조는 `path-a` 태그의 같은 문서에 있다.
+아래 그림은 **Supabase 모드(길 B)** 기준이다. `.env`에 Supabase 정보가 없으면 같은 서버가 **SQLite 모드(길 A)**로 돌고, 이때는 로그인 없이 `db/sqlite.js`가 `data/todo.db`를 쓴다.
 
 ## 한눈에 보기
 
@@ -40,7 +40,10 @@ flowchart LR
 | `public/demo-api.js` | 프론트(데모 전용) | GitHub Pages용 가짜 백엔드. [deployment.md](deployment.md) 참고 |
 | `server.js` | 백엔드 | API 주소 정의, 로그인 API, 로그인 확인, 입력값 검사, 에러 응답 |
 | `supabase.js` | 백엔드 | 요청마다 "그 사용자로" Supabase에 접속하는 클라이언트를 만든다. 로그인 쿠키를 읽고 쓴다 |
-| `db.js` | 백엔드 | DB 쿼리는 전부 여기에. 모든 함수가 사용자의 클라이언트를 받는다 |
+| `db.js` | 백엔드 | DB 입구. `.env`에 Supabase 정보가 있으면 `db/supabase.js`, 없으면 `db/sqlite.js`를 쓴다 |
+| `db/supabase.js` | 백엔드 | Supabase 모드 DB 쿼리. 모든 함수가 사용자의 클라이언트를 받는다 |
+| `db/sqlite.js` | 백엔드 | SQLite 모드 DB 쿼리(`data/todo.db`, 로그인 없음). 함수 이름·인자는 supabase.js와 같다 |
+| `db/schema.sql` | DB | SQLite 모드의 표 정의. 서버가 켜질 때 자동 실행 |
 | `db/supabase/01_schema.sql` | DB | 표·제약조건·색인·RLS 정책·규칙 함수 정의. Supabase SQL Editor에서 한 번 실행 |
 | `db/supabase/02_cron.sql` | DB | (선택) 90일 지난 완료 항목 매일 삭제 |
 | `scripts/rls-check.mjs` | 확인 | 계정 두 개로 RLS가 막는지 자동 확인 (`npm run check:rls`) |
@@ -92,7 +95,7 @@ sequenceDiagram
 ## 실행 흐름 - 서버가 켜질 때
 
 1. `.env`를 읽는다(`node --env-file-if-exists=.env`).
-2. `SUPABASE_URL`과 키가 없으면 설정 방법을 출력하고 종료.
+2. `SUPABASE_URL`과 키가 둘 다 있으면 Supabase 모드, 둘 다 없으면 SQLite 모드(로그인 없음, `data/todo.db`). 하나만 있으면 안내를 출력하고 종료.
 3. `public/` 폴더를 정적 파일로 내보내고 `/api/...` 요청을 받기 시작한다.
 4. DB 연결을 미리 열어 두지 않는다. 요청이 올 때마다 그 사용자로 접속한다.
 

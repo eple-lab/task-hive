@@ -1,14 +1,13 @@
 import express from 'express';
 import path from 'node:path';
 import * as db from './db.js';
-import { assertSupabaseConfig, createSupabase } from './supabase.js';
-
-assertSupabaseConfig();
+import { createSupabase } from './supabase.js';
+import { UNIQUE_VIOLATION } from './db/common.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const MAX_TITLE = 200;
-const UNIQUE_VIOLATION = '23505';   // Postgres 에러 코드: UNIQUE 색인 위반 (중복 제목)
+const USE_SUPABASE = db.mode === 'supabase';   // .env에 Supabase 정보가 있으면 true (db.js 참고)
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(path.join(import.meta.dirname, 'public')));
@@ -86,6 +85,13 @@ async function onDuplicate(message, work) {
 
 // --- 로그인 (Supabase Auth) ---
 // 비밀번호 저장·확인과 토큰 발급은 Supabase Auth가 한다. 서버는 결과 토큰을 httpOnly 쿠키로만 주고받는다.
+// SQLite 모드는 혼자 쓰는 로컬 앱이라 로그인이 없다. 화면은 email: null을 받고 바로 할 일 화면을 연다
+if (!USE_SUPABASE) {
+  app.get('/api/auth/me', (req, res) => res.json({ email: null, mode: db.mode }));
+  app.use('/api/auth', () => {
+    throw new HttpError(404, 'SQLite 모드에는 로그인이 없습니다. .env에 Supabase 정보를 넣으면 켜집니다.');
+  });
+}
 
 function authError(error) {
   const known = {
@@ -110,7 +116,7 @@ function authError(error) {
 app.get('/api/auth/me', async (req, res) => {
   const { data: { user } } = await createSupabase(req, res).auth.getUser();
   if (!user) throw new HttpError(401, '로그인이 필요합니다.');
-  res.json({ email: user.email });
+  res.json({ email: user.email, mode: db.mode });
 });
 
 app.post('/api/auth/signup', async (req, res) => {
@@ -136,7 +142,9 @@ app.post('/api/auth/logout', async (req, res) => {
 });
 
 // 여기부터는 로그인한 사용자만. req.sb는 그 사용자로 접속한 Supabase 클라이언트(RLS 적용)
+// SQLite 모드는 로그인 없이 통과하고 req.sb는 비워 둔다
 async function requireUser(req, res, next) {
+  if (!USE_SUPABASE) return next();
   const sb = createSupabase(req, res);
   const { data: { user } } = await sb.auth.getUser();
   if (!user) throw new HttpError(401, '로그인이 필요합니다.');
@@ -223,5 +231,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`TODO: http://localhost:${PORT}`);
+  console.log(`TODO: http://localhost:${PORT} (${USE_SUPABASE ? 'Supabase' : `SQLite: ${process.env.DB_PATH || 'data/todo.db'}`})`);
 });

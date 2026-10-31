@@ -2,7 +2,7 @@
   "name": "todo",
   "version": "1.0.0",
   "private": true,
-  "description": "하위 태스크가 있는 Todo 앱 (Express + Supabase)",
+  "description": "하위 태스크가 있는 Todo 앱 (Express + SQLite/Supabase)",
   "type": "module",
   "main": "server.js",
   "engines": {

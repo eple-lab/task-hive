@@ -123,9 +123,9 @@ DB가 아니라 백엔드가 지키는 규칙(마감일 필수, 지난 날짜 �
 
 ## 화면 기능 ↔ 쿼리
 
-`db.js`는 SQL 문자열 대신 Supabase 클라이언트의 메서드로 쿼리를 만든다. 값은 언제나 따로 전달된다(SQL 주입 불가).
+`db/supabase.js`는 SQL 문자열 대신 Supabase 클라이언트의 메서드로 쿼리를 만든다. 값은 언제나 따로 전달된다(SQL 주입 불가).
 
-| 화면 기능 | `db.js` (Supabase 클라이언트) | 실제로 실행되는 SQL (요약) |
+| 화면 기능 | `db/supabase.js` (Supabase 클라이언트) | 실제로 실행되는 SQL (요약) |
 |---|---|---|
 | 목록 + 태스크 | `from('todos').select('..., tasks (...)')` | `SELECT ... FROM todos` + 각 할 일의 `tasks` (RLS로 내 것만) |
 | 오늘 할 일만 | `.eq('due_date', today)` | `WHERE due_date = $1` |

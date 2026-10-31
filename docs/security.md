@@ -10,7 +10,7 @@
 | 비밀번호 유출 | 직접 저장하지 않는다. **Supabase Auth**가 해시로 저장 | `server.js` `/api/auth/*` |
 | 로그인 토큰 탈취 (XSS) | 토큰은 **httpOnly 쿠키**에만. 화면 JS가 읽을 수 없다 | `supabase.js` |
 | 다른 사이트가 내 이름으로 요청 (CSRF) | 쿠키 `SameSite=Lax` + 변경 요청은 JSON 본문만 받음 | `supabase.js`, `server.js` |
-| SQL 주입 | 값은 항상 따로 전달 (Supabase 클라이언트, DB 함수 인자) | `db.js` |
+| SQL 주입 | 값은 항상 따로 전달 (Supabase 클라이언트, DB 함수 인자) | `db/supabase.js`, `db/sqlite.js` |
 | 화면 조작 (프론트는 못 믿는다) | 같은 규칙을 백엔드와 DB에서 다시 검사 | `server.js`, DB 제약 |
 | 스크립트 주입 (XSS) | 사용자 입력은 `textContent`로만 화면에 넣기 | `public/app.js` |
 | 키 유출 | `.env`에만, Git 제외. **관리자 키(service_role/secret)는 쓰지 않는다** | `.env`, `.gitignore` |
@@ -64,7 +64,7 @@ Supabase의 secret 키(예전 이름 service_role)는 **RLS를 무시**한다. �
 
 ## SQL 주입
 
-`db.js`는 SQL 문자열을 만들지 않고 Supabase 클라이언트 메서드로 쿼리를 만든다.
+`db/supabase.js`는 SQL 문자열을 만들지 않고 Supabase 클라이언트 메서드로 쿼리를 만든다.
 ```js
 sb.from('todos').insert({ title, due_date: dueDate })      // 값은 따로 전달된다
 sb.rpc('set_todo_completed', { p_todo_id: id, p_completed: true })

@@ -75,7 +75,7 @@ pg_dump "postgresql://postgres.[프로젝트ID]:[DB비밀번호]@...pooler.supab
 
 | 증상 | 원인 | 해결 |
 |---|---|---|
-| `Supabase 접속 정보가 없습니다.` 후 종료 | `.env`에 `SUPABASE_URL`이나 키가 없다 | [supabase-setup.md](supabase-setup.md) 4단계 |
+| `Supabase 접속 정보가 반만 있습니다.` 후 종료 | `.env`에 `SUPABASE_URL`과 키 중 하나만 있다. 둘 다 채우거나(Supabase) 둘 다 비운다(SQLite) | [supabase-setup.md](supabase-setup.md) 4단계 |
 | `.env not found. Continuing without it.` | `.env` 파일이 없다는 안내 | `.env.example`을 `.env`로 복사해 채운다 |
 | 로그인하면 "Supabase에 연결하지 못했습니다" | 인터넷 문제 또는 무료 프로젝트 **일시정지**(1주 미사용) | 대시보드에서 프로젝트 Restore |
 | 회원가입 후 "인증 메일을 보냈어요" | Supabase의 Confirm email이 켜져 있다 | 메일 링크를 누르거나, 설정에서 끈다 |
