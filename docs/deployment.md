@@ -48,25 +48,53 @@ flowchart LR
 Render 같은 무료 서버는 재시작·재배포할 때 디스크를 초기화하는 경우가 많다. 길 A의 `todo.db`였다면 통째로 사라진다.
 길 B에서 데이터가 Supabase로 옮겨 갔으므로, 서버는 언제 다시 켜져도 상관없다. **서버에는 데이터가 없고 Supabase에만 있다.**
 
-### Render에 백엔드를 올릴 때 필요한 것
-| 준비물 | 이 프로젝트에서 |
+### Render 설정: Blueprint (`render.yaml`)
+운영 서버 설정은 저장소의 [render.yaml](../render.yaml)에 코드로 둔다(IaC). 대시보드 폼을 손으로 채우지 않는다.
+
+| 항목 | 값 | 이유 |
+|---|---|---|
+| `plan` | `free` | **빼면 유료(`0.5c-512mb`)로 만들어진다** |
+| `region` | `singapore` | Supabase(서울)와 가까운 곳. 만든 뒤 변경 불가 |
+| `buildCommand` / `startCommand` | `npm install` / `npm start` | 로컬과 같은 실행 경로. 차이는 환경변수뿐 |
+| `healthCheckPath` | `/` | 200을 돌려주는 주소. 없는 주소(`/healthz` 등)면 배포가 실패로 판정된다 |
+| `autoDeployTrigger` | `commit` | `main`에 push하면 다시 배포 |
+
+**환경변수**
+
+| 이름 | 어디에 | 값 |
+|---|---|---|
+| `NODE_ENV` | `render.yaml` (커밋) | `production`. 로그인 쿠키를 https로만 전송. 반드시 이 철자 그대로 |
+| `NODE_VERSION` | `render.yaml` (커밋) | `24`. 빌드 단계에서 Render가 Node 버전을 고를 때 읽는다 |
+| `SUPABASE_URL` | `render.yaml`에는 키 이름만(`sync: false`), 값은 Render | 로컬 `.env`와 같은 값 |
+| `SUPABASE_PUBLISHABLE_KEY` | 위와 같음 | 공개용 키. secret / service_role 키는 넣지 않는다 |
+
+- `sync: false` 값은 **Blueprint를 처음 만들 때 한 번만** 입력받는다. 이후 바꾸거나 새 비밀값을 추가할 때는 대시보드 Environment 화면에서 직접 고친다.
+- Spring으로 치면 `application-prod.yml`에 `${SUPABASE_URL}`만 쓰고 실제 값은 서버 환경변수로 주는 것과 같다.
+
+> ⚠️ Supabase 두 값이 비어 있으면 앱이 **SQLite 모드**로 켜진다. 로그인 없이 누구나 같은 목록을 보고 고칠 수 있고, Render가 다시 켜질 때마다 데이터가 사라진다.
+
+명세: https://render.com/docs/blueprint-spec
+
+### 개발(dev)과 서비스(prod)의 차이
+| | 내 컴퓨터 | Render |
+|---|---|---|
+| 실행 | `npm run dev` (파일 고치면 자동 재시작) 또는 `npm start` | `npm start` |
+| 설정값 | `.env` 파일 | `render.yaml` + Render에 저장된 비밀값 (`.env` 파일 없음. `--env-file-if-exists`라 없어도 괜찮다) |
+| `NODE_ENV` | 없음 | `production` |
+| 주소 | `http://localhost:3000` | `https://todo-xxxx.onrender.com` |
+
+### 그 밖에 알아 둘 것
+| 항목 | 내용 |
 |---|---|
-| 코드 보관 위치 | GitHub 저장소 `eple-lab/todo` (`main` 브랜치) |
-| 서비스 종류 | Web Service (Node) |
-| 리전 | Singapore (Supabase 서울과 가까운 곳) |
-| 설치 명령 (Build Command) | `npm install` |
-| 시작 명령 (Start Command) | `npm start` |
-| Node 버전 | 24 이상. `package.json`의 `engines`를 Render가 읽는다. 안 되면 환경변수 `NODE_VERSION=24` |
-| 환경변수 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `NODE_ENV=production`. **Render 대시보드의 Environment 화면에 입력**하고 코드·Git에는 넣지 않는다 |
 | 포트 | Render가 `PORT` 환경변수를 넣어 준다. `server.js`가 이미 `process.env.PORT`를 읽는다 |
 | https | Render가 자동으로 붙여 준다. `NODE_ENV=production`이면 로그인 쿠키가 https로만 전송된다 |
 | Supabase 쪽 설정 | Authentication → URL Configuration의 **Site URL**을 Render 주소로 (이메일 인증 링크가 그 주소로 돌아오게) |
 | 확인 방법 | 배포 후 받은 `https://….onrender.com` 접속 → 회원가입·로그인 → 할 일 추가 → 새로고침 → Supabase Table Editor에서 행 확인 |
 
 ### 배포에 도전한다면 순서
-1. Render 가입 → New → Web Service → GitHub 저장소 연결
-2. 위 표대로 명령과 환경변수 입력 → Create
-3. 로그(Logs)에 `TODO: http://localhost:10000` 같은 줄이 나오면 서버가 켜진 것 (주소는 Render가 바꿔 보여 준다)
+1. Render 가입 → **New → Blueprint** → GitHub 저장소 `eple-lab/todo` 연결
+2. Render가 `render.yaml`을 읽고 만들 서비스를 보여 준다. `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` 값을 입력 → **Deploy Blueprint**
+3. 로그(Logs)에 `TODO: http://localhost:10000 (Supabase)` 같은 줄이 나오면 서버가 켜진 것 (주소는 Render가 바꿔 보여 준다). `(SQLite: …)`가 나오면 Supabase 환경변수를 다시 확인한다
 4. 받은 주소로 접속해 확인. 성공하면 주소를 [verification.md](verification.md)와 과제 제출에 남긴다
 
 ### 알아 둘 점

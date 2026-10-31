@@ -63,6 +63,15 @@ TODO: http://localhost:3000 (Supabase)
 
 단계별 설명은 [docs/supabase-setup.md](docs/supabase-setup.md), 백업·문제 해결은 [docs/operations.md](docs/operations.md).
 
+### 배포 (Render)
+운영 서버 설정은 [render.yaml](render.yaml)(Render Blueprint)에 코드로 둔다. Free 플랜, Singapore 리전, `npm start`, 헬스 체크 `/`, `NODE_ENV=production`.
+
+1. Render → **New → Blueprint** → 저장소 `eple-lab/todo` 연결
+2. `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` 값 입력 (`render.yaml`에는 키 이름만 있고 값은 Render에만 저장된다)
+3. **Deploy Blueprint** → 로그에 `(Supabase)`가 찍히면 성공. 이후 `main`에 push하면 자동 재배포
+
+자세한 설정과 이유는 [docs/deployment.md](docs/deployment.md).
+
 ## 구조
 
 ```mermaid
@@ -86,6 +95,7 @@ public/demo-api.js     GitHub Pages 데모용 가짜 백엔드
 scripts/rls-check.mjs  계정 두 개로 RLS 확인 (npm run check:rls)
 docs/                  기획서와 문서, 화면 캡처
 .github/workflows/     push하면 public/을 GitHub Pages에 올리는 설정
+render.yaml            Render 운영 서버 설정 (Blueprint). 비밀값은 키 이름만
 ```
 
 자세한 구조는 [docs/architecture.md](docs/architecture.md).

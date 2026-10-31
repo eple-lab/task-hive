@@ -1,0 +1,24 @@
+# Render Blueprint: 운영 서버 설정을 코드로 관리한다.
+# Render → New → Blueprint → 이 저장소 선택. 비밀값(sync: false)은 처음 만들 때 한 번만 입력받는다.
+# 명세: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: todo
+    runtime: node
+    region: singapore          # Supabase(서울)와 가까운 곳. 만든 뒤에는 바꿀 수 없다
+    plan: free                 # 빼면 유료(0.5c-512mb)로 만들어진다
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeployTrigger: commit  # main에 push하면 다시 배포
+    envVars:
+      - key: NODE_ENV
+        value: production      # 로그인 쿠키를 https로만 전송
+      - key: NODE_VERSION
+        value: "24"            # node:sqlite, --env-file 사용
+      # 비밀값: Git에는 키 이름만. 값은 Render 대시보드에서 입력
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
