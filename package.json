@@ -11,7 +11,8 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "dev": "node --watch --env-file-if-exists=.env server.js",
-    "check:rls": "node --env-file-if-exists=.env scripts/rls-check.mjs"
+    "check:rls": "node --env-file-if-exists=.env scripts/rls-check.mjs",
+    "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

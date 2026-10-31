@@ -53,6 +53,12 @@ http://localhost:3000 → 바로 사용. 데이터는 `data/todo.db` 파일에 �
    Connect 화면에 `NEXT_PUBLIC_SUPABASE_URL`처럼 나오면 앞의 `NEXT_PUBLIC_`만 빼고 넣는다.
 3. `npm start` → http://localhost:3000 → 회원가입 → 사용
 
+### 테스트
+```bash
+npm test
+```
+기본 기능 14가지(CRUD, 규칙, 재시작 후 유지, 90일 자동 삭제)를 임시 DB로 자동 확인한다. 화면 상태 테스트와 RLS 확인 방법은 [docs/testing.md](docs/testing.md).
+
 ### 모드 바꾸기
 `.env`의 `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`를 **둘 다 비우면 SQLite**, **둘 다 채우면 Supabase**. 서버를 다시 켜면 바뀐다.
 서버 첫 줄에 지금 모드가 나온다.
