@@ -23,6 +23,8 @@
 | [supabase-setup.md](supabase-setup.md) | Supabase 프로젝트 만들기부터 RLS 확인까지 |
 | [operations.md](operations.md) | 설치·실행·설정, 백업과 복구, 자주 막히는 문제 |
 | [testing.md](testing.md) | 과제 확인 체크리스트, 테스트 기록 |
+| [test-report-2026-10-31.md](test-report-2026-10-31.md) | 길 A·B 통합과 Render 배포 후 테스트 케이스·결과·검토 |
+| [bugfix.md](bugfix.md) | 버그 수정 기록 (원인·수정·확인) |
 | [verification.md](verification.md) | 로컬·클라우드 저장과 RLS 확인 기록 (캡처) |
 | [deployment.md](deployment.md) | GitHub Pages 데모, 길 C(Render) 배포 준비물 |
 

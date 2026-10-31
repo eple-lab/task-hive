@@ -8,6 +8,7 @@
 | **SQLite** (길 A) | `.env`에 Supabase 정보가 **없으면** | 내 컴퓨터 `data/todo.db` | 없음 (혼자 쓰기) |
 | **Supabase** (길 B) | `.env`에 Supabase 정보가 **있으면** | 클라우드 Postgres | 이메일 회원가입·로그인, 내 할 일만 보기(RLS) |
 
+- **운영 서버 (Render):** https://todo-0vru.onrender.com/ (Supabase 모드. 회원가입·로그인 후 내 할 일만 보인다. 무료 서버라 한동안 안 쓰면 첫 접속이 30초~1분 걸린다)
 - **데모:** https://eple-lab.github.io/todo/ (서버 없이 브라우저에서만 동작, 새로고침하면 초기화)
 - **기획서:** [docs/PRD.md](docs/PRD.md)
 - **저장·보안 확인 기록:** [docs/verification.md](docs/verification.md)
@@ -69,6 +70,10 @@ TODO: http://localhost:3000 (Supabase)
 1. Render → **New → Blueprint** → 저장소 `eple-lab/todo` 연결
 2. `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` 값 입력 (`render.yaml`에는 키 이름만 있고 값은 Render에만 저장된다)
 3. **Deploy Blueprint** → 로그에 `(Supabase)`가 찍히면 성공. 이후 `main`에 push하면 자동 재배포
+
+배포 결과: https://todo-0vru.onrender.com/
+
+![Render에 배포된 TODO 로그인 화면](docs/images/render-login.png)
 
 자세한 설정과 이유는 [docs/deployment.md](docs/deployment.md).
 
@@ -141,6 +146,8 @@ erDiagram
 | [보안](docs/security.md) | RLS, 쿠키, SQL 주입, XSS, 키 관리 |
 | [운영](docs/operations.md) | 실행, 백업과 복구, 문제 해결 |
 | [테스트](docs/testing.md) | 체크리스트, 테스트 기록 |
+| [테스트 결과 2026-10-31](docs/test-report-2026-10-31.md) | 통합·Render 배포 후 테스트 케이스와 결과 |
+| [버그 수정 기록](docs/bugfix.md) | 버그별 원인·수정·확인 |
 | [배포](docs/deployment.md) | GitHub Pages 데모, Render 배포 준비물 |
 | [결정 기록](docs/decisions.md) | 왜 이렇게 만들었는지 |
 | [로드맵](docs/roadmap.md) | 진행 기록, 과제 대응 |
@@ -152,6 +159,6 @@ erDiagram
 - [x] 길 B: Supabase로 저장소 전환 + 로그인 + RLS (코드 완료)
 - [x] 길 A·B 합치기: `.env` 설정에 따라 SQLite / Supabase 중 하나로 동작
 - [ ] 길 B: 실제 Supabase 프로젝트에서 저장·RLS 확인
-- [ ] 길 C(선택): Render 배포
+- [x] 길 C(선택): Render 배포 (https://todo-0vru.onrender.com/)
 
 자세한 내용은 [docs/roadmap.md](docs/roadmap.md).

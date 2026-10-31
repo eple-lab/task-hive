@@ -77,6 +77,8 @@ function showApp(email) {
   document.body.dataset.view = 'app';
   userBox.hidden = !email;
   userEmail.textContent = email ?? '';
+  // 2026-10-31 버그 수정: 이메일 칸도 비운다. 안 비우면 로그아웃 후 로그인 화면에 이전 이메일이 남는다 (docs/bugfix.md BUG-001)
+  $('auth-email').value = '';
   $('auth-password').value = '';
   refresh();
 }
