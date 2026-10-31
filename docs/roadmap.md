@@ -49,7 +49,7 @@ GitHub Pages 데모(https://eple-lab.github.io/todo/)는 셋과 별개인 화면
 
 | 순서 | 할 일 | 누가 |
 |---|---|---|
-| 1 | Supabase 가입, 프로젝트 생성, Confirm email 끄기, `01_schema.sql` 실행, `.env` 입력 ([supabase-setup.md](supabase-setup.md)) | 직접 |
+| 1 | Supabase 가입, 프로젝트 생성, Confirm email은 테스트 계정 만들 때만 끄고 다시 켜기, `01_schema.sql` 실행, `.env` 입력 ([supabase-setup.md](supabase-setup.md)) | 직접 |
 | 2 | `npm start` → 테스트 계정 두 개 회원가입, `.env`에 두 계정 입력 | 직접 |
 | 3 | `npm run check:rls` 실행 | 직접 (결과를 알려 주면 기록) |
 | 4 | 앱 화면·Table Editor·RLS 결과 캡처, [verification.md](verification.md) 작성 | Claude (로그인된 화면에서) |

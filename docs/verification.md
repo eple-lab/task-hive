@@ -21,7 +21,7 @@
 | 화면 | 확인한 것 | 위치 |
 |---|---|---|
 | Supabase SQL Editor | `01_schema.sql` 실행 결과 `Success. No rows returned` | [supabase-setup.md 3단계](supabase-setup.md#3-표-만들기) |
-| Supabase Auth 설정 | 가입 허용 켜짐, 익명 로그인 꺼짐, Confirm email은 캡처 시점 켜짐 (테스트 계정은 끈 상태에서 만듦) | [supabase-setup.md 2단계](supabase-setup.md#2-로그인-설정-이메일-인증-끄기) |
+| Supabase Auth 설정 | 가입 허용 켜짐, 익명 로그인 꺼짐, **Confirm email 켜짐(권장: 평소 켜 두고 테스트 계정 만들 때만 끔)**. 끈 상태에서 만든 계정은 다시 켠 뒤에도 로그인됨 | [supabase-setup.md 2단계](supabase-setup.md#2-로그인-설정-이메일-인증) |
 | Render 서비스 | Blueprint managed, Free, Live, 커밋마다 Auto-Deploy | [deployment.md](deployment.md#실제-배포-화면) |
 
 ### 1. 저장 확인

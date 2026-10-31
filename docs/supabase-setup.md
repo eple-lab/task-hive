@@ -10,18 +10,29 @@
 5. Plan: **Free**
 6. 만들어지는 데 1~2분
 
-## 2. 로그인 설정 (이메일 인증 끄기)
-테스트 계정을 빨리 만들기 위해 가입 즉시 로그인되게 한다.
+## 2. 로그인 설정 (이메일 인증)
+위치: **Authentication → Sign In / Providers → Email** → **Confirm email**
 
-- **Authentication → Sign In / Providers → Email** → **Confirm email** 끄기 → Save
+**평소에는 켜 두고, 테스트 계정을 만들 때만 잠깐 끈다.** (2026-10-31 방침)
 
-> 실제 서비스라면 켜 두는 게 맞다. 켜 두면 가입 후 받은 메일의 링크를 눌러야 로그인할 수 있고, 앱은 "인증 메일을 보냈어요"라고 안내한다.
-> 켠 상태에서 테스트 계정 두 개가 필요하면 `내아이디+a@gmail.com`, `내아이디+b@gmail.com`처럼 `+`를 붙이면 같은 메일함으로 받을 수 있다.
+| 상태 | 언제 | 이유 |
+|---|---|---|
+| **켜 둠 (기본)** | 평소, 배포 중 | 악성 접근 방지. 꺼져 있으면 남의 주소나 받을 수 없는 주소로 계정을 대량으로 만들 수 있다(가입 봇·스팸 계정). 켜 두면 메일함을 가진 사람만 가입을 끝낼 수 있다 |
+| 잠깐 끔 | 테스트 계정을 만들 때만 | 받을 수 없는 테스트 주소(`aaa@email.com` 등)로 바로 가입하려고 |
+
+테스트 계정 만드는 순서
+1. Confirm email **끄기** → Save
+2. 앱에서 테스트 계정 회원가입
+3. Confirm email **다시 켜기** → Save
+
+- 끈 상태에서 만든 계정은 다시 켠 뒤에도 그대로 로그인된다 (2026-10-31, `aaa@email.com`으로 확인).
+- 켜진 상태에서 가입하면 앱이 "인증 메일을 보냈어요"라고 안내하고, 메일의 링크를 눌러야 로그인할 수 있다.
+- 끄지 않고 테스트 계정이 필요하면 `내아이디+a@gmail.com`, `내아이디+b@gmail.com`처럼 `+`를 붙이면 같은 메일함으로 받을 수 있다.
 
 ![Supabase Authentication → Sign In / Providers 화면: User Signups 설정](images/supabase-auth-settings.png)
 
-- 이 프로젝트의 설정 화면 (2026-10-31 캡처). **Allow new users to sign up** 켜짐, **Confirm email**은 캡처 시점에 **켜짐**.
-- 테스트 계정 두 개(`aaa@`, `bbb@email.com`)는 Confirm email을 **끈 상태에서** 만들었다. 켜 둔 지금은 새로 가입하면 메일 인증을 마쳐야 로그인할 수 있고, `@email.com` 같은 받을 수 없는 주소로는 가입을 끝낼 수 없다.
+- 이 프로젝트의 설정 화면 (2026-10-31 캡처). **Allow new users to sign up** 켜짐, **Confirm email** 켜짐 = **권장 상태**.
+- 테스트 계정 두 개(`aaa@`, `bbb@email.com`)는 Confirm email을 끈 상태에서 만들고 다시 켰다.
 - Anonymous sign-ins(익명 로그인)는 꺼져 있다. 켜면 가입 없이도 `authenticated` 역할의 사용자가 만들어진다. RLS는 `auth.uid()` 기준이라 익명 사용자도 자기 것만 보지만, 가입하지 않은 사람이 데이터를 쓸 수 있게 된다. 이 앱은 익명 로그인 화면이 없으므로 꺼 둔다.
 
 ## 3. 표 만들기
