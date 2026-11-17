@@ -19,6 +19,7 @@
 | 9 | Colab 무료 GPU에 세 모델이 올라가는지 | **확인 못 함** (실행해야 앎) | 대신 **Colab 이용 정책 위험**을 새로 발견 → Q-25 |
 | 10 | mermaid 그림 | 확인함 (7개 모두 그려짐) | 없음 |
 | 11 | 읽지 않았던 참고 문서 | 읽음 | 시트 수식 방어 방식 수정, PoC 검증 방식 보강 |
+| 12 | Render 무료에서 Docker 서비스 | 확인함 (막는 문구 없음, 직접 허용 문구도 없음) | D-32 유지. 첫 배포 때 화면에서 최종 확인 |
 
 자세한 주제별 문서는 [checks/](checks/README.md), 직접 실행해 확인할 것은 [poc/](poc/README.md)에 있다.
 
@@ -200,6 +201,22 @@
 | 확신이 낮은 건은 사람에게 넘긴다 | [08](08-performance-review.md) 5.1 |
 | 확인한 날짜를 링크와 함께 적는다 | 이 문서 |
 
+### 2.12 Render 무료에서 Docker 서비스 (확인함, 2026-11-17)
+
+| 확인한 것 | 공식 문서 내용(요약) |
+|---|---|
+| 무료가 되는 서비스 종류 | Static Site, Web Service, Postgres, Key Value. 그 밖의 종류(백그라운드 워커, 크론 등)는 무료 인스턴스가 없다 |
+| Docker는 어떤 위치인가 | 웹 서비스를 만드는 방법 중 하나다. 언어 런타임 대신 `Dockerfile`로 빌드하거나 만들어 둔 이미지를 받을 수 있다 |
+| 무료 웹 서비스가 못 하는 것 | 인스턴스 2개 이상, 디스크, 엣지 캐시, 일회성 작업, 셸 접속, 사설망으로 들어오는 요청, 예약 포트, SMTP 포트. **Docker는 이 목록에 없다** |
+| 다단계 빌드 | Render가 다단계 빌드를 지원한다고 적혀 있다 |
+| 무료 사양 | 0.1 CPU / 512MB (Blueprint 설명의 `plan: free`) |
+
+판단: 무료 인스턴스를 런타임으로 제한하는 문구가 없으므로 Docker 웹 서비스도 무료로 만들 수 있다고 본다. 다만 "Docker도 무료"라고 직접 적은 문장은 찾지 못했다. **첫 배포 때 Render 화면에서 Docker 런타임과 Free 플랜을 함께 고를 수 있는지 확인한다.** 안 되면 대안은 (1) 화면 빌드 결과를 미리 만들어 Python 환경으로 올리기, (2) 화면은 Static Site, 서버는 Python 웹 서비스로 나누기다(이때는 쿠키·CORS 설정이 달라진다).
+
+조심할 것: 0.1 CPU에서 Docker 다단계 빌드(npm 설치 + 화면 빌드)가 느릴 수 있다. 빌드 시간은 워크스페이스의 빌드 분에 포함된다.
+
+출처(2026-11-17 조회): [Deploy for Free](https://render.com/docs/free), [Docker on Render](https://render.com/docs/docker), [Blueprint YAML Reference](https://render.com/docs/blueprint-spec), 문서 전체 묶음 [llms-full.txt](https://render.com/llms-full.txt)(생성일 2026-11-17)
+
 ## 3. 아직 확인하지 못한 것
 
 | 내용 | 왜 못 했나 | 확인 방법 |
@@ -209,4 +226,5 @@
 | XTTS-v2, Supertonic 2의 사용 조건 | 약관 페이지가 열리지 않거나 본문을 읽지 못했다 | 설치한 패키지의 LICENSE 파일 |
 | Colab 무료 GPU에 세 모델이 함께 올라가는지 | 실행해야 안다 | 1단계에서 GPU 메모리 측정 |
 | Render·Neon 서버의 리전 선택 범위 | 확인하지 않았다 | 서비스 만들 때 화면에서 확인 |
+| Render 화면에서 Docker 런타임 + Free 플랜이 함께 골라지는지 | 문서에 직접 적힌 문장이 없다 | 첫 배포 때 화면에서 확인 |
 | GitHub에서 mermaid가 그려지는지 | 올리기 전이다 | 올린 뒤 화면 확인 |

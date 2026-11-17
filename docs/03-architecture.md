@@ -386,7 +386,7 @@ sequenceDiagram
 
 - `render.yaml`(Blueprint)에 설정을 코드로 둔다. 비밀값은 키 이름만 적고 값은 Render 화면에 넣는다.
 - `main`에 합쳐지고 CI가 통과하면 Render가 자동 배포한다.
-- 화면 빌드는 Docker 다단계 빌드 안에서 한다(D-32). 기존 프로젝트의 Render 설정은 Node 환경(`todo`, `healing-forest-trip`)과 Docker(`honey-voice-log`)뿐이고, Python 환경에서 Node 빌드를 한 사례는 없었다. Render 무료에서 Docker 서비스가 되는지는 **확인하지 않았다.**
+- 화면 빌드는 Docker 다단계 빌드 안에서 한다(D-32). 기존 프로젝트의 Render 설정은 Node 환경(`todo`, `healing-forest-trip`)과 Docker(`honey-voice-log`)뿐이고, Python 환경에서 Node 빌드를 한 사례는 없었다. Render 무료에서 Docker 서비스가 되는지는 공식 문서로 확인했다(2026-11-17): 무료 인스턴스는 "웹 서비스" 종류에 열려 있고 런타임(언어·Docker)으로 제한하는 문구는 없다. 다만 "Docker도 무료로 된다"고 직접 적은 문장도 없어서, 처음 배포할 때 Render 화면에서 Docker 런타임 + Free 플랜이 고를 수 있는지 확인한다. 안 되면 Python 환경에서 화면 빌드 결과(`frontend/dist`)를 미리 커밋하거나 화면을 정적 사이트로 따로 올리는 방법으로 바꾼다. → [09 확인 기록](09-verification.md) 2.12
 - Render 무료 서버는 요청이 15분 없으면 잠들고 깨어나는 데 약 1분 걸린다. 화면에 "서버를 깨우는 중" 안내를 둔다.
 - Render 무료는 512MB·0.1 CPU·인스턴스 1개·디스크 없음이고 언제든 재시작될 수 있다. Neon 무료는 5분 안 쓰면 멈추고 복구 가능 기간이 6시간이다. (2026-11-17 확인, [09 확인 기록](09-verification.md))
 - 업스트림을 부를 때 `ngrok-skip-browser-warning` 헤더를 넣는다.
