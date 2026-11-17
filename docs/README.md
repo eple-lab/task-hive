@@ -15,6 +15,8 @@ Task Hive는 저녁에 일기 쓰듯 AI와 대화하면서 할 일을 끌어내�
 | [07 열린 질문](07-open-questions.md) | 아직 정하지 않은 것과 추천 |
 | [08 성능 검토 화면](08-performance-review.md) | 운영 지표와 PoC 검증을 보는 관리자 화면 |
 | [09 확인 기록](09-verification.md) | 미검증 사실을 공식 문서로 확인한 결과와 출처 (2026-11-17) |
+| [확인사항 (checks/)](checks/README.md) | 주제별로 자세히 확인한 문서: 구글 로그인 7일 만료, Docs 이미지 넣기, Colab 이용 조건 |
+| [PoC (poc/)](poc/README.md) | 직접 실행해 확인할 실험 5개의 계획과 기록 틀 |
 
 ## 문서 읽는 법
 

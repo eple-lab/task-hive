@@ -20,6 +20,16 @@
 | 10 | mermaid 그림 | 확인함 (7개 모두 그려짐) | 없음 |
 | 11 | 읽지 않았던 참고 문서 | 읽음 | 시트 수식 방어 방식 수정, PoC 검증 방식 보강 |
 
+자세한 주제별 문서는 [checks/](checks/README.md), 직접 실행해 확인할 것은 [poc/](poc/README.md)에 있다.
+
+| 이 문서의 항목 | 이어지는 문서 |
+|---|---|
+| 2.4 캘린더 권한 분류 | [PoC-04](poc/poc-04-calendar-scope.md). 권한은 `calendar.events.owned.readonly`로 확정(D-14) |
+| 2.5 테스트 상태 앱의 제약 | [checks/google-oauth-7day-expiry.md](checks/google-oauth-7day-expiry.md) |
+| 2.6 Docs 이미지 | [checks/docs-image-insert.md](checks/docs-image-insert.md), [PoC-05](poc/poc-05-docs-image.md) |
+| 2.8 TTS 모델 | [PoC-02](poc/poc-02-tts-korean-voices.md) |
+| 2.9 Colab | [checks/colab-usage.md](checks/colab-usage.md), [PoC-01](poc/poc-01-llm-summary.md), [PoC-03](poc/poc-03-colab-gpu-memory.md). Colab은 과제용으로 확정(D-13) |
+
 ## 2. 항목별 내용
 
 ### 2.1 Render 무료 웹 서비스 (확인함)
