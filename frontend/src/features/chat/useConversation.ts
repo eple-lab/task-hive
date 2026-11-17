@@ -131,11 +131,16 @@ export function useConversation() {
     const wire = toWire(stateRef.current.messages, EXTRACT_LIMIT);
     if (wire.length === 0) return;
     let result;
+    dispatch({ type: 'extract_start' }); // 후보 구역·접힌 띠·탭에 "찾는 중" 표시
     try {
       result = await api.extract(wire);
     } catch {
-      return; // 추출은 덤이다. 실패했다고 대화를 방해하지 않는다.
+      // 추출은 덤이다. 실패했다고 대화를 방해하지 않고, 후보 구역에 짧은 안내만 잠깐 보인다.
+      dispatch({ type: 'extract_fail' });
+      window.setTimeout(() => dispatch({ type: 'extract_dismiss' }), 8000);
+      return;
     }
+    dispatch({ type: 'extract_end' });
 
     if (result.candidates.length > 0) {
       dispatch({

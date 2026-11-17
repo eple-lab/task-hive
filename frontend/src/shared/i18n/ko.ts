@@ -107,6 +107,9 @@ export const ko = {
       noDue: '날짜 없음',
       sub: (n: number) => `하위 ${n}개`,
       guide: 'AI가 뽑은 제안이에요. 담아야 등록 예정으로 넘어가요.',
+      extracting: '대화에서 할 일을 찾는 중이에요…',
+      extractFailed: '이번에는 할 일을 찾지 못했어요. 대화는 그대로 이어가도 돼요.',
+      extractingShort: '할 일 찾는 중',
     },
     pending: {
       title: '하이브 등록 예정',

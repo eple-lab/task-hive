@@ -73,6 +73,12 @@ export interface State {
   messages: ChatMessage[];
   /** AI 답을 기다리는 중(입력창 잠금) */
   busy: boolean;
+  /**
+   * 대화에서 할 일 후보를 뽑는 중인가(/api/extract 호출 동안. 로컬 LLM에서는 2~3분 걸린다).
+   * idle: 아무것도 안 함 / running: 찾는 중(후보 구역·접힌 띠·탭에 표시) / failed: 실패했다는 짧은 안내
+   * 대화는 입력창 잠금(busy)과 따로 움직인다. 찾는 동안에도 대화는 이어 갈 수 있다.
+   */
+  extracting: 'idle' | 'running' | 'failed';
   candidates: LocalCandidate[];
   pending: LocalCandidate[];
   tasks: Task[];
@@ -106,6 +112,11 @@ export type Action =
   | { type: 'end_stream'; error?: string }
   | { type: 'actions_done'; id: number }
   | { type: 'set_busy'; busy: boolean }
+  /** 후보 찾기 시작 / 정상 끝 / 실패 / 실패 안내 닫기 */
+  | { type: 'extract_start' }
+  | { type: 'extract_end' }
+  | { type: 'extract_fail' }
+  | { type: 'extract_dismiss' }
   | { type: 'add_candidates'; items: Omit<LocalCandidate, 'localId'>[] }
   | { type: 'remove_candidate'; localId: number }
   | { type: 'candidate_to_pending'; localId: number }
@@ -165,6 +176,7 @@ export function initialState(): State {
     bootError: null,
     messages: [],
     busy: false,
+    extracting: 'idle',
     candidates: [],
     pending: [],
     tasks: [],
@@ -258,6 +270,15 @@ export function reducer(state: State, action: Action): State {
       };
     case 'set_busy':
       return { ...state, busy: action.busy };
+    case 'extract_start':
+      return { ...state, extracting: 'running' };
+    case 'extract_end':
+      return { ...state, extracting: 'idle' };
+    case 'extract_fail':
+      return { ...state, extracting: 'failed' };
+    case 'extract_dismiss':
+      // 실패 안내만 닫는다. 그 사이 새로 시작한 찾기(running)는 건드리지 않는다.
+      return state.extracting === 'failed' ? { ...state, extracting: 'idle' } : state;
     case 'add_candidates': {
       // 이미 후보·등록 예정·벌집에 있는 제목은 다시 넣지 않는다.
       const known = new Set<string>([

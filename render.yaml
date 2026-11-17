@@ -1,0 +1,55 @@
+# ============================================================================
+# Render Blueprint (결정 D-32). 이 파일을 저장소 루트에 두고 Render 에서
+# "New > Blueprint" 로 저장소를 연결하면 아래 서비스가 만들어진다.
+#
+# 규칙: 비밀값은 이 파일에 쓰지 않는다. 키 이름만 적고 sync: false 로 두면
+#       값은 Render 화면(Environment)에서 직접 넣는다. (저장소가 공개라서 값이 들어가면 유출이다)
+# ============================================================================
+services:
+  - type: web                    # 외부에서 접속하는 웹 서비스
+    name: task-hive              # 주소가 https://task-hive.onrender.com 처럼 된다(이미 쓰인 이름이면 뒤에 글자가 붙는다)
+    runtime: docker              # 저장소 루트의 Dockerfile 로 빌드한다(다단계: 화면 빌드 -> 서버)
+    plan: free                   # 무료: 메모리 512MB, 0.1 CPU, 15분 동안 요청이 없으면 잠든다(깨울 때 수십 초), 디스크 없음
+    healthCheckPath: /health     # Render 가 이 주소가 200 을 주는지 보고 배포 성공을 판단한다(app/routers/admin.py)
+    # autoDeployTrigger: main 에 push 할 때 자동 배포할지. 값은 commit(push 마다) | checksPass(검사 통과 뒤) | off.
+    #   (예전 boolean 필드 autoDeploy 는 공식 문서에서 deprecated 라 쓰지 않는다)
+    #   지금은 off. 확인 안 된 커밋이 곧바로 공개 주소에 나가는 것을 막기 위해서다.
+    #   Render 화면의 "Manual Deploy" 로 눌러 배포한다. 안정되면 commit 으로 바꿔도 된다.
+    autoDeployTrigger: "off"     # YAML 에서 off 는 false 로 읽힐 수 있어 따옴표로 문자열임을 분명히 한다
+    envVars:
+      # -- 실행 환경 --
+      - key: APP_ENV
+        value: production        # production 이면 비밀값이 비었을 때 서버가 켜지지 않고, 쿠키에 Secure 가 붙는다
+      # PORT 는 적지 않는다. Render 가 자동으로 넣어 주고 Dockerfile 의 CMD 가 ${PORT} 를 읽는다.
+      - key: PUBLIC_BASE_URL
+        sync: false              # 배포된 주소(https://...onrender.com, 끝에 / 없이). CSRF Origin 검사에 쓴다. https:// 가 아니면 서버가 안 켜진다.
+                                 # 주소는 서비스가 만들어진 뒤에야 알 수 있다: 임시 https 값으로 첫 배포 -> 실제 주소 확인 -> 값 수정 -> 재배포.
+
+      # -- 비밀값 (APP_ENV=production 에서 필수. 비면 서버가 켜지지 않는다. 각각 32자 이상) --
+      - key: SESSION_SECRET      # 세션 쿠키 암호화 키
+        sync: false
+      - key: DATA_ENC_KEY        # DB에 넣는 태스크 제목, 토큰 암호화 키(SESSION_SECRET 과 다른 값)
+        sync: false
+      - key: SUB_HASH_KEY        # 사용자 ID를 가리는 HMAC 키
+        sync: false
+      # 만드는 법은 .env.example 에 있다. 값은 Render 화면에서만 넣고, 로컬과 다른 값을 쓴다.
+
+      # -- 데이터베이스 (2단계) --
+      # DATABASE_URL 은 지금 일부러 두지 않는다(비우면 메모리 저장소).
+      #   - 서버가 재시작되거나 잠들었다 깨면 저장된 데이터(손님 세션, 태스크)가 모두 사라진다.
+      #   - 손님 데이터는 "마지막 활동 24시간 뒤 삭제"(D-07)가 원칙이라, 일찍 사라지는 것은 원칙을 어기지 않는다.
+      #     다만 24시간은 "최대 보관 기간"이지 보장이 아니다. 15분만 안 써도 잠들면 그 사이 데이터가 없어질 수 있다.
+      #   - 로그인 사용자의 보관(D-23, 완료 태스크 90일)은 Neon Postgres(D-26)를 붙이는 2단계에서 지킨다.
+      #     그때 아래 두 줄의 주석을 풀고 값은 화면에서 넣는다.
+      # - key: DATABASE_URL
+      #   sync: false
+
+      # -- 선택값 (기본값을 바꿀 때만. 비워 두면 app/config.py 의 기본값을 쓴다) --
+      # HIVE_MAX_RINGS, GUEST_TTL_HOURS, RATE_LIMIT_*_PER_MIN, UPSTREAM_ALLOWED_HOST_SUFFIXES 등은
+      # 필요할 때 Render 화면에서 추가한다. UPSTREAM_ALLOW_LOCALHOST 는 운영에서 켜면 서버가 안 켜지므로 넣지 않는다.
+      #
+      # 구글 로그인은 2단계라 아직 두지 않는다. 켤 때 아래처럼 키만 추가하고 값은 화면에서 넣는다.
+      # - key: GOOGLE_CLIENT_ID
+      #   sync: false
+      # - key: GOOGLE_CLIENT_SECRET
+      #   sync: false

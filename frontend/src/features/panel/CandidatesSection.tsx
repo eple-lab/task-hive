@@ -28,6 +28,18 @@ export function CandidatesSection() {
 
   return (
     <Collapsible title={t.panel.candidates.title} badge={items.length}>
+      {/* 후보 찾는 중 / 실패 안내. 움직임은 CSS 가 "움직임 줄이기" 설정을 보고 끈다. */}
+      {state.extracting === 'running' ? (
+        <p className="extracting" role="status">
+          <span className="extracting__dot" aria-hidden="true" />
+          {t.panel.candidates.extracting}
+        </p>
+      ) : null}
+      {state.extracting === 'failed' ? (
+        <p className="extracting extracting--failed" role="status">
+          {t.panel.candidates.extractFailed}
+        </p>
+      ) : null}
       {items.length === 0 ? (
         <p className="muted">{t.panel.candidates.empty}</p>
       ) : (

@@ -156,3 +156,35 @@ describe('설정 보조 계산', () => {
     expect(koreanVoices(voices)).toHaveLength(2);
   });
 });
+
+
+describe('후보 찾는 중 표시(extracting)', () => {
+  // 기대: 처음은 idle → start 하면 running → end 하면 idle
+  it('시작하면 running, 끝나면 idle', () => {
+    let s = initialState();
+    expect(s.extracting).toBe('idle');
+    s = reducer(s, { type: 'extract_start' });
+    expect(s.extracting).toBe('running');
+    s = reducer(s, { type: 'extract_end' });
+    expect(s.extracting).toBe('idle');
+  });
+
+  // 기대: 실패하면 failed(짧은 안내), dismiss 하면 idle. 실패 뒤 새로 시작하면 running 으로 바뀐다.
+  it('실패하면 failed, 안내를 닫으면 idle', () => {
+    let s = reducer(initialState(), { type: 'extract_start' });
+    s = reducer(s, { type: 'extract_fail' });
+    expect(s.extracting).toBe('failed');
+    s = reducer(s, { type: 'extract_dismiss' });
+    expect(s.extracting).toBe('idle');
+  });
+
+  // 기대: 실패 안내 타이머가 늦게 와도, 그 사이 새로 시작한 찾기(running)는 지우지 않는다. reset 하면 idle.
+  it('늦은 dismiss 는 새 찾기를 지우지 않고, reset 은 idle 로 돌린다', () => {
+    let s = reducer(initialState(), { type: 'extract_fail' });
+    s = reducer(s, { type: 'extract_start' });
+    s = reducer(s, { type: 'extract_dismiss' });
+    expect(s.extracting).toBe('running');
+    s = reducer(s, { type: 'reset' });
+    expect(s.extracting).toBe('idle');
+  });
+});

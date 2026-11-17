@@ -93,6 +93,9 @@ export function Layout() {
               onClick={() => dispatch({ type: 'ui', patch: { mobileTab: tab.key } })}
             >
               {tab.label}
+              {tab.key === 'panel' && state.extracting === 'running' ? (
+                <span className="extracting__dot extracting__dot--tab" role="img" aria-label={t.panel.candidates.extractingShort} />
+              ) : null}
               {tab.key === 'panel' && unseenCandidates > 0 ? <span className="badge">{unseenCandidates}</span> : null}
             </button>
           ))}
@@ -111,7 +114,7 @@ export function Layout() {
         <div className="center">
           <ChatPanel />
         </div>
-        <SidePanel side="right" label={t.panel.title} collapsed={rightC} onToggle={toggleRight} badge={unseenCandidates}>
+        <SidePanel side="right" label={t.panel.title} collapsed={rightC} onToggle={toggleRight} badge={unseenCandidates} working={state.extracting === 'running'}>
           <StatusPanel />
         </SidePanel>
       </main>

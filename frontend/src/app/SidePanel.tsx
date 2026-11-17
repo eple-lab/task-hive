@@ -17,12 +17,14 @@ interface Props {
   collapsed: boolean;
   onToggle: () => void;
   badge?: number;
+  /** 일이 진행 중인 표시(예: 후보 찾는 중). 접힌 띠에 작은 점을 보인다. */
+  working?: boolean;
   /** 좁은 화면: 손잡이 없이 내용만 */
   mobile?: boolean;
   children: ReactNode;
 }
 
-export function SidePanel({ side, label, collapsed, onToggle, badge, mobile, children }: Props) {
+export function SidePanel({ side, label, collapsed, onToggle, badge, working, mobile, children }: Props) {
   if (mobile) {
     return <div className="side side--mobile">{children}</div>;
   }
@@ -40,6 +42,9 @@ export function SidePanel({ side, label, collapsed, onToggle, badge, mobile, chi
       onClick={onToggle}
     >
       <span aria-hidden="true">{arrow}</span>
+      {collapsed && working ? (
+        <span className="extracting__dot extracting__dot--strip" role="img" aria-label="할 일 찾는 중" title="할 일 찾는 중" />
+      ) : null}
       {collapsed && badge ? (
         <span className="badge badge--strip" aria-label={`새 알림 ${badge}개`}>
           {badge}

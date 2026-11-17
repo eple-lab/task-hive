@@ -1,0 +1,74 @@
+# ============================================================================
+# Docker 이미지에 넣지 않을 것. (COPY 하기 전에 걸러지므로 이미지에도 빌드 기록에도 남지 않는다)
+# 목적 1) 비밀값과 개인 데이터가 이미지에 들어가지 않게 한다.
+# 목적 2) 이미지를 작게, 빌드를 빠르게 한다.
+# ============================================================================
+
+# -- 비밀값 -----------------------------------------------------------------
+# .env, .env.local 등. 운영 값은 Render 화면의 환경변수로만 넣는다.
+# (.env.example 은 값이 빈 예시라 넣어도 무방하지만 이미지에 필요 없어서 함께 뺀다)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+client_secret*.json
+credentials*.json
+token*.json
+service-account*.json
+secrets/
+ngrok.yml
+
+# -- 개인 데이터 ------------------------------------------------------------
+# 실제 대화, 일기, 음성, 내려받은 파일. eval/ 은 평가 결과에 대화 내용이 섞일 수 있어 통째로 뺀다.
+data/
+exports/
+recordings/
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.ogg
+*.flac
+eval/
+
+# -- 버전관리, 편집기 -------------------------------------------------------
+.git
+.gitignore
+.gitattributes
+.github/
+.vscode/
+.idea/
+.claude/
+
+# -- 파이썬 개발용 ----------------------------------------------------------
+# 내 PC의 가상환경은 수백 MB이고 OS가 달라 동작도 안 한다.
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+pytest.ini
+requirements-dev.txt
+
+# -- 화면 개발용 ------------------------------------------------------------
+# node_modules 는 1단계에서 npm ci 로 새로 설치하고, dist 는 1단계에서 새로 빌드한다.
+# (내 PC에서 빌드한 dist 가 섞이면 "무엇이 배포됐는지" 알 수 없게 된다)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/coverage/
+*.tsbuildinfo
+
+# -- 이미지에 필요 없는 폴더, 파일 -------------------------------------------
+tests/
+docs/
+colab/
+README.md
+Dockerfile
+.dockerignore
+render.yaml
