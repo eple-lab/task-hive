@@ -208,7 +208,7 @@ export function useConversation() {
               dispatch({ type: 'append_stream', text: ev.text });
               speakBuffer += ev.text;
               // 문장이 끝날 때마다 바로 읽기 시작한다(설정이 켜져 있을 때).
-              if (stateRef.current.voice.sentenceStreaming) {
+              if (stateRef.current.voice.sentence_stream) {
                 const [done, rest] = splitSentences(speakBuffer);
                 for (const s of done) speaker.enqueue(s);
                 speakBuffer = rest;

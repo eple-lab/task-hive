@@ -14,8 +14,11 @@ export type Mode = 'none' | 'guest' | 'google';
 export interface VoiceSettings {
   /** 말하기 켜기/끄기 (R-CHAT-2) */
   enabled: boolean;
-  /** 브라우저 음성 이름(voiceURI). 비어 있으면 한국어 기본 음성 */
-  voiceURI: string | null;
+  /** 목소리 성별. 브라우저 음성을 고를 때 참고한다 (R-PANEL-2) */
+  gender: 'female' | 'male';
+  /** 브라우저 음성 이름(SpeechSynthesisVoice.voiceURI 값). null이면 한국어 기본 음성.
+   *  필드 이름은 서버·계약(docs/11-api-contract.md)과 같게 `voice`로 둔다. */
+  voice: string | null;
   /** 0.5 ~ 2.0 */
   rate: number;
   /** 0 ~ 2. 낮을수록 굵은 목소리("저음") */
@@ -25,9 +28,9 @@ export interface VoiceSettings {
   /** 에코 크기 0 ~ 1. 브라우저 내장 음성에는 걸 수 없다(D-03). Colab TTS가 붙으면 쓴다. */
   echo: number;
   /** 답이 끝나기 전에 문장 단위로 읽기 시작 */
-  sentenceStreaming: boolean;
+  sentence_stream: boolean;
   /** 사용자가 글을 쓰기 시작하면 읽기를 멈춤 */
-  stopOnTyping: boolean;
+  stop_on_typing: boolean;
 }
 
 export interface LlmSettings {

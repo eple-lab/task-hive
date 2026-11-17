@@ -55,13 +55,14 @@ export type MobileTab = 'hive' | 'chat' | 'panel';
 
 export const DEFAULT_VOICE: VoiceSettings = {
   enabled: false,
-  voiceURI: null,
+  gender: 'female',
+  voice: null,
   rate: 1,
   pitch: 1,
   volume: 1,
   echo: 0,
-  sentenceStreaming: true,
-  stopOnTyping: true,
+  sentence_stream: true,
+  stop_on_typing: true,
 };
 
 export interface State {

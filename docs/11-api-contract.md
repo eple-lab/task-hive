@@ -30,7 +30,17 @@ MVP(1단계: 손님 모드로 대화 → 할 일 후보 → 벌집 등록) 기�
   "lang": "ko",
   "city": "서울",
   "settings": {
-    "voice": {},
+    "voice": {
+      "enabled": true,
+      "gender": "female",
+      "voice": null,
+      "rate": 1.0,
+      "pitch": 1.0,
+      "volume": 1.0,
+      "echo": 0.0,
+      "sentence_stream": true,
+      "stop_on_typing": true
+    },
     "llm": {"temperature": 0.6, "max_tokens": 400, "model": null}
   },
   "features": {"calendar": null, "diary_google": null, "task_sheet": null},
@@ -42,6 +52,21 @@ MVP(1단계: 손님 모드로 대화 → 할 일 후보 → 벌집 등록) 기�
 
 - `features`의 값: `null`은 "아직 묻지 않음", `true`는 켬, `false`는 끔(D-16, D-28).
 - `google_available`이 `false`면 화면은 구글 기능을 "2단계에 연결돼요"로 안내한다.
+- `settings.voice`는 서버의 지금 모양을 기준으로 한다(eple 결정, 2026-11-17). 화면도 같은 이름을 쓴다.
+
+| 필드 | 값 | 뜻 |
+|---|---|---|
+| `enabled` | true/false | 말하기 켬·끔 |
+| `gender` | `"female"` / `"male"` | 목소리 성별(브라우저 음성을 고를 때 참고) |
+| `voice` | 문자열(120자까지) 또는 `null` | 브라우저 음성 이름(`voiceURI`). `null`이면 화면이 한국어 기본 음성을 고른다 |
+| `rate` | 0.5 ~ 2.0 | 속도 |
+| `pitch` | 0.0 ~ 2.0 | 높낮이(낮을수록 굵다) |
+| `volume` | 0.0 ~ 1.0 | 크기 |
+| `echo` | 0.0 ~ 1.0 | 울림. Colab TTS가 붙은 뒤에만 쓴다(D-03) |
+| `sentence_stream` | true/false | 문장마다 바로 읽기 |
+| `stop_on_typing` | true/false | 내가 입력하면 읽기 멈추기 |
+
+`PUT /api/settings`의 `voice`는 이 중 바꿀 필드만 보낸다. 표에 없는 필드나 범위 밖 값은 422다.
 
 ### `POST /api/guest`
 

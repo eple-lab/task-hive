@@ -93,7 +93,7 @@ export class Speaker {
     const clean = cleanForSpeech(text);
     if (!clean) return;
     const u = new SpeechSynthesisUtterance(clean);
-    const voice = pickVoice(this.settings.voiceURI);
+    const voice = pickVoice(this.settings.voice);
     if (voice) {
       u.voice = voice;
       u.lang = voice.lang;

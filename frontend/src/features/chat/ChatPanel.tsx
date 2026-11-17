@@ -58,7 +58,7 @@ export function ChatPanel() {
 
   const onDraftChange = (value: string) => {
     // "내가 입력하면 멈추기": 글을 쓰기 시작하면 읽기를 멈춘다.
-    if (value && !draft && state.voice.stopOnTyping) speaker.stop();
+    if (value && !draft && state.voice.stop_on_typing) speaker.stop();
     setDraft(value);
   };
 
