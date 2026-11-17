@@ -1,0 +1,8 @@
+# Task Hive 서버 실행용 패키지. 이 버전으로 직접 설치해 서버를 돌려 본 조합이다(Python 3.14.7).
+# 직접 쓰는 것과, 동작에 영향이 큰 하위 패키지(starlette, pydantic)를 함께 고정한다.
+fastapi==0.163.1
+starlette==1.10.0
+pydantic==2.14.3
+uvicorn==0.54.0
+httpx==0.28.1
+cryptography==50.0.2

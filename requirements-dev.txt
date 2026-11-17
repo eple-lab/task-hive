@@ -1,0 +1,5 @@
+# 개발·테스트용: 실행용 패키지 + 테스트 도구
+-r requirements.txt
+pytest==9.2.0
+# anyio는 pytest 플러그인으로 비동기 테스트에 쓴다(httpx와 starlette가 함께 끌어온다)
+anyio==4.16.0

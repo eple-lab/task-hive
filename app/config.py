@@ -45,9 +45,12 @@ def _bool(value: str | None, default: bool = False) -> bool:
     return value.strip().lower() in ("1", "true", "yes", "on")
 
 
-def _int(env: dict, key: str, default: int, lo: int, hi: int) -> int:
-    """정수 환경변수. 범위를 벗어나면 서버를 켜지 않는다(조용히 고치지 않는다)."""
-    raw = (env.get(key) or "").strip()
+def _int(env: dict, key: str, default: int, lo: int, hi: int, alias: str | None = None) -> int:
+    """정수 환경변수. 범위를 벗어나면 서버를 켜지 않는다(조용히 고치지 않는다).
+
+    alias: .env.example에 적힌 이름이 코드의 이름과 다를 때 그 이름도 읽는다(key가 우선).
+    """
+    raw = (env.get(key) or (env.get(alias) if alias else "") or "").strip()
     if raw == "":
         return default
     try:
@@ -90,7 +93,7 @@ class Settings:
 
     # 입력·요청 제한
     max_messages: int = 40
-    max_message_chars: int = 4000
+    max_message_chars: int = 2000  # .env.example의 MAX_MESSAGE_CHARS 기본값과 같게
     max_body_bytes: int = 200_000
     rate_limit_chat_per_min: int = 20
     rate_limit_extract_per_min: int = 30
@@ -176,16 +179,17 @@ def load_settings(env: dict | None = None) -> Settings:
         google_client_secret=(env.get("GOOGLE_CLIENT_SECRET") or "").strip(),
         google_token_mode=token_mode,
         admin_sub_hashes=tuple(s.strip() for s in (env.get("ADMIN_SUB_HASHES") or "").split(",") if s.strip()),
-        hive_max_rings=_int(env, "HIVE_MAX_RINGS", 3, 1, 8),
+        # .env.example: 허용 범위 1~6
+        hive_max_rings=_int(env, "HIVE_MAX_RINGS", 3, 1, 6),
         guest_ttl_hours=_int(env, "GUEST_TTL_HOURS", 24, 1, 168),
         done_task_ttl_days=_int(env, "DONE_TASK_TTL_DAYS", 90, 1, 3650),
         session_hours=_int(env, "SESSION_HOURS", 8, 1, 72),
         upstream_allowed_host_suffixes=suffixes,
         upstream_allow_localhost=allow_localhost,
-        upstream_connect_timeout=_int(env, "UPSTREAM_CONNECT_TIMEOUT", 10, 1, 60),
-        upstream_read_timeout=_int(env, "UPSTREAM_READ_TIMEOUT", 120, 5, 600),
-        max_messages=_int(env, "MAX_MESSAGES", 40, 2, 200),
-        max_message_chars=_int(env, "MAX_MESSAGE_CHARS", 4000, 100, 20000),
+        upstream_connect_timeout=_int(env, "UPSTREAM_CONNECT_TIMEOUT", 10, 1, 60, alias="UPSTREAM_CONNECT_TIMEOUT_SECONDS"),
+        upstream_read_timeout=_int(env, "UPSTREAM_READ_TIMEOUT", 120, 5, 600, alias="UPSTREAM_READ_TIMEOUT_SECONDS"),
+        max_messages=_int(env, "MAX_MESSAGES", 40, 2, 200, alias="MAX_HISTORY_MESSAGES"),
+        max_message_chars=_int(env, "MAX_MESSAGE_CHARS", 2000, 100, 20000),
         max_body_bytes=_int(env, "MAX_BODY_BYTES", 200_000, 1_000, 5_000_000),
         rate_limit_chat_per_min=_int(env, "RATE_LIMIT_CHAT_PER_MIN", 20, 1, 1000),
         rate_limit_extract_per_min=_int(env, "RATE_LIMIT_EXTRACT_PER_MIN", 30, 1, 1000),

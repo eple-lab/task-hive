@@ -1,7 +1,8 @@
 """앱 조립.
 
 실행
-    python -m uvicorn app.main:create_app --factory --port 8000
+    python -m uvicorn app.main:app --port 8000
+    (같은 뜻: python -m uvicorn app.main:create_app --factory --port 8000)
     (환경변수 파일을 쓰려면 --env-file .env 를 붙인다)
 
 create_app이 하는 일
@@ -85,6 +86,9 @@ def _mount_frontend(app: FastAPI, settings: Settings) -> None:
     def frontend(path: str):
         if path.startswith(("api/", "auth/")) or path in ("api", "auth"):
             return error_response(404, "not_found", "찾을 수 없습니다.")
+        # /docs, /redoc, /openapi.json은 꺼 둔 주소다. 화면 대체 응답(200)으로 덮이지 않게 404를 준다. (계약: 문서 주소는 끈다)
+        if path in ("docs", "redoc", "openapi.json") or path.startswith("docs/"):
+            return error_response(404, "not_found", "찾을 수 없습니다.")
         if not index.is_file():
             return JSONResponse(
                 {
@@ -98,3 +102,18 @@ def _mount_frontend(app: FastAPI, settings: Settings) -> None:
             if target.is_file() and dist in target.parents:
                 return FileResponse(target)
         return FileResponse(index, headers={"Cache-Control": "no-cache"})
+
+
+def __getattr__(name: str):
+    """`uvicorn app.main:app`을 지원하는 "늦은 생성".
+
+    왜 모듈 맨 위에서 app = create_app()으로 만들지 않나
+        - 그러면 `import app.main`만 해도 설정을 읽고 저장소를 만든다(운영에서는 비밀값이 없으면 import에서 터진다).
+        - 테스트와 eval은 create_app()에 설정을 직접 넘기므로, import 때는 아무것도 만들지 않는 편이 안전하다.
+    uvicorn이 `app` 속성을 처음 찾을 때 한 번만 만들어 모듈에 붙여 둔다.
+    """
+    if name == "app":
+        instance = create_app()
+        globals()["app"] = instance
+        return instance
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
