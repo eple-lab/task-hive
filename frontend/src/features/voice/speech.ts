@@ -20,6 +20,23 @@ export function speechSupported(): boolean {
 }
 
 /**
+ * 사용자가 이 페이지를 한 번이라도 눌렀거나 키를 눌렀는가.
+ * 브라우저는 사용자 조작 없이 소리가 나는 것을 막는다(자동재생 제한). 새로고침 직후 첫 인사처럼
+ * 조작 전에 읽으려 하면 조용히 건너뛰어, 막힌 소리가 나중에 한꺼번에 나오거나 오류가 나지 않게 한다.
+ */
+let interacted = false;
+if (typeof window !== 'undefined') {
+  for (const ev of ['pointerdown', 'keydown'] as const) {
+    window.addEventListener(ev, () => (interacted = true), { capture: true, passive: true });
+  }
+}
+export function userHasInteracted(): boolean {
+  if (interacted) return true;
+  // 브라우저가 알려 주는 값도 함께 본다(지원하는 브라우저만).
+  return (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive === true;
+}
+
+/**
  * 기기에 있는 목소리 목록. 한국어 목소리를 앞에 둔다.
  * 일부 브라우저는 목록을 늦게 채우므로 'voiceschanged' 이벤트 뒤에 다시 불러야 한다(useVoices 참고).
  */
@@ -89,7 +106,19 @@ export class Speaker {
   }
 
   enqueue(text: string): void {
-    if (!speechSupported() || !this.settings.enabled) return;
+    // 말하기가 꺼져 있거나, 사용자가 아직 화면을 누른 적이 없으면 읽지 않는다(자동재생 제한).
+    if (!speechSupported() || !this.settings.enabled || !userHasInteracted()) return;
+    this.speakNow(text);
+  }
+
+  /** "들어 보기": 말하기가 꺼져 있어도 지금 설정으로 한 문장을 읽는다. 버튼을 눌러 부르므로 사용자 조작이 있었던 셈이다. */
+  preview(text: string): void {
+    if (!speechSupported()) return;
+    this.stop();
+    this.speakNow(text);
+  }
+
+  private speakNow(text: string): void {
     const clean = cleanForSpeech(text);
     if (!clean) return;
     const u = new SpeechSynthesisUtterance(clean);

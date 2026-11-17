@@ -1,0 +1,145 @@
+/*
+ * 오른쪽 상태창 스타일 (features/panel).
+ * - 색은 theme.css 의 변수만 쓴다(밝음/어두움 모두 따라간다).
+ * - 접는 구역(.section)·버튼(.btn)·슬라이더(.slider)·토글은 base.css 의 것을 그대로 쓴다.
+ */
+
+/* layout.css 의 자리표시 여백을 없앤다. 구역이 스스로 여백을 가진다. */
+.statuspanel {
+  padding: 0 0 16px;
+  gap: 0;
+}
+.statuspanel__title {
+  margin: 0;
+  padding: 12px 12px 4px;
+  font-size: 1.05rem;
+}
+.statuspanel__google {
+  margin: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* 입력칸·선택칸 */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+.field input,
+.field select,
+.card__edit input {
+  font: inherit;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  min-width: 0;
+}
+.field input:focus-visible,
+.field select:focus-visible,
+.card__edit input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.field-stack .btn {
+  margin-top: 6px;
+}
+.field-group {
+  border: 0;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.field-group legend {
+  float: left;
+  margin-right: 12px;
+  font-size: 0.9rem;
+}
+.radio {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  cursor: pointer;
+}
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.btn--block {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* 연결 상태 줄 */
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+/* 후보·등록 예정 카드 */
+.cards {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 8px 10px;
+}
+.card__title {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.card__meta {
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.card__subs {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.card__evidence {
+  margin: 6px 0 0;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.card__actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+.card__edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card__edit input {
+  flex: 1 1 100%;
+}

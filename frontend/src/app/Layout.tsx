@@ -13,11 +13,12 @@ import { useEffect, useRef } from 'react';
 import { ChatPanel } from '../features/chat/ChatPanel';
 import { useConversation } from '../features/chat/useConversation';
 import { HivePanel } from '../features/hive/HivePanel';
+import { StatusPanel } from '../features/panel/StatusPanel';
 import { t } from '../shared/i18n/ko';
 import { useStore, type MobileTab } from '../shared/state/store';
 import { Header } from './Header';
 import { SidePanel } from './SidePanel';
-import { StatusPlaceholder } from './StatusPlaceholder';
+
 import { useViewport } from './useViewport';
 
 const TABS: { key: MobileTab; label: string }[] = [
@@ -78,7 +79,7 @@ export function Layout() {
           </div>
           <div className="pane" hidden={mobileTab !== 'panel'}>
             <SidePanel side="right" label={t.panel.title} collapsed={false} onToggle={toggleRight} mobile>
-              <StatusPlaceholder />
+              <StatusPanel />
             </SidePanel>
           </div>
         </main>
@@ -111,7 +112,7 @@ export function Layout() {
           <ChatPanel />
         </div>
         <SidePanel side="right" label={t.panel.title} collapsed={rightC} onToggle={toggleRight} badge={unseenCandidates}>
-          <StatusPlaceholder />
+          <StatusPanel />
         </SidePanel>
       </main>
     </div>

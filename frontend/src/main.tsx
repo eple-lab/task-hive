@@ -16,6 +16,7 @@ import './styles/layout.css';
 import './styles/chat.css';
 import './styles/hive.css';
 import './styles/start.css';
+import './styles/panel.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root 요소가 없습니다. index.html 을 확인해 주세요.');

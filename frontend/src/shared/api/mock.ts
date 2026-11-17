@@ -12,6 +12,7 @@
 import type { Api } from './client';
 import type {
   BulkItem,
+  Candidate,
   ChatEvent,
   ChatRequest,
   Completion,
@@ -25,12 +26,29 @@ import type {
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+/** 가짜 서버가 받는 도시(진짜 서버의 목록 일부). */
+const MOCK_CITIES = ['서울', '부산', '인천', '대구', '대전', '광주', '제주'];
+
 let me: Me = {
   mode: 'none',
   name: null,
   lang: 'ko',
   city: '서울',
-  settings: { voice: {}, llm: { temperature: 0.6, max_tokens: 400, model: null } },
+  // 서버의 기본값(docs/11-api-contract.md)과 같은 모양.
+  settings: {
+    voice: {
+      enabled: true,
+      gender: 'female',
+      voice: null,
+      rate: 1,
+      pitch: 1,
+      volume: 1,
+      echo: 0,
+      sentence_stream: true,
+      stop_on_typing: true,
+    },
+    llm: { temperature: 0.6, max_tokens: 400, model: null },
+  },
   features: { calendar: null, diary_google: null, task_sheet: null },
   upstream: { connected: false, models: [] },
   limits: { hive_max_rings: 3, hive_max_cells: 37 },
@@ -84,7 +102,7 @@ function find(id: number): Task {
 function fakeExtract(messages: WireMessage[]): ExtractResult {
   const last = [...messages].reverse().find((m) => m.role === 'user');
   const text = last?.content ?? '';
-  const candidates = text
+  const candidates: Candidate[] = text
     .split(/[.!?\n]/)
     .map((s) => s.trim())
     .filter((s) => /해야|할 거|하기로|예약|준비/.test(s))
@@ -108,6 +126,16 @@ function fakeExtract(messages: WireMessage[]): ExtractResult {
       });
     }
   }
+  // 규칙에 걸리는 문장이 없어도 화면 흐름을 끝까지 볼 수 있게, 지어낸 후보 2~3개를 돌려준다(가짜 모드 전용).
+  if (candidates.length === 0 && text.trim()) {
+    const snippet = text.trim().slice(0, 30);
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    candidates.push(
+      { title: '장 보고 오기', due_date: tomorrow, subtasks: ['우유 사기', '빵 사기'], evidence: snippet, confidence: 0.8 },
+      { title: '빨래 널기', due_date: null, subtasks: [], evidence: snippet, confidence: 0.7 },
+      { title: '친구에게 안부 문자 보내기', due_date: null, subtasks: [], evidence: snippet, confidence: 0.6 },
+    );
+  }
   return { candidates, completions };
 }
 
@@ -122,6 +150,10 @@ export const mockApi: Api = {
     tasks = [];
   },
   putSettings: async (patch: SettingsPatch) => {
+    if (patch.city !== undefined && !MOCK_CITIES.includes(patch.city)) {
+      const { ApiError } = await import('./client');
+      throw new ApiError(422, 'invalid_city', '고를 수 없는 도시입니다.');
+    }
     me = {
       ...me,
       lang: patch.lang ?? me.lang,
@@ -134,17 +166,22 @@ export const mockApi: Api = {
     };
     return me;
   },
-  putUpstream: async (url: string) => {
+  putUpstream: async (url: string, key: string) => {
     await wait(400);
     if (!/^https:\/\/[a-z0-9-]+\.ngrok-free\.(app|dev)\/?$/i.test(url)) {
       const { ApiError } = await import('./client');
       throw new ApiError(400, 'bad_upstream_url', 'ngrok 무료 주소(https://….ngrok-free.app)만 넣을 수 있어요.');
     }
-    me = { ...me, upstream: { connected: true, models: ['mock-model'] } };
-    return { connected: true, models: ['mock-model'], latency_ms: 123 };
+    if (!key.trim()) {
+      const { ApiError } = await import('./client');
+      throw new ApiError(502, 'upstream_unreachable', 'Colab에 연결하지 못했어요. 노트북이 켜져 있고 접속 키가 맞는지 확인해 주세요.');
+    }
+    const models = ['mock-model-a', 'mock-model-b'];
+    me = { ...me, upstream: { connected: true, models } };
+    return { connected: true, models, latency_ms: 123 };
   },
   deleteUpstream: async () => {
-    me = { ...me, upstream: { connected: false, models: [] } };
+    me = { ...me, upstream: { connected: false, models: [] }, settings: { ...me.settings, llm: { ...me.settings.llm, model: null } } };
   },
   greeting: async () => ({
     now: new Date().toISOString(),
@@ -167,6 +204,15 @@ export const mockApi: Api = {
   tasks: async () => tasks,
   bulk: async (items: BulkItem[]) => {
     await wait(300);
+    // 진짜 서버처럼: 제목이 이미 벌집에 있거나 칸이 모자라면 409.
+    const { ApiError } = await import('./client');
+    const live = tasks.filter((x) => !x.archived);
+    const titles = new Set(live.map((x) => x.title.trim().toLowerCase()));
+    const dup = items.find((i) => titles.has(i.title.trim().toLowerCase()));
+    if (dup) throw new ApiError(409, 'duplicate_title', `이미 벌집에 있는 제목이에요: ${dup.title}`);
+    if (live.length + items.length > me.limits.hive_max_cells) {
+      throw new ApiError(409, 'hive_full', '벌집이 꽉 찼어요. 완료한 태스크를 보관함으로 옮겨 주세요.');
+    }
     const made: Task[] = [];
     // makeTask 가 빈 칸을 찾을 때 방금 만든 것도 봐야 하므로 하나씩 넣는다.
     for (const item of items) {

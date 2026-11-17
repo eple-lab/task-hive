@@ -54,7 +54,8 @@ export type HiveMode = 'hive' | 'list';
 export type MobileTab = 'hive' | 'chat' | 'panel';
 
 export const DEFAULT_VOICE: VoiceSettings = {
-  enabled: false,
+  // 서버 기본값(docs/11-api-contract.md)과 같게 켠 채로 둔다. 소리는 사용자가 화면을 한 번 누른 뒤에만 난다(speech.ts userHasInteracted).
+  enabled: true,
   gender: 'female',
   voice: null,
   rate: 1,
