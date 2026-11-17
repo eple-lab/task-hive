@@ -2,7 +2,12 @@
 
 > 저녁에 일기 쓰듯 AI와 이야기하면, 할 일이 벌집에 쌓인다.
 
-**지금 상태: 기획 단계.** 이 저장소에는 아직 문서만 있다. 실행할 코드는 없다. (2026-11-17 기준)
+**지금 상태: 1단계 MVP가 로컬에서 동작한다. 모델 검증은 진행 중이다.** (2026-11-17 기준)
+
+- 손님 모드로 대화 → AI가 할 일 후보를 뽑음 → 담기 → 벌집 등록까지 실제 서버와 로컬 LLM(Ollama llama3.2)으로 끝까지 확인했다.
+- 백엔드 테스트 214개, 화면 테스트 37개가 통과한다.
+- 첫 모델 측정(llama3.2)은 성공 기준을 **넘지 못했다.** 이유와 실패 사례는 [아래](#검증-결과)와 [PoC-01](docs/poc/poc-01-llm-summary.md)에 있다.
+- 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. 배포 파일은 있지만 아직 배포하지 않았다.
 
 ## Task Hive는 무엇인가
 
@@ -34,6 +39,18 @@
 
 자세한 화면 구조: [docs/04-screens.md](docs/04-screens.md)
 
+### 시연 화면
+
+로컬에서 실제 서버 + 로컬 LLM(Ollama llama3.2)으로 찍었다. 대화는 지어낸 문장이다.
+
+| 1. 시작 (손님 모드) | 2. 대화, 할 일 찾는 중 |
+|---|---|
+| ![시작 화면](docs/images/01-start.jpg) | ![대화와 할 일 찾는 중](docs/images/02-chat-extracting.jpg) |
+| **3. 후보: 담기 / 빼기** | **4. 벌집으로 옮긴 뒤** |
+| ![할 일 후보](docs/images/03-candidate.jpg) | ![벌집에 한 칸](docs/images/04-hive.jpg) |
+
+3번에서 모델은 "회의록 메일 보내기"(내일)만 뽑고 "금요일 치과 예약"은 놓쳤다. 작은 모델이 할 일 두 개 중 하나를 놓치는 것은 측정에서도 반복된 실패다(PoC-01 8장 ④). 그래서 후보는 사용자가 골라 담아야 등록된다.
+
 ## 구조
 
 ```mermaid
@@ -44,30 +61,44 @@ flowchart LR
     A --> G["Google<br/>로그인 · 캘린더 · 드라이브"]
 ```
 
-| 영역 | 사용 (예정) |
+| 영역 | 사용 |
 |---|---|
 | 서버 | Python, FastAPI |
 | 화면 | React + Vite + TypeScript, 벌집은 SVG |
-| DB | Neon Postgres |
-| 배포 | Render 무료 |
-| LLM | Colab + vLLM (OpenAI 호환), ngrok으로 연결 |
-| 말하기 | Colab TTS 모델, 꺼져 있으면 브라우저 내장 음성 |
+| DB | 지금은 메모리 저장소(서버를 끄면 사라짐). Neon Postgres는 2단계 |
+| 배포 | Render 무료, Docker 다단계 빌드 (`Dockerfile`, `render.yaml`. 아직 배포 전) |
+| LLM | OpenAI 호환 API면 된다: Colab + vLLM + ngrok, 또는 개발 중에는 로컬 Ollama |
+| 말하기 | 지금은 브라우저 내장 음성. Colab TTS는 자리만 (2단계) |
 | 받아쓰기 | Colab Whisper (2단계) |
-| 로그인 | Google OpenID Connect 또는 손님 모드 |
+| 로그인 | 지금은 손님 모드. 구글 로그인은 2단계 |
 
 자세한 구조: [docs/03-architecture.md](docs/03-architecture.md)
 
 ## 사용하는 AI 모델
 
-메인 퀘스트 조건(배운 모델을 1개 이상 직접 실행)에 맞춰 Colab에서 직접 돌린다. 어떤 모델을 쓸지는 비교 실험 뒤에 정한다.
+메인 퀘스트 조건(배운 모델을 1개 이상 직접 실행)에 맞춰 직접 돌린다. 어떤 모델을 쓸지는 같은 자료 20건으로 비교한 뒤 정한다.
 
 | 역할 | 하는 일 | 후보 |
 |---|---|---|
-| 텍스트 생성 (LLM) | 대화, 할 일 추출, 일기 요약 | Qwen 4B급 양자화 모델 등 |
+| 텍스트 생성 (LLM) | 대화, 할 일 추출, 일기 요약 | llama3.2 3B (로컬 Ollama, **측정함**), Qwen 4B AWQ (Colab, 측정 전) |
 | 음성 생성 (TTS) | 답을 목소리로 읽기 | MeloTTS-Korean, Supertonic 2, XTTS-v2 |
 | 음성 인식 (STT) | 말로 입력하기 (2단계) | Whisper |
 
 실험 계획: [docs/poc/](docs/poc/README.md)
+
+## 검증 결과
+
+가상 저녁 대화 20건(할 일 19개)으로 잰다. 정답은 모델을 돌리기 전에 고정했다. 판정 기준은 [D-33](docs/02-decisions.md): 재현율 80% 이상, 지어낸 할 일 3개 이하, 할 일 없는 대화 3건 중 2건 통과, 손 입력보다 빠름.
+
+| 후보 | 재현율 | 지어낸 할 일 | 없는 대화 | 완료 신호 | 첫 글자 시간 | 판정 |
+|---|---|---|---|---|---|---|
+| 손 입력 (`todo` 앱, 기준선) | 측정 중 | - | - | - | - | - |
+| llama3.2 3B (로컬 Ollama, CPU) | 0.63 | 8 | 0 / 3 | 2 / 10 | 약 24초 | **못 넘음** |
+| Qwen 4B AWQ (Colab GPU) | 측정 전 | | | | | |
+
+- 잘한 것: 애매한 날짜("월말까지"), 하위 태스크 구조, JSON 형식(오류 0건).
+- 못한 것: **할 일이 아닌 것을 거르지 못했다.** 지어낸 8개 중 7개가 지난 일·취소된 일·남의 일을 할 일로 만든 것이다. 할 일 두 개를 하나로 합치거나, 지시문의 예시 문구("숙소 예약, 기차표 예매")를 관계없는 대화에 복사하기도 했다.
+- 자세한 결과와 실패 사례: [docs/poc/poc-01-llm-summary.md](docs/poc/poc-01-llm-summary.md), 결과 파일 [eval/results/](eval/results/)
 
 ## 내 데이터는 어디에 있나
 
@@ -109,10 +140,10 @@ flowchart LR
 
 | 단계 | 내용 | 상태 |
 |---|---|---|
-| 0 | 기획: 요구사항, 아키텍처, 문제 정의서 | 진행 중 |
-| 1 | 대화로 벌집 쌓기 (손님 모드, 대화, 추출, 벌집, TTS) | 예정 |
+| 0 | 기획: 요구사항, 아키텍처, 문제 정의서 | 끝 |
+| 1 | 대화로 벌집 쌓기 (손님 모드, 대화, 추출, 벌집, TTS) | 로컬 동작, 모델 검증 중 (TTS는 브라우저 음성) |
 | 2 | 구글 로그인, 캘린더, 일기, 말로 입력 | 예정 |
-| 3 | 배포, 성능 화면, 보안 파이프라인 | 예정 |
+| 3 | 배포, 성능 화면, 보안 파이프라인 | 배포 파일만 있음 |
 | 4 | 3D 벌집, 칸 옮기기, 검색 | 예정 |
 | 5 | 구독·결제 | 예정 |
 
@@ -120,16 +151,61 @@ flowchart LR
 
 ## 실행 방법
 
-**아직 실행할 코드가 없다.** 1단계가 끝나면 이 자리에 실제 명령을 적는다. 계획한 순서는 아래와 같다.
+Windows 기준이다(Git Bash). 필요한 것: Python 3.14, Node 24.
 
-1. Colab에서 `colab/task_hive_server.ipynb`를 내 구글 계정으로 열고 런타임을 GPU로 바꾼다.
-2. ngrok 토큰을 Colab 보안 비밀에 넣고 셀을 순서대로 실행한다. 마지막 셀이 ngrok 주소와 접속 키를 보여 준다.
-3. 내 컴퓨터에서 가상환경을 만들고 의존성을 설치한다. `frontend/`에서 화면을 빌드한다(Node 필요).
-4. `.env.example`을 `.env`로 복사한다. 비워 두어도 손님 모드로 돌아간다.
-5. 서버를 켜고 `http://localhost:8000`을 연다.
-6. 이름을 적거나 구글 로그인을 하고, 오른쪽 상태창에 ngrok 주소와 접속 키를 넣는다.
+### 1. 설치
 
-자세한 계획: [docs/03-architecture.md 8장](docs/03-architecture.md)
+```bash
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+cd frontend && npm ci && npm run build && cd ..
+```
+
+### 2. 서버 켜기
+
+```bash
+APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true .venv/Scripts/python.exe -m uvicorn app.main:app --port 8000
+```
+
+- `http://localhost:8000`을 연다. 서버가 빌드한 화면(`frontend/dist`)도 함께 내준다.
+- 개발 환경에서는 비밀값이 없으면 실행할 때마다 임시값을 만든다. `.env` 파일은 없어도 된다. 다른 설정은 위처럼 명령 앞에 환경변수로 붙인다(이름과 뜻은 `.env.example`). uvicorn의 `--env-file`은 `python-dotenv`가 필요한데 `requirements.txt`에 없어서 지금은 쓰지 않는다.
+- `UPSTREAM_ALLOW_LOCALHOST=true`는 개발에서만 `http://localhost` LLM 주소를 받게 하는 설정이다. 운영에서는 ngrok `https` 주소만 받는다.
+- 화면을 고치면서 볼 때: `cd frontend && npm run dev` (Vite가 `/api`를 8000으로 넘긴다). 서버 없이 화면만: `npm run dev:mock`.
+
+### 3. LLM 연결
+
+이름을 적고 "로그인 없이 시작" → 오른쪽 상태창 "연결"에 주소와 접속 키를 넣는다.
+
+| LLM | 주소 | 접속 키 |
+|---|---|---|
+| 로컬 Ollama (개발용) | `http://localhost:11434` (`ollama pull llama3.2` 필요) | 아무 값 |
+| 내 Colab | 노트북 마지막 셀이 보여 주는 `https://….ngrok-free.app` | 노트북이 보여 준 키 |
+
+Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). **이 노트북은 아직 실제로 실행해 확인하지 못했다.**
+
+### 4. 테스트
+
+```bash
+.venv/Scripts/python.exe -m pytest -q
+```
+
+```bash
+cd frontend && npm run typecheck && npm test
+```
+
+### 5. 모델 측정 (PoC-01)
+
+```bash
+.venv/Scripts/python.exe eval/run_eval.py --base-url http://localhost:11434 --model llama3.2 --label llama32-ollama --timeout 300 --completions eval/samples/completions.jsonl
+```
+
+- Colab이면 `--base-url`에 ngrok 주소, 접속 키는 환경변수 `TASK_HIVE_EVAL_API_KEY`로 넘긴다.
+- 모델 없이 채점 로직만 볼 때: `--dry-run`.
+- 결과는 `eval/results/`에 `.md`와 `.json`으로 남는다. 자료 설명: [eval/samples/README.md](eval/samples/README.md)
+
+### 6. 배포 (아직 안 함)
+
+`render.yaml`(Render Blueprint)과 `Dockerfile`(화면 빌드 → Python 서버)이 있다. 비밀값 4개(`PUBLIC_BASE_URL`, `SESSION_SECRET`, `DATA_ENC_KEY`, `SUB_HASH_KEY`)는 Render 화면에서 넣는다. 이 PC에 Docker가 없어 Docker 빌드는 확인하지 못했다. → [docs/09-verification.md](docs/09-verification.md) 2.12
 
 ### Colab을 쓸 때 알아 둘 것
 
@@ -144,9 +220,9 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 | 제출물 | 위치 | 상태 |
 |---|---|---|
 | 문제 정의서 | [docs/00-problem-definition.md](docs/00-problem-definition.md) | 작성함 (검증 전) |
-| PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `colab/`, `docs/poc/` | 계획만 있음 |
-| 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | 계획만 있음 |
-| README (실행 방법, 시연 자료) | 이 파일 | 기획 단계 내용만 |
+| PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `frontend/`, `colab/`, `eval/`, `docs/poc/` | 코드 동작함. Colab 노트북은 실행 확인 전 |
+| 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | llama3.2 측정·실패 사례 정리함. 기준선·Qwen 남음 |
+| README (실행 방법, 시연 자료) | 이 파일 | 실행 방법, 시연 화면, 검증 결과 요약 |
 
 ## 배우며 만든 것에서 가져온 것
 
