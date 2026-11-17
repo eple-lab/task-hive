@@ -98,6 +98,8 @@ class Settings:
     rate_limit_chat_per_min: int = 20
     rate_limit_extract_per_min: int = 30
     rate_limit_general_per_min: int = 240
+    rate_limit_guest_start_per_min: int = 5  # POST /api/guest, IP마다
+    max_title_chars: int = 200  # 태스크·하위 태스크 제목 길이 한도
 
     # 그 밖에
     weather_default_city: str = "서울"
@@ -194,6 +196,8 @@ def load_settings(env: dict | None = None) -> Settings:
         rate_limit_chat_per_min=_int(env, "RATE_LIMIT_CHAT_PER_MIN", 20, 1, 1000),
         rate_limit_extract_per_min=_int(env, "RATE_LIMIT_EXTRACT_PER_MIN", 30, 1, 1000),
         rate_limit_general_per_min=_int(env, "RATE_LIMIT_GENERAL_PER_MIN", 240, 10, 10000),
+        rate_limit_guest_start_per_min=_int(env, "RATE_LIMIT_GUEST_START_PER_MIN", 5, 1, 1000),
+        max_title_chars=_int(env, "MAX_TITLE_CHARS", 200, 10, 500),
         weather_default_city=(env.get("WEATHER_DEFAULT_CITY") or "서울").strip(),
         frontend_dist=(env.get("FRONTEND_DIST") or "frontend/dist").strip(),
         ephemeral_secrets=tuple(ephemeral),

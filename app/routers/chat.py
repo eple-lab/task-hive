@@ -154,7 +154,7 @@ async def extract(
     except UpstreamError as exc:
         metrics.record("extract", status=exc.kind, total_ms=int((time.perf_counter() - started) * 1000))
         raise ApiError(400 if exc.kind == "rejected_url" else 502, exc.kind, exc.message) from None
-    result = parse_and_validate(raw, tasks)
+    result = parse_and_validate(raw, tasks, settings.max_title_chars)
     # 아무것도 못 읽은 경우를 지표로 구분한다(형식 오류율을 보려고). 빈 대화의 빈 결과와 섞이지 않게 raw로 판단.
     readable = raw.strip().startswith("{") or "```" in raw or "{" in raw
     metrics.record("extract", status="ok" if readable else "bad_json", total_ms=int((time.perf_counter() - started) * 1000))

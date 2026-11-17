@@ -5,7 +5,7 @@
     - 태스크 규칙을 여기서 검사한다(화면에서도 검사하지만 화면은 믿지 않는다: docs/05 7장).
 
 태스크 규칙 (todo/docs/business-rules.md에서 이어받음, docs/01 5.5)
-    - 제목은 비울 수 없고 200자까지 (sanitize.clean_title)
+    - 제목은 비울 수 없고 200자까지 (sanitize.clean_title, 길이는 MAX_TITLE_CHARS)
     - 태스크 제목은 같은 사용자 안에서 중복 불가 (대소문자·앞뒤 공백 무시)
     - 하위 태스크 제목은 "같은 태스크 안에서만" 중복 불가
     - 마감일(due_date)은 없어도 된다 (todo와 다른 점, R-HIVE-5)
@@ -59,12 +59,12 @@ def _norm(title: str) -> str:
     return title.strip().casefold()
 
 
-def _title(raw, what: str) -> str:
+def _title(raw, what: str, max_chars: int = 200) -> str:
     """제목 검사. ApiError(화면용)를 StoreError(저장소용)로 바꿔 한 종류로 맞춘다."""
     if not isinstance(raw, str):
         raise StoreError(422, "empty_title", f"{what}을 적어 주세요.")
     try:
-        return clean_title(raw, what)
+        return clean_title(raw, what, max_chars)
     except ApiError as exc:
         raise StoreError(exc.status, exc.code, exc.message) from None
 
@@ -195,7 +195,7 @@ class MemoryStore(Store):
             prepared: list[dict] = []
             taken: set[tuple[int, int]] = set()
             for item in items:
-                title = _title(item.get("title"), "할 일 제목")
+                title = _title(item.get("title"), "할 일 제목", self.settings.max_title_chars)
                 if _norm(title) in existing:
                     raise StoreError(409, "duplicate_title", f"같은 제목의 할 일이 이미 있어요: {title}")
                 existing.add(_norm(title))
@@ -203,7 +203,7 @@ class MemoryStore(Store):
                 sub_titles: list[str] = []
                 seen: set[str] = set()
                 for raw in item.get("subtasks") or []:
-                    st = _title(raw, "하위 할 일 제목")
+                    st = _title(raw, "하위 할 일 제목", self.settings.max_title_chars)
                     if _norm(st) in seen:
                         raise StoreError(409, "duplicate_subtask", f"같은 하위 할 일이 두 번 들어 있어요: {st}")
                     seen.add(_norm(st))
@@ -247,7 +247,7 @@ class MemoryStore(Store):
             task = self._find(owner, task_id)
 
             if "title" in patch and patch["title"] is not None:
-                title = _title(patch["title"], "할 일 제목")
+                title = _title(patch["title"], "할 일 제목", self.settings.max_title_chars)
                 if any(_norm(t["title"]) == _norm(title) and t["id"] != task_id for t in tasks):
                     raise StoreError(409, "duplicate_title", f"같은 제목의 할 일이 이미 있어요: {title}")
                 task["title"] = title
@@ -283,7 +283,7 @@ class MemoryStore(Store):
     def add_subtask(self, owner: str, task_id: int, title: str) -> Task:
         with self._lock:
             task = self._find(owner, task_id)
-            title = _title(title, "하위 할 일 제목")
+            title = _title(title, "하위 할 일 제목", self.settings.max_title_chars)
             if len(task["subtasks"]) >= MAX_SUBTASKS:
                 raise StoreError(422, "too_many_subtasks", f"하위 할 일은 {MAX_SUBTASKS}개까지 넣을 수 있어요.")
             if any(_norm(s["title"]) == _norm(title) for s in task["subtasks"]):
@@ -303,7 +303,7 @@ class MemoryStore(Store):
             task = self._find(owner, task_id)
             sub = self._find_sub(task, subtask_id)
             if "title" in patch and patch["title"] is not None:
-                title = _title(patch["title"], "하위 할 일 제목")
+                title = _title(patch["title"], "하위 할 일 제목", self.settings.max_title_chars)
                 if any(_norm(s["title"]) == _norm(title) and s["id"] != subtask_id for s in task["subtasks"]):
                     raise StoreError(409, "duplicate_subtask", f"같은 하위 할 일이 이미 있어요: {title}")
                 sub["title"] = title

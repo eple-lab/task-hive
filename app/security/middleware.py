@@ -64,7 +64,10 @@ def _origin_allowed(request: Request, settings: Settings) -> bool:
     return False
 
 
-def _limit_group(path: str, settings: Settings) -> tuple[str, int] | None:
+def _limit_group(path: str, settings: Settings, method: str = "GET") -> tuple[str, int] | None:
+    # 손님 시작은 세션이 아직 없어 IP로만 센다. 이름만 바꿔 계속 새 손님을 만드는 남용을 막는다.
+    if method == "POST" and path == "/api/guest":
+        return "guest_start", settings.rate_limit_guest_start_per_min
     if path.startswith("/api/chat") or path.startswith("/api/diary"):
         return "chat", settings.rate_limit_chat_per_min
     if path.startswith("/api/extract"):
@@ -86,7 +89,7 @@ def install_security_middleware(app: FastAPI, settings: Settings, limiter: RateL
             return _with_headers(response, settings, path)
 
         # 2. 요청 횟수
-        group = _limit_group(path, settings)
+        group = _limit_group(path, settings, request.method)
         if group and not limiter.allow(f"{group[0]}:{client_ip(request)}", group[1]):
             getattr(request.app.state, "metrics").record("security", status="rate_limited")
             response = error_response(429, "rate_limited", "요청이 너무 많아요. 잠시 뒤에 다시 해 주세요.")

@@ -69,11 +69,11 @@ def _load_json(raw: str) -> Any:
     return None
 
 
-def _title_or_none(raw: Any) -> str | None:
+def _title_or_none(raw: Any, max_chars: int = 200) -> str | None:
     if not isinstance(raw, str):
         return None
     try:
-        return clean_title(raw)
+        return clean_title(raw, max_chars=max_chars)
     except ApiError:
         return None
 
@@ -101,7 +101,7 @@ def _norm(title: str) -> str:
     return title.strip().casefold()
 
 
-def parse_and_validate(raw: str, tasks: list[dict]) -> dict:
+def parse_and_validate(raw: str, tasks: list[dict], max_title_chars: int = 200) -> dict:
     """LLM 출력(raw)을 검증해 {"candidates": [...], "completions": [...]}로 돌려준다.
 
     tasks는 "이 사용자의" 태스크 목록이다(API 계약의 태스크 모양). 소유 검사의 기준이 된다.
@@ -121,7 +121,7 @@ def parse_and_validate(raw: str, tasks: list[dict]) -> dict:
             break
         if not isinstance(item, dict):
             continue
-        title = _title_or_none(item.get("title"))
+        title = _title_or_none(item.get("title"), max_title_chars)
         if title is None or _norm(title) in existing_titles or _norm(title) in seen:
             continue
         seen.add(_norm(title))
@@ -130,7 +130,7 @@ def parse_and_validate(raw: str, tasks: list[dict]) -> dict:
         sub_seen: set[str] = set()
         raw_subs = item.get("subtasks")
         for sub in raw_subs if isinstance(raw_subs, list) else []:
-            st = _title_or_none(sub)
+            st = _title_or_none(sub, max_title_chars)
             if st is None or _norm(st) in sub_seen or len(subtasks) >= MAX_SUBTASKS:
                 continue
             sub_seen.add(_norm(st))

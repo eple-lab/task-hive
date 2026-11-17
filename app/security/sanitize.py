@@ -16,7 +16,7 @@ import unicodedata
 
 from app.errors import ApiError
 
-TITLE_MAX = 200
+TITLE_MAX = 200  # 기본값. 실제 한도는 설정 MAX_TITLE_CHARS(Settings.max_title_chars)
 NAME_MAX = 20
 _NAME_FORBIDDEN = set("<>\"'`")
 _EXTERNAL_TAG = re.compile(r"</?\s*external_content[^>]*>", re.IGNORECASE)
@@ -46,12 +46,12 @@ def clean_name(name: str) -> str:
     return name
 
 
-def clean_title(title: str, what: str = "제목") -> str:
+def clean_title(title: str, what: str = "제목", max_chars: int = TITLE_MAX) -> str:
     title = _strip_controls(title or "")
     if not title:
         raise ApiError(422, "empty_title", f"{what}을 적어 주세요.")
-    if len(title) > TITLE_MAX:
-        raise ApiError(422, "title_too_long", f"{what}은 {TITLE_MAX}자까지 적을 수 있어요.")
+    if len(title) > max_chars:
+        raise ApiError(422, "title_too_long", f"{what}은 {max_chars}자까지 적을 수 있어요.")
     return title
 
 

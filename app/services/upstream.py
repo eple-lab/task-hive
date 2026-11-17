@@ -56,6 +56,7 @@ class ThinkFilter:
     def __init__(self) -> None:
         self._buf = ""
         self._in_think = False
+        self._skip_newlines = False  # </think> 바로 뒤의 줄바꿈은 조각이 나뉘어 와도 버린다
 
     def feed(self, text: str) -> str:
         self._buf += text
@@ -69,7 +70,13 @@ class ThinkFilter:
                     break
                 self._buf = self._buf[idx + len(THINK_CLOSE):].lstrip("\n")
                 self._in_think = False
+                self._skip_newlines = True
             else:
+                if self._skip_newlines:
+                    self._buf = self._buf.lstrip("\n")
+                    if not self._buf:
+                        break
+                    self._skip_newlines = False
                 idx = self._buf.find(THINK_OPEN)
                 if idx >= 0:
                     out.append(self._buf[:idx])

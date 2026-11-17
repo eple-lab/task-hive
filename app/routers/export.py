@@ -37,7 +37,8 @@ _MD_SPECIAL_START = re.compile(r"^(\s*)([#>\-+*]|\d+\.)")
 
 def _md(text: str) -> str:
     """사용자 글이 Markdown 구조로 해석되지 않게 한다."""
-    text = text.replace("\\", "\\\\").replace("`", "\\`").replace("[", "\\[").replace("]", "\\]")
+    # "<"도 막는다: <script> 같은 글자가 HTML을 허용하는 Markdown 뷰어에서 태그로 해석되지 않게 한다
+    text = text.replace("\\", "\\\\").replace("`", "\\`").replace("[", "\\[").replace("]", "\\]").replace("<", "\\<")
     return _MD_SPECIAL_START.sub(lambda m: f"{m.group(1)}\\{m.group(2)}", text)
 
 
