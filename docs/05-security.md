@@ -7,7 +7,7 @@
 | 자산 | 유출·변조되면 | 민감도 |
 |---|---|---|
 | 대화 원문, 일기 | 사생활이 그대로 드러난다 | 매우 높음 |
-| 구글 refresh token | 사용자의 드라이브 파일·캘린더에 접근당한다 | 매우 높음 |
+| 구글 access token | 약 1시간 동안 사용자의 드라이브 파일·캘린더에 접근당한다. refresh token은 받지 않는다 (D-19) | 매우 높음 |
 | 태스크·하위 태스크 | 일정과 생활이 드러난다 | 높음 |
 | 캘린더 일정 | 만나는 사람, 장소, 시간이 드러난다 | 높음 |
 | 업스트림 주소·접속 키 | 남이 내 Colab을 쓴다 | 높음 |
@@ -89,22 +89,24 @@
 | `calendar.events.owned.readonly` | 캘린더 기능을 켤 때 (D-14) | **내가 소유한 캘린더**의 일정 읽기만. 공유받은 캘린더는 읽지 않는다 |
 
 - 기능을 끄면 그 기능을 쓰지 않는다. 이미 받은 권한을 구글에서 없애는 것은 "구글 연결 해제" 버튼으로 따로 한다(제안).
-- 구글 기능을 모두 끈 사용자는 `openid`만 쓴다. 이 경우 7일 토큰 만료와 테스트 사용자 등록 대상이 아니다.
+- 구글 기능을 모두 끈 사용자는 `openid`만 쓴다. 이 경우 테스트 사용자 등록 대상이 아니다.
+- 토글이 켜진 모습으로 보여도(D-16) 사용자가 "연결"을 누르기 전에는 권한을 요청하지 않는다.
 
 - `drive.file`은 민감하지 않은 권한이다(확인함).
 - 캘린더 읽기 권한의 분류는 공식 문서에 표시가 없다. 구글은 "캘린더 일정 읽기"를 민감한 권한의 예로 든다. Google Cloud Console 동의 화면에서 확인한다.
-- 테스트 상태 앱은 등록한 테스트 사용자(최대 100명)만 쓸 수 있고, refresh token이 7일 뒤 만료된다(확인함). `drive.file`만 받아도 해당한다. → [07 Q-01](07-open-questions.md), [09 확인 기록](09-verification.md)
+- 테스트 상태 앱은 등록한 테스트 사용자(최대 100명)만 쓸 수 있다(확인함). refresh token 7일 만료 규칙이 있지만, Task Hive는 refresh token을 받지 않아(D-19) 약 1시간마다 다시 연결하는 방식이다. → [checks/google-oauth-7day-expiry.md](checks/google-oauth-7day-expiry.md)
 
 ### 4.2 토큰 보관
 
 | 토큰 | 보관 | 보호 |
 |---|---|---|
-| 구글 access token | 서버 메모리 (요청 처리 중) | 저장 안 함 |
-| 구글 refresh token | Neon | 암호화 (AES-GCM 또는 Fernet). 키는 Render 환경변수 |
+| 구글 access token | Neon | 암호화 (Fernet). 키는 Render 환경변수. 만료(약 1시간)·로그아웃·탈퇴 때 삭제 |
+| 구글 refresh token | **받지 않는다** (D-19) | 오프라인 접근을 요청하지 않는다 |
 | 세션 | 브라우저 쿠키 | 암호화 + `HttpOnly`, `Secure`, `SameSite=Lax` |
 | 업스트림 주소·접속 키 | 세션 쿠키 안 | 세션과 함께 암호화. 화면 JS가 읽을 수 없다 |
 
 - 세션 쿠키는 서명만 하지 않고 **반드시 암호화**한다. `honey-voice-log`는 서명만 해서 쿠키에 사용자 ID와 이름만 넣었다. Task Hive는 업스트림 주소와 접속 키를 넣으므로 서명만으로는 부족하다.
+- npm 의존성이 생긴다(D-20). lock 파일을 올리고 `npm ci`로만 설치한다. 새 의존성은 꼭 필요한 것만 넣는다.
 - 화면의 `localStorage`에는 토큰·주소·대화를 넣지 않는다. 패널 접힘, 테마 같은 화면 설정만 넣는다.
 - 로그인 과정은 `state`와 PKCE로 가로채기를 막는다.
 - 구글 사용자 ID는 HMAC으로 가려 저장한다. DB만 유출돼서는 누구인지 알 수 없다.
@@ -113,7 +115,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 유효 시간 | 로그인 7일, 손님 24시간 (활동하면 연장) |
+| 유효 시간 | 로그인 8시간(`honey-voice-log`와 같게, 제안), 손님 24시간 (활동하면 연장) |
 | 로그인 직후 | 세션 ID를 새로 만든다 (세션 고정 방지) |
 | 변경 요청 | `SameSite=Lax` + 사용자 정의 헤더 + 출처(Origin) 확인 + JSON 본문만 받음 (`honey-voice-log` 방식) |
 | 로그아웃 | 쿠키 삭제 |
@@ -151,7 +153,7 @@
 | 위험 | 대응 | 본받는 곳 |
 |---|---|---|
 | 남의 데이터 보기·바꾸기 | 모든 쿼리에 사용자 조건 + RLS. 손님과 로그인 사용자를 구분 | `todo` RLS |
-| XSS | `innerHTML` 금지, `textContent` 사용. CSP: 외부 스크립트·인라인 스크립트 금지 | `todo` |
+| XSS | React가 글자를 기본으로 이스케이프한다. `dangerouslySetInnerHTML`은 쓰지 않는다. CSP: 외부 스크립트·인라인 스크립트 금지(빌드한 파일만 허용) | `todo` |
 | CSRF | `SameSite=Lax` + CSRF 토큰 + JSON만 | `honey-voice-log` |
 | SQL 주입 | 값은 항상 따로 전달 | `todo` |
 | 시트 수식 주입 | `valueInputOption=RAW`로 써서 수식으로 실행되지 않게 한다 | `honey-voice-log` |
@@ -200,7 +202,8 @@ flowchart LR
 | PR | 문법·형식 검사 | ruff |
 | PR | 테스트 (기본 기능 → 보안 규칙) | pytest, 가짜 업스트림·가짜 구글 |
 | PR | 코드 취약점 검사 (SAST) | bandit, CodeQL |
-| PR | 의존성 취약점 검사 | pip-audit, Dependabot |
+| PR | 의존성 취약점 검사 (Python + npm, D-20) | pip-audit, `npm audit`, Dependabot |
+| PR | 화면 빌드와 검사 | `npm ci`(lock 파일 그대로 설치), 빌드, ESLint |
 | PR | 비밀값 검사 | gitleaks, GitHub 비밀 검사·푸시 보호 |
 | PR | 부품 목록(SBOM) 만들기 | CycloneDX |
 | main | 직접 푸시 금지, 검사 통과 필수 | 브랜치 보호 규칙 |

@@ -71,7 +71,7 @@ flowchart LR
 
 | 구성 요소 | 역할 | 본받는 곳 |
 |---|---|---|
-| 프론트 (정적 파일) | 3단 화면, 대화 기록 보관(메모리), 벌집 그리기, 음성 재생과 효과 | `todo/public`, `llm-chatbot/static` |
+| 프론트 (React + Vite, D-20) | 3단 화면, 대화 기록 보관(메모리), 벌집 그리기, 음성 재생과 효과. 빌드한 정적 파일을 FastAPI가 내준다 | 화면 규칙은 `todo/public`, `llm-chatbot/static` |
 | 인증 | 구글 로그인, 손님 세션, 세션 쿠키, CSRF | `honey-voice-log/app/security.py` |
 | 대화 중계 | 사용자의 업스트림으로 SSE 스트리밍 중계, 시스템 프롬프트 삽입 | `llm-chatbot/server.py` |
 | 할 일 추출 | 대화에서 후보 태스크·완료 신호를 JSON으로 뽑고 검증 | `honey-voice-log/app/llm.py` (JSON 스키마 강제) |
@@ -99,7 +99,7 @@ task-hive/
 │   │   ├── voice.py            /api/tts, /api/stt (2단계)
 │   │   ├── settings.py         /api/settings (업스트림 URL, 언어, 음성·LLM 설정)
 │   │   ├── export.py           /api/export (손님 MD 내려받기 → 삭제)
-│   │   ├── admin.py            /admin, /api/admin/metrics
+│   │   ├── admin.py            /api/admin/metrics (화면은 frontend의 admin)
 │   │   └── health.py           /health
 │   ├── services/
 │   │   ├── upstream.py         Colab 게이트웨이 호출 (LLM, TTS, STT)
@@ -122,19 +122,22 @@ task-hive/
 │   │   ├── memory.py           로컬 개발용
 │   │   └── migrations/         표·RLS·정리 작업 SQL
 │   └── prompts/                시스템 프롬프트 (언어별), 추출 지시문
-├── static/
-│   ├── index.html              3단 화면
-│   ├── admin.html              성능 검토 화면
-│   ├── css/
-│   └── js/
-│       ├── api.js              서버 호출
-│       ├── chat.js             채팅창, 스트리밍 표시, 대화 기록(메모리)
-│       ├── hive.js             벌집 배치와 그리기
-│       ├── bee.js              벌 비행·클로즈업 애니메이션
-│       ├── panel.js            상태창
-│       ├── voice.js            음성 재생, 에코·저음 효과, 대체 음성
-│       ├── layout.js           패널 접기, 테마
+├── frontend/                   화면 (React + Vite, D-20)
+│   ├── index.html
+│   ├── package.json / package-lock.json
+│   ├── vite.config.*
+│   └── src/
+│       ├── main.*              시작점
+│       ├── App.*               3단 배치, 패널 접기, 테마
+│       ├── api/                서버 호출 (CSRF 헤더, SSE 읽기)
+│       ├── state/              함께 쓰는 상태: 대화, 후보, 등록 예정, 태스크, 설정
+│       ├── chat/               채팅창, 스트리밍 표시, 행동 버튼
+│       ├── hive/               벌집 배치 계산, SVG 그리기, 벌 애니메이션
+│       ├── panel/              상태창: 연결, 후보, 캘린더, 일기, 목소리·대화 설정
+│       ├── voice/              음성 재생, 에코·저음 효과, 대체 음성
+│       ├── admin/              성능 검토 화면
 │       └── i18n/               언어별 문구
+│   (빌드 결과 frontend/dist/ 는 Git에 올리지 않는다. 서버가 이 폴더를 내준다)
 ├── colab/
 │   └── task_hive_server.ipynb  vLLM + TTS + (2단계) Whisper + 게이트웨이 + ngrok
 ├── eval/
@@ -158,9 +161,9 @@ task-hive/
 |---|---|---|---|
 | 대화 원문 | 매우 높음 | 브라우저 메모리. 전송 중에만 서버와 Colab을 지남 | 탭을 닫거나 새로고침할 때까지 |
 | 일기 요약 | 매우 높음 | 사용자의 구글 드라이브 (손님은 내려받은 MD) | 사용자가 정함 |
-| 태스크·하위 태스크 제목 | 높음 | Neon (암호화 저장 제안 P-03), 사본은 사용자의 구글 시트 | 완료 후 90일 (P-17) |
+| 태스크·하위 태스크 제목 | 높음 | Neon (암호화 저장 제안 P-03), 사본은 사용자의 구글 시트(켰을 때, D-18) | 완료 후 90일 (D-23) |
 | 캘린더 일정 | 높음 | 서버 메모리에서 후보로 바꿔 브라우저로 전달. DB에 저장 안 함 | 요청 처리 중에만 |
-| 구글 refresh token | 매우 높음 | Neon (암호화) | 탈퇴 또는 권한 해제까지 |
+| 구글 access token | 매우 높음 | Neon (암호화). refresh token은 받지 않는다 (D-19) | 만료(약 1시간)·로그아웃·탈퇴 때 삭제 |
 | 구글 사용자 ID | 중간 | Neon (HMAC으로 가린 값만) | 탈퇴까지 |
 | 부를 이름 | 낮음 | Neon | 탈퇴까지, 손님은 24시간 |
 | 업스트림 URL·접속 키 | 높음 | 암호화한 세션 쿠키 (DB에 저장 안 함) | 세션이 끝날 때까지 |
@@ -181,7 +184,8 @@ erDiagram
         text display_name "사용자가 적은 이름"
         text lang
         jsonb prefs "음성·LLM 설정, 캘린더 켬·끔, 일기 구글 저장 켬·끔과 저장처"
-        bytea google_token_enc "refresh token 암호문"
+        bytea google_token_enc "access token 암호문 (약 1시간, D-19)"
+        timestamptz google_token_expires_at "지나면 지운다"
         text scopes "받은 권한"
         text drive_folder_id
         text tasks_sheet_id
@@ -238,7 +242,8 @@ erDiagram
 |---|---|---|
 | 손님 | 내려받기 직후 | `/api/export` 응답을 보낸 뒤 그 손님 행 삭제 |
 | 손님 | 마지막 활동 24시간 뒤 | 요청이 들어올 때마다(최대 10분에 1번) 오래된 행 삭제. Render 무료는 잠들기 때문에 정해진 시각 작업에 기대지 않는다 |
-| 완료된 태스크 | 완료 후 90일 (P-17) | 같은 정리 작업 |
+| 완료된 태스크 | 완료 후 90일 (D-23) | 같은 정리 작업 |
+| 만료된 구글 토큰 | 만료 시각이 지남 (D-19) | 같은 정리 작업 |
 | 지표 | 30일 | 같은 정리 작업 |
 
 ## 6. 데이터 이동
@@ -280,16 +285,18 @@ sequenceDiagram
     participant S as 구글 시트 (사용자)
 
     B->>A: POST /api/tasks/bulk (등록 예정 목록)
-    A->>A: 규칙 검사 (빈 제목, 길이, 중복, 37칸)
+    A->>A: 규칙 검사 (빈 제목, 길이, 중복, 칸 수 한도)
     A->>DB: 태스크·하위 태스크 저장, 벌집 좌표 배정
     A-->>B: 저장된 태스크 + 좌표
     B->>B: 벌 비행 → 벌집 클로즈업 → 칸 생성
-    A->>S: 시트에 행 추가 (로그인 사용자만, 실패해도 등록은 유지)
+    A->>S: 시트에 행 추가 (시트 내보내기를 켠 사용자만, 실패해도 등록은 유지)
 ```
 
 시트 내보내기가 실패하면 등록은 그대로 두고 "시트 반영 실패, 다시 시도" 안내만 한다. 원본은 Neon이다(D-02).
 
 ### 6.3 완료 체크 ("그건 한 것 같아")
+
+규칙은 D-21이다(일괄 완료만 확인, 삭제는 대화로 못 함).
 
 1. `/api/extract`가 완료 신호 `{task_ref, subtask_ref?, confidence}`를 낸다.
 2. 서버가 그 태스크가 이 사용자의 것인지 확인한다.
@@ -339,6 +346,7 @@ sequenceDiagram
 | `POST /api/tts`, `POST /api/stt` | 말하기, 받아쓰기(2단계) | 필요 |
 | `GET /api/export` | 손님 MD 내려받기 후 삭제 | 손님 |
 | `GET /admin`, `GET /api/admin/metrics` | 성능 검토 | 관리자 |
+| `GET /api/weather` | 고른 도시의 날씨 (Open-Meteo, D-25) | 필요 |
 
 "필요"는 구글 로그인 또는 손님 세션이다.
 
@@ -348,7 +356,7 @@ sequenceDiagram
 
 | 환경 | 서버 | DB | LLM | 용도 |
 |---|---|---|---|---|
-| 로컬 | 내 컴퓨터 `localhost:8000` | 메모리 저장소 또는 Neon 개발 브랜치 (P-14) | 내 Colab | 개발, 과제 재현 |
+| 로컬 | 내 컴퓨터 `localhost:8000` | 메모리 저장소 또는 Neon 개발 브랜치 (D-26) | 내 Colab | 개발, 과제 재현 |
 | CI | GitHub Actions | 메모리 저장소 | 가짜 업스트림 | 테스트, 보안 검사 |
 | 운영 | Render 무료 | Neon 운영 브랜치 | 각 사용자의 Colab | 데모 |
 
@@ -357,6 +365,7 @@ sequenceDiagram
 1. **Colab**: `colab/task_hive_server.ipynb`를 내 구글 계정으로 열고 런타임을 GPU로 바꾼다.
 2. **Colab**: ngrok 토큰을 Colab 보안 비밀에 넣고 셀을 순서대로 실행한다. 마지막 셀이 ngrok 주소와 접속 키를 보여 준다.
 3. **내 컴퓨터**: 가상환경을 만들고 `requirements.lock`으로 설치한다.
+   - 이어서 `frontend/`에서 `npm ci`로 설치하고 `npm run build`로 화면을 빌드한다(Node 필요). 화면을 고치며 개발할 때는 Vite 개발 서버를 따로 띄우고 API 요청만 FastAPI로 넘긴다.
 4. **내 컴퓨터**: `.env.example`을 `.env`로 복사한다. 비워 두어도 손님 모드로 돌아간다.
 5. **내 컴퓨터**: 서버를 켜고 `http://localhost:8000`을 연다.
 6. **화면**: 손님 이름을 적거나 구글 로그인한다. 상태창에 ngrok 주소와 접속 키를 넣고 "연결 확인"을 누른다.
@@ -377,6 +386,7 @@ sequenceDiagram
 
 - `render.yaml`(Blueprint)에 설정을 코드로 둔다. 비밀값은 키 이름만 적고 값은 Render 화면에 넣는다.
 - `main`에 합쳐지고 CI가 통과하면 Render가 자동 배포한다.
+- 화면 빌드(`npm ci`, `npm run build`)를 어디서 할지는 정해야 한다. Render의 Python 환경에서 Node 빌드가 되는지는 **확인하지 않았다.** 안 되면 Docker로 배포하거나 CI에서 빌드한다.
 - Render 무료 서버는 요청이 15분 없으면 잠들고 깨어나는 데 약 1분 걸린다. 화면에 "서버를 깨우는 중" 안내를 둔다.
 - Render 무료는 512MB·0.1 CPU·인스턴스 1개·디스크 없음이고 언제든 재시작될 수 있다. Neon 무료는 5분 안 쓰면 멈추고 복구 가능 기간이 6시간이다. (2026-11-17 확인, [09 확인 기록](09-verification.md))
 - 업스트림을 부를 때 `ngrok-skip-browser-warning` 헤더를 넣는다.
@@ -400,7 +410,7 @@ sequenceDiagram
 |---|---|
 | 카카오 로그인 | `users`에 인증 수단을 구분하는 열을 추가할 수 있게 `sub_hash`를 "제공자:가린 ID" 형태로 만든다 |
 | 구독·결제 | `routers/billing.py`, `subscriptions` 표를 추가한다. 카드 정보는 저장하지 않고 결제사가 맡는다 |
-| 7개 무료 제한 | 태스크 개수 제한을 설정값으로 둔다 |
+| 7개 무료 제한 | 태스크 개수 제한을 설정값으로 둔다. 벌집 한도는 이미 환경변수(`HIVE_MAX_RINGS`, 기본 3단 37칸)로 바꿀 수 있다 (D-24) |
 | 로컬 SQLite | 저장소 계층(`store/base.py`)에 SQLite 구현을 추가한다 |
-| Three.js 3D | `hive.js`의 배치 계산과 그리기를 분리해 그리기만 바꾼다 |
+| Three.js 3D | `frontend/src/hive/`의 배치 계산과 그리기를 분리해 그리기만 바꾼다 |
 | STT | `/api/stt`와 `services/upstream.py`에 자리를 둔다 |
