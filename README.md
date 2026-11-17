@@ -232,3 +232,50 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 | 할 일·하위 태스크 규칙, 화면·서버·DB 세 곳 검사, 테스트 방식 | `todo` |
 | Colab vLLM + ngrok 스트리밍 프록시 | `llm-chatbot` |
 | 구글 로그인, 토큰 암호화, Neon, 시트 저장, 손님 모드, 보안 규칙 | `honey-voice-log` |
+
+## 사용한 코드와 모델의 라이선스
+
+이 저장소가 불러와 쓰는 외부 코드와 모델이다. 라이선스는 설치한 패키지 정보(`pip show`, `package-lock.json`)와 모델 배포처 기준이며, 2026-11-17에 확인했다. GPL·AGPL 같은 카피레프트 라이선스는 없다.
+
+**서버 (Python, `requirements.txt`)**
+
+| 패키지 | 버전 | 라이선스 |
+|---|---|---|
+| FastAPI | 0.163.1 | MIT |
+| Starlette | 1.10.0 | BSD-3-Clause |
+| Pydantic | 2.14.3 | MIT |
+| Uvicorn | 0.54.0 | BSD-3-Clause |
+| HTTPX | 0.28.1 | BSD-3-Clause |
+| cryptography | 50.0.2 | Apache-2.0 또는 BSD-3-Clause |
+| pytest (테스트만) | 9.2.0 | MIT |
+| certifi (HTTPX가 함께 설치) | - | MPL-2.0 (고치지 않고 그대로 쓴다) |
+
+**화면 (Node, `frontend/package.json`)**
+
+| 패키지 | 버전 | 라이선스 |
+|---|---|---|
+| React, React DOM | 19.3.1 | MIT |
+| Vite, @vitejs/plugin-react | 8.3.8, 6.3.0 | MIT |
+| TypeScript | 7.0.2 | Apache-2.0 |
+| Vitest, jsdom (테스트만) | 5.1.0, 31.0.1 | MIT |
+| lightningcss (Vite가 빌드에 씀) | - | MPL-2.0 (빌드 도구, 결과물에 들어가지 않는다) |
+
+**Colab 노트북 (`colab/`)**
+
+| 패키지 | 라이선스 |
+|---|---|
+| vLLM | Apache-2.0 |
+| FastAPI, HTTPX | 위와 같음 |
+| pyngrok | MIT (ngrok 서비스 자체는 ngrok 이용약관을 따른다) |
+
+**AI 모델과 외부 데이터**
+
+| 이름 | 쓰는 곳 | 라이선스·조건 |
+|---|---|---|
+| Llama 3.2 3B (`llama3.2`, Ollama) | 로컬 측정 (PoC-01) | Llama 3.2 Community License. 가중치를 이 저장소에 넣거나 배포하지 않는다 |
+| Qwen 4B AWQ (`cyankiwi/Qwen3.5-4B-AWQ-4bit`) | Colab 측정 (예정) | **확인 전.** 실행할 때 모델 카드의 라이선스를 확인해 여기에 적는다 |
+| Open-Meteo | 인사말의 날씨 | Weather data by [Open-Meteo.com](https://open-meteo.com/), [CC BY 4.0](https://open-meteo.com/en/licence). 무료 API는 비상업 용도 |
+
+---
+
+Copyright © 2026 eple-lab
