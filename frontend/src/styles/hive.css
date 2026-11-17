@@ -1,0 +1,273 @@
+/* 왼쪽 하이브: 패널, 벌집 SVG, 리스트, 상세, 벌 애니메이션 */
+
+.hivepanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+}
+.hivepanel__head {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.hivepanel__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.hivepanel__foot {
+  flex: none;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+}
+
+/* 벌집 */
+.hive {
+  position: relative;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hive--empty {
+  padding: 24px 12px;
+  text-align: center;
+  gap: 8px;
+  color: var(--ink-soft);
+}
+.hive__svg {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+}
+.hive__svg--empty {
+  width: 120px;
+}
+.cell {
+  cursor: pointer;
+}
+.cell__shape {
+  fill: var(--cell-bg);
+  stroke: var(--cell-line);
+  stroke-width: 2;
+}
+.cell__honey {
+  fill: var(--honey);
+  opacity: 0.85;
+}
+.cell:hover .cell__shape,
+.cell:focus-visible .cell__shape {
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+.cell:focus-visible {
+  outline: none;
+}
+.cell__title,
+.cell__dday,
+.cell__count {
+  text-anchor: middle;
+  fill: var(--ink);
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--cell-bg);
+  stroke-width: 2.5px;
+}
+.cell__title {
+  font-size: 11px;
+  font-weight: 700;
+}
+.cell__dday {
+  font-size: 9px;
+  font-weight: 700;
+}
+.cell__count {
+  font-size: 9px;
+}
+.cell--done .cell__shape {
+  stroke: var(--ok);
+}
+.cell__dday--done {
+  fill: var(--ok);
+}
+
+/* 새 칸: 벌이 도착한 뒤 부드럽게 나타난다(transform, opacity 만 사용) */
+.cell--new {
+  animation: cell-in 0.5s ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 벌 비행(약 2.6초, Bee.tsx 의 FLIGHT_MS 와 맞춘다) */
+.hive--flight .hive__svg {
+  animation: hive-zoom 2.6s ease-in-out both;
+}
+@keyframes hive-zoom {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(0.6);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.bee-layer {
+  all: unset;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+.bee {
+  position: absolute;
+  top: 10%;
+  left: 85%;
+  font-size: 2rem;
+  animation: bee-fly 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.bee__pot {
+  margin-left: 2px;
+}
+@keyframes bee-fly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-30vw, 8vh);
+  }
+  100% {
+    transform: translate(-60%, 35%);
+    opacity: 1;
+  }
+}
+
+/* 리스트 보기 */
+.listview {
+  padding: 8px 12px;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.list__head {
+  margin: 14px 0 6px;
+  color: var(--ink-soft);
+}
+.listrow {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  background: var(--panel);
+}
+.listrow--done .listrow__title span:first-child {
+  text-decoration: line-through;
+  color: var(--ink-soft);
+}
+.listrow__title {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+}
+.listrow__title:focus-visible {
+  outline: 3px solid var(--accent);
+}
+.listrow__meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--ink-soft);
+  flex: none;
+}
+.sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 4px 8px;
+}
+.sublist li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sublist label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.sublist label.checked span {
+  text-decoration: line-through;
+  color: var(--ink-soft);
+}
+
+/* 태스크 상세: 하이브 패널 위에 덮는 카드 */
+.detail {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 60px;
+  max-height: 75%;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow), 0 8px 24px rgba(0, 0, 0, 0.25);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.detail__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+.detail__add {
+  display: flex;
+  gap: 6px;
+}
+.detail__foot {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 움직임 줄이기: 비행과 확대를 끄고 새 칸은 바로 보이게 한다 */
+@media (prefers-reduced-motion: reduce) {
+  .hive--flight .hive__svg,
+  .bee,
+  .cell--new,
+  .cursor {
+    animation: none;
+  }
+}

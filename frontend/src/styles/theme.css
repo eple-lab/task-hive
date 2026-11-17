@@ -1,0 +1,61 @@
+/*
+ * 테마 변수 (밝음 / 어두움).
+ * - 꿀·벌집 느낌: 밝은 화면은 노란 꿀, 어두운 화면은 파란 꿀(R-LAYOUT-3, 벌집의 --honey).
+ * - 색만으로 상태를 구분하지 않는다(글자 DONE, 숫자도 함께 보인다). 글자색과 배경은 대비를 충분히 둔다.
+ * - 외부 글꼴을 쓰지 않는다(CSP). 기기에 있는 글꼴만 쓴다.
+ * - 테마는 <html data-theme="light|dark"> 로 정해진다(app/App.tsx). 아직 JS 가 안 돌았을 때는 기기 설정을 따른다.
+ */
+:root {
+  --font: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+
+  --bg: #fff6dc; /* 화면 바탕: 연한 꿀색 */
+  --panel: #fffdf6; /* 패널 바탕 */
+  --panel-2: #fff1c7; /* 조금 진한 바탕(머리줄, 접힌 띠) */
+  --ink: #3a2c0b; /* 글자 */
+  --ink-soft: #6f5d33; /* 흐린 글자 */
+  --line: #e8d49a; /* 테두리 */
+  --accent: #f2a900; /* 강조(꿀) */
+  --accent-ink: #2b1f00; /* 강조 위의 글자 */
+  --honey: #f6b800; /* 벌집 꿀 */
+  --honey-soft: #ffe08a;
+  --cell-bg: #fff4cc; /* 빈 벌집 칸 */
+  --cell-line: #d9b44a;
+  --danger: #b3261e;
+  --ok: #2e7d32;
+  --bubble-user: #ffe9a8;
+  --bubble-ai: #ffffff;
+  --shadow: 0 1px 3px rgba(80, 55, 0, 0.18);
+  --radius: 10px;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f1420;
+  --panel: #171d2c;
+  --panel-2: #1f2740;
+  --ink: #e8ecf6;
+  --ink-soft: #a5afc6;
+  --line: #2f3a57;
+  --accent: #6aa8ff;
+  --accent-ink: #07111f;
+  --honey: #4d90f5; /* 어두운 화면은 파란 꿀 */
+  --honey-soft: #27407a;
+  --cell-bg: #1c2540;
+  --cell-line: #3d4e7c;
+  --danger: #ff8a80;
+  --ok: #81c995;
+  --bubble-user: #26375f;
+  --bubble-ai: #1e2538;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* JS 가 data-theme 을 정하기 전 짧은 순간만 기기 설정을 따른다. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0f1420;
+    --panel: #171d2c;
+    --panel-2: #1f2740;
+    --ink: #e8ecf6;
+    --ink-soft: #a5afc6;
+    --line: #2f3a57;
+  }
+}

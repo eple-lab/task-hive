@@ -93,6 +93,8 @@ export interface State {
 export type Action =
   | { type: 'boot_ok'; me: Me }
   | { type: 'boot_error'; message: string }
+  /** 나가기 뒤: 대화·태스크·후보를 모두 비우고 화면 설정(접힘·테마)만 남긴다. */
+  | { type: 'reset' }
   | { type: 'set_me'; me: Me }
   | { type: 'set_tasks'; tasks: Task[] }
   | { type: 'upsert_task'; task: Task }
@@ -195,6 +197,10 @@ export function reducer(state: State, action: Action): State {
       return { ...state, me: action.me, bootError: null, voice: voiceFromMe(action.me, state.voice) };
     case 'boot_error':
       return { ...state, bootError: action.message };
+    case 'reset': {
+      const fresh = initialState();
+      return { ...fresh, ui: { ...fresh.ui, leftCollapsed: state.ui.leftCollapsed, rightCollapsed: state.ui.rightCollapsed, theme: state.ui.theme, hiveMode: state.ui.hiveMode } };
+    }
     case 'set_me':
       return { ...state, me: action.me };
     case 'set_tasks':

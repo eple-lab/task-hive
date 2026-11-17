@@ -1,0 +1,163 @@
+/*
+ * 3단 배치 (docs/04-screens.md 1장).
+ * 머리줄 / [왼쪽 하이브 | 가운데 채팅 | 오른쪽 상태창] / (좁은 화면) 아래 탭
+ * 폭: 넓음 1200px~, 중간 768~1199px, 좁음 ~767px.  (JS 의 useViewport 와 같은 경계)
+ */
+
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 머리줄 */
+.topbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+}
+.topbar__logo {
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.topbar__name {
+  font-weight: 600;
+}
+
+/* 본문 3단 */
+.shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--bg);
+}
+.center {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.side {
+  display: flex;
+  min-height: 0;
+  background: var(--panel);
+  flex: none;
+}
+.side--left {
+  width: clamp(280px, 30vw, 440px);
+  border-right: 1px solid var(--line);
+}
+.side--right {
+  width: clamp(300px, 28vw, 400px);
+  border-left: 1px solid var(--line);
+}
+.side__body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+/* 접히면 손잡이만 있는 가는 띠 */
+.side--collapsed,
+.side--collapsed.side--left,
+.side--collapsed.side--right {
+  width: 40px;
+  background: var(--panel-2);
+}
+.side__handle {
+  flex: none;
+  width: 28px;
+  border: 0;
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+.side--collapsed .side__handle {
+  width: 100%;
+  justify-content: flex-start;
+  padding-top: 16px;
+}
+.side__handle:hover {
+  background: var(--honey-soft);
+}
+.badge--strip {
+  margin-left: 0;
+}
+
+/* 좁은 화면: 영역 하나만 보이고, 아래에 탭 */
+.shell--narrow {
+  display: block;
+  position: relative;
+}
+.pane {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pane > .side--mobile {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: block;
+  width: auto;
+}
+.tabs {
+  flex: none;
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: var(--panel-2);
+}
+.tabs__item {
+  flex: 1;
+  font: inherit;
+  padding: 12px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-top: 3px solid transparent;
+}
+.tabs__item--on {
+  color: var(--ink);
+  font-weight: 700;
+  border-top-color: var(--accent);
+}
+
+/* 상태창 자리 */
+.statuspanel {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    padding: 6px 10px;
+  }
+  .topbar__name {
+    display: none;
+  }
+}

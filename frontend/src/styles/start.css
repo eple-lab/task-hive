@@ -1,0 +1,54 @@
+/* 시작 화면 */
+.start {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(160deg, var(--bg), var(--honey-soft));
+}
+.start__card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.start__logo {
+  font-size: 1.6rem;
+  text-align: center;
+}
+.start__tagline {
+  text-align: center;
+  color: var(--ink-soft);
+}
+.start__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.start__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.start__form label {
+  font-weight: 600;
+}
+.start__data {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.start__data summary {
+  cursor: pointer;
+}
+.start__data ul {
+  margin-top: 6px;
+  padding-left: 18px;
+  list-style: disc;
+}
