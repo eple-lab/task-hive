@@ -14,12 +14,15 @@ import { t } from '../../shared/i18n/ko';
 import { useStore, type ChatMessage } from '../../shared/state/store';
 import { Button } from '../../shared/ui/controls';
 import { useSpeaker } from '../voice/useVoice';
+import { useSettingsSave } from '../panel/useSettingsSave';
 import { useConversation } from './useConversation';
 
 export function ChatPanel() {
   const { state, dispatch } = useStore();
   const { send, stop, runAction } = useConversation();
   const speaker = useSpeaker();
+  // 🔊 버튼도 상태창 "목소리 설정"과 같은 저장 경로(PUT /api/settings)를 쓴다. 예전에는 화면 상태만 바꿔 새로고침하면 되돌아갔다.
+  const { saveDebounced } = useSettingsSave();
   const [draft, setDraft] = useState('');
   /** 지금 소리로 읽고 있는 문장(채팅창에서 강조) */
   const [speaking, setSpeaking] = useState<string | null>(null);
@@ -93,7 +96,11 @@ export function ChatPanel() {
             variant="ghost"
             aria-pressed={state.voice.enabled}
             title={state.voice.enabled ? t.chat.speakOn : t.chat.speakOff}
-            onClick={() => dispatch({ type: 'set_voice', patch: { enabled: !state.voice.enabled } })}
+            onClick={() => {
+              const patch = { enabled: !state.voice.enabled };
+              dispatch({ type: 'set_voice', patch }); // 화면은 바로 바꾸고
+              saveDebounced({ voice: patch }); // 서버에는 바꾼 필드만 저장한다(VoiceSection 과 같은 방식)
+            }}
           >
             {state.voice.enabled ? '🔊' : '🔇'}
             <span className="visually-hidden">{state.voice.enabled ? t.chat.speakOn : t.chat.speakOff}</span>

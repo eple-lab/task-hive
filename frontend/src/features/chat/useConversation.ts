@@ -5,7 +5,7 @@
  * - send(): 사용자 말을 보내고, AI 답을 글자 단위로 받아 채팅창에 붙이고, (켜져 있으면) 문장 단위로 읽는다.
  * - 답이 끝나면 /api/extract 로 "할 일 후보"와 "완료 신호"를 받아 처리한다.
  * - runAction(): 말풍선 아래 버튼(되돌리기, 응 다 했어, 연결/나중에 …)을 처리한다.
- * - moveToHive(): 등록 예정 목록을 벌집에 올린다. 성공 응답을 받은 뒤에만 벌 애니메이션을 시작한다.
+ * - (등록 예정 → 벌집 옮기기는 상태창의 panel/PendingSection + panel/logic.movePending 이 맡는다. 예전 moveToHive 는 쓰이지 않아 지웠다.)
  * - notify(): 상태창에서 한 일을 채팅창에 남긴다(R-CHAT-5 "모든 대화는 채팅창에 동일하게").
  *
  * 지키는 규칙
@@ -230,8 +230,9 @@ export function useConversation() {
       dispatch({ type: 'end_stream', error: failed ?? undefined });
       dispatch({ type: 'set_busy', busy: false });
 
+      // (서버 허용 종류 이름은 client_chat_ttfb. 예전 이름 chat_ttfb_client 는 서버가 422로 거절했다.)
       // 브라우저에서만 알 수 있는 숫자: 첫 글자까지 걸린 시간(성능 화면용). 내용은 보내지 않는다.
-      if (firstTokenAt !== null) void api.clientMetric('chat_ttfb_client', Math.round(firstTokenAt - started));
+      if (firstTokenAt !== null) void api.clientMetric('client_chat_ttfb', Math.round(firstTokenAt - started));
 
       if (!failed) {
         // store 가 방금 끝난 답을 반영한 뒤에 추출하도록 한 박자 늦춘다.
@@ -323,26 +324,6 @@ export function useConversation() {
     [askNextFeature, dispatch, notify, saveFeature, say],
   );
 
-  /** 등록 예정 목록을 벌집에 올린다(R-HIVE-3, R-HIVE-4). 성공하면 true. */
-  const moveToHive = useCallback(async (): Promise<boolean> => {
-    const pending = stateRef.current.pending;
-    if (pending.length === 0) return false;
-    try {
-      const created = await api.bulk(
-        pending.map((p) => ({ title: p.title, due_date: p.due_date, subtasks: p.subtasks, source: p.source })),
-      );
-      for (const task of created) dispatch({ type: 'upsert_task', task });
-      dispatch({ type: 'clear_pending' });
-      // 서버 저장이 성공한 뒤에만 벌이 난다. 실패하면 애니메이션 없이 오류를 알린다(docs/04 4장).
-      dispatch({ type: 'start_flight', taskIds: created.map((x) => x.id) });
-      notify(t.notices.moved(created.length));
-      return true;
-    } catch (e) {
-      dispatch({ type: 'add_message', message: { role: 'system', content: errorText(e), error: true } });
-      return false;
-    }
-  }, [dispatch, notify]);
-
   /** "오늘의 일기" 버튼: 대화를 잠시 멈추고 요약을 보여 준 뒤 등록할지 묻는다(R-DIARY-2, R-DIARY-3). */
   const requestDiary = useCallback(async () => {
     const cur = stateRef.current;
@@ -371,5 +352,5 @@ export function useConversation() {
     }
   }, [dispatch, notify, say]);
 
-  return { send, stop, runAction, notify, say, startSession, moveToHive, requestDiary, saveFeature };
+  return { send, stop, runAction, notify, say, startSession, requestDiary, saveFeature };
 }

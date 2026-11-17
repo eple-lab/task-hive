@@ -28,7 +28,8 @@ router = APIRouter()
 
 class ClientMetricIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    kind: Literal["client_tts", "client_render"]
+    # 화면이 보내는 종류만 받는다. client_chat_ttfb 는 화면의 채팅 첫 글자 시간(처음엔 목록에 없어 422가 났다).
+    kind: Literal["client_tts", "client_render", "client_chat_ttfb"]
     ms: int = Field(ge=0, le=600_000)
 
 

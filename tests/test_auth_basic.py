@@ -100,6 +100,10 @@ def test_client_metric_kind_whitelist(env):
     # 지표는 정해진 종류만 받는다(자유 문자열로 지표를 오염시키지 못하게)
     c = env.guest()
     assert c.post("/api/metrics/client", json={"kind": "client_tts", "ms": 100}).status_code == 204
+    # 화면이 채팅 첫 글자 시간으로 보내는 종류(실제 서버에 붙여 보다가 422가 나서 허용 목록에 추가)
+    assert c.post("/api/metrics/client", json={"kind": "client_chat_ttfb", "ms": 100}).status_code == 204
+    # 예전에 화면이 쓰던 이름은 거절한다(서버와 화면이 같은 이름을 쓰게)
+    assert c.post("/api/metrics/client", json={"kind": "chat_ttfb_client", "ms": 100}).status_code == 422
     assert c.post("/api/metrics/client", json={"kind": "whatever", "ms": 100}).status_code == 422
 
 

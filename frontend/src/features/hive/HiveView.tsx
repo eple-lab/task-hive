@@ -25,6 +25,7 @@ import {
   hexPoints,
   hiveExtent,
   honeyRatio,
+  ringOf,
   nextFreeCell,
   shortTitle,
   type Axial,
@@ -76,7 +77,11 @@ export function HiveView() {
 
   const visible = useMemo(() => state.tasks.filter((x) => !x.archived), [state.tasks]);
   const placed = useMemo(() => placeTasks(visible, maxRings), [visible, maxRings]);
-  const { halfW, halfH } = hiveExtent(maxRings, SIZE);
+  // 보여 줄 고리 수: 지금 채운 가장 바깥 고리 + 1 (최소 1, 최대 maxRings).
+  // 예전에는 37칸 전체가 들어가게 고정해서, 칸이 몇 개 없을 때 칸이 너무 작게 보였다.
+  // 칸이 늘어 바깥 고리로 넘어가면 보기 영역이 커지며 칸이 자연스럽게 줄어든다.
+  const shownRings = Math.min(maxRings, Math.max(1, ...placed.map((p) => ringOf(p.cell) + 1)));
+  const { halfW, halfH } = hiveExtent(shownRings, SIZE);
 
   // Bee 의 타이머가 화면이 다시 그려질 때마다 초기화되지 않게, 끝내는 함수를 고정해 둔다.
   const endFlight = useCallback(() => dispatch({ type: 'end_flight' }), [dispatch]);

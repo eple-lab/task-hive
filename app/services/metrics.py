@@ -13,7 +13,8 @@ import statistics
 from collections import Counter, deque
 from datetime import datetime, timedelta, timezone
 
-KINDS = ("chat", "extract", "diary", "tts", "stt", "calendar", "hive_register", "upstream_check", "security", "client_tts", "client_render")
+KINDS = ("chat", "extract", "diary", "tts", "stt", "calendar", "hive_register", "upstream_check", "security", "client_tts", "client_render", "client_chat_ttfb")
+# client_chat_ttfb: 화면이 잰 "보내기 → 첫 글자" 시간(실제 서버+Ollama 연결 때 화면이 보내는데 허용 목록에 없어 422였다)
 
 
 def _percentile(values: list[int], pct: float) -> int | None:
