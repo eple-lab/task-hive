@@ -47,7 +47,7 @@ flowchart LR
 | 영역 | 사용 (예정) |
 |---|---|
 | 서버 | Python, FastAPI |
-| 화면 | React + Vite, 벌집은 SVG |
+| 화면 | React + Vite + TypeScript, 벌집은 SVG |
 | DB | Neon Postgres |
 | 배포 | Render 무료 |
 | LLM | Colab + vLLM (OpenAI 호환), ngrok으로 연결 |
@@ -89,6 +89,7 @@ flowchart LR
 | 문서 | 내용 |
 |---|---|
 | [docs/README.md](docs/README.md) | 문서 목차, 용어, 표기 규칙 |
+| [00 문제 정의서](docs/00-problem-definition.md) | 과제 제출용 문제 정의 |
 | [01 사용자 요구사항](docs/01-requirements.md) | 무엇을 만드는가 |
 | [02 결정 기록](docs/02-decisions.md) | 왜 이렇게 정했는가 |
 | [03 아키텍처](docs/03-architecture.md) | 구성 요소, 폴더 구조, 데이터 이동, 로컬 실행 |
@@ -98,6 +99,7 @@ flowchart LR
 | [07 열린 질문](docs/07-open-questions.md) | 아직 정하지 않은 것 |
 | [08 성능 검토 화면](docs/08-performance-review.md) | 운영 지표와 PoC 검증 화면 |
 | [09 확인 기록](docs/09-verification.md) | 공식 문서로 확인한 사실과 출처 |
+| [10 프론트 구성](docs/10-frontend-architecture.md) | React + Vite + TypeScript 구성 |
 | [확인사항](docs/checks/README.md) | 자세히 확인한 주제별 문서 (구글 로그인 7일 만료, Docs 이미지 등) |
 | [PoC](docs/poc/README.md) | 직접 실행해 확인할 실험 계획과 기록 |
 
@@ -139,7 +141,7 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 
 | 제출물 | 위치 | 상태 |
 |---|---|---|
-| 문제 정의서 | `docs/` | 작성 전 |
+| 문제 정의서 | [docs/00-problem-definition.md](docs/00-problem-definition.md) | 작성함 (검증 전) |
 | PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `colab/`, `docs/poc/` | 계획만 있음 |
 | 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | 계획만 있음 |
 | README (실행 방법, 시연 자료) | 이 파일 | 기획 단계 내용만 |

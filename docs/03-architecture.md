@@ -386,7 +386,7 @@ sequenceDiagram
 
 - `render.yaml`(Blueprint)에 설정을 코드로 둔다. 비밀값은 키 이름만 적고 값은 Render 화면에 넣는다.
 - `main`에 합쳐지고 CI가 통과하면 Render가 자동 배포한다.
-- 화면 빌드(`npm ci`, `npm run build`)를 어디서 할지는 정해야 한다. Render의 Python 환경에서 Node 빌드가 되는지는 **확인하지 않았다.** 안 되면 Docker로 배포하거나 CI에서 빌드한다.
+- 화면 빌드는 Docker 다단계 빌드 안에서 한다(D-32). 기존 프로젝트의 Render 설정은 Node 환경(`todo`, `healing-forest-trip`)과 Docker(`honey-voice-log`)뿐이고, Python 환경에서 Node 빌드를 한 사례는 없었다. Render 무료에서 Docker 서비스가 되는지는 **확인하지 않았다.**
 - Render 무료 서버는 요청이 15분 없으면 잠들고 깨어나는 데 약 1분 걸린다. 화면에 "서버를 깨우는 중" 안내를 둔다.
 - Render 무료는 512MB·0.1 CPU·인스턴스 1개·디스크 없음이고 언제든 재시작될 수 있다. Neon 무료는 5분 안 쓰면 멈추고 복구 가능 기간이 6시간이다. (2026-11-17 확인, [09 확인 기록](09-verification.md))
 - 업스트림을 부를 때 `ngrok-skip-browser-warning` 헤더를 넣는다.
