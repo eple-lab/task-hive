@@ -1,0 +1,2254 @@
+{
+  "meta": {
+    "label": "llama32-ollama",
+    "model": "llama3.2",
+    "dry_run": false,
+    "started_at": "2026-11-17T17:39:27+09:00",
+    "prompt_source": "backend (app.prompts.extract)",
+    "samples_file": "dialogs.jsonl",
+    "temperature": 0.2,
+    "max_tokens": 600,
+    "structured": "json_schema",
+    "limit": null
+  },
+  "summary": {
+    "dialogs": 20,
+    "expected_tasks": 19,
+    "predicted_tasks": 20,
+    "matched_tasks": 12,
+    "recall": 0.631578947368421,
+    "precision": 0.6,
+    "fabricated_tasks": 8,
+    "split_subtasks": 0,
+    "none_dialogs": 3,
+    "none_dialogs_passed": 0,
+    "date_accuracy_all_matched": 0.5,
+    "date_accuracy_dated_only": 0.6,
+    "subtask_recall": 1.0,
+    "evidence_rate": 1.0,
+    "json_format_errors": 0,
+    "request_errors": 0,
+    "ttfb_median_s": 23.958204049995402,
+    "ttfb_max_s": 32.81160830002045,
+    "total_median_s": 61.035636599961435,
+    "by_category": {
+      "negation": {
+        "dialogs": 2,
+        "expected": 1,
+        "matched": 0,
+        "recall": 0.0,
+        "fabricated": 2
+      },
+      "none": {
+        "dialogs": 3,
+        "expected": 0,
+        "matched": 0,
+        "recall": null,
+        "fabricated": 3
+      },
+      "others": {
+        "dialogs": 2,
+        "expected": 1,
+        "matched": 0,
+        "recall": 0.0,
+        "fabricated": 2
+      },
+      "plain": {
+        "dialogs": 10,
+        "expected": 14,
+        "matched": 9,
+        "recall": 0.6428571428571429,
+        "fabricated": 1
+      },
+      "subtasks": {
+        "dialogs": 1,
+        "expected": 1,
+        "matched": 1,
+        "recall": 1.0,
+        "fabricated": 0
+      },
+      "vague_date": {
+        "dialogs": 2,
+        "expected": 2,
+        "matched": 2,
+        "recall": 1.0,
+        "fabricated": 0
+      }
+    },
+    "criteria": {
+      "recall": {
+        "value": 0.631578947368421,
+        "need": ">= 0.8",
+        "passed": false
+      },
+      "fabricated": {
+        "value": 8,
+        "need": "<= 3",
+        "passed": false
+      },
+      "none_dialogs": {
+        "value": 0,
+        "need": ">= 2 / 3",
+        "passed": false
+      }
+    },
+    "verdict": "못 넘음"
+  },
+  "completions": {
+    "total": 10,
+    "correct": 2,
+    "accuracy": 0.2,
+    "rows": [
+      {
+        "id": "c01",
+        "expected": {
+          "task_id": 1,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 1,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "correct": true,
+        "error": null,
+        "note": "하위 태스크 없는 태스크 완료"
+      },
+      {
+        "id": "c02",
+        "expected": {
+          "task_id": 1,
+          "subtask_id": 11,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "특정 하위 태스크 완료"
+      },
+      {
+        "id": "c03",
+        "expected": {
+          "task_id": 1,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "하위 태스크 전부 완료 → 확인받아야 하는 경우"
+      },
+      {
+        "id": "c04",
+        "expected": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "correct": false,
+        "error": null,
+        "note": "무엇을 가리키는지 알 수 없다. 체크하면 안 된다"
+      },
+      {
+        "id": "c05",
+        "expected": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "correct": false,
+        "error": null,
+        "note": "하지 않았다"
+      },
+      {
+        "id": "c06",
+        "expected": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "태스크와 관계없는 말"
+      },
+      {
+        "id": "c07",
+        "expected": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "'납부'를 '이체'로 바꿔 말함"
+      },
+      {
+        "id": "c08",
+        "expected": {
+          "task_id": 1,
+          "subtask_id": 12,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "하위 태스크를 다른 말로 표현"
+      },
+      {
+        "id": "c09",
+        "expected": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": 2,
+          "subtask_id": null,
+          "all_subtasks": true
+        },
+        "correct": false,
+        "error": null,
+        "note": "남이 한 일이다. 내 '방 청소'를 체크하면 안 된다"
+      },
+      {
+        "id": "c10",
+        "expected": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "predicted": {
+          "task_id": null,
+          "subtask_id": null,
+          "all_subtasks": false
+        },
+        "correct": true,
+        "error": null,
+        "note": "아직 하지 않은 계획이다"
+      }
+    ]
+  },
+  "dialogs": [
+    {
+      "id": "d01",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘 하루는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "오늘은 회사에서 좀 정신없었어. 점심도 대충 먹었고."
+        },
+        {
+          "role": "assistant",
+          "content": "바쁜 하루였네요. 고생 많았어요. 저녁은 좀 쉬고 있어요?"
+        },
+        {
+          "role": "user",
+          "content": "응 이제 좀 쉬어. 아 맞다, 이가 계속 시려서 내일 점심시간에 치과 예약 전화해야 해."
+        },
+        {
+          "role": "assistant",
+          "content": "이가 시리면 신경 쓰이죠. 내일 꼭 전화해 봐요."
+        },
+        {
+          "role": "user",
+          "content": "응 그래야지."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "치과|병원",
+              "예약|전화"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "회사에서 바빴다",
+          "이가 시려 치과 예약이 필요하다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 2.431422099994961,
+      "total_s": 37.816218699968886,
+      "raw_text": "{\"candidates\": [{\"title\": \"치과 예약\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"숙소 예약\", \"기차표 예매\"], \"evidence\": \"응 그래야지.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"응 그래야지.\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "치과 예약",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "숙소 예약",
+            "기차표 예매"
+          ],
+          "evidence": "응 그래야지."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "치과|병원",
+                "예약|전화"
+              ],
+              "due_date": "2026-11-18",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "치과 예약",
+              "due_date": "2026-11-18",
+              "subtasks": [
+                "숙소 예약",
+                "기차표 예매"
+              ],
+              "evidence": "응 그래야지."
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d02",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘은 어떤 하루였어요?"
+        },
+        {
+          "role": "user",
+          "content": "기획 보고서 쓰느라 하루가 다 갔어. 금요일까지 제출이라 마음이 급해."
+        },
+        {
+          "role": "assistant",
+          "content": "마감이 있으면 마음이 바쁘죠. 얼마나 진행됐어요?"
+        },
+        {
+          "role": "user",
+          "content": "절반쯤? 그리고 퇴근길에 우유 사려고 했는데 까먹었어. 내일은 꼭 사야지."
+        },
+        {
+          "role": "assistant",
+          "content": "내일 퇴근길에 꼭 챙겨요 ^^"
+        },
+        {
+          "role": "user",
+          "content": "응 고마워."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "보고서",
+              "제출|마무리|작성|완성"
+            ],
+            "due_date": "2026-11-20",
+            "subtasks_keywords": []
+          },
+          {
+            "title_keywords": [
+              "우유"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "기획 보고서를 절반쯤 썼다",
+          "우유 사는 것을 잊었다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 25.426285499997903,
+      "total_s": 67.34855240001343,
+      "raw_text": "{\"candidates\": [{\"title\": \"기획 보고서\", \"due_date\": \"2026-11-19\", \"subtasks\": [\"보고서 작성\", \"데이터 수집\"], \"evidence\": \"절반쯤? 그리고 퇴근길에 우유 사려고 했는데 까먹었어.\", \"confidence\": 0.5}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"보고서 작성\", \"confidence\": 0.5}]}",
+      "predicted": [
+        {
+          "title": "기획 보고서",
+          "due_date": "2026-11-19",
+          "subtasks": [
+            "보고서 작성",
+            "데이터 수집"
+          ],
+          "evidence": "절반쯤? 그리고 퇴근길에 우유 사려고 했는데 까먹었어."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 2,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "보고서",
+                "제출|마무리|작성|완성"
+              ],
+              "due_date": "2026-11-20",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "기획 보고서",
+              "due_date": "2026-11-19",
+              "subtasks": [
+                "보고서 작성",
+                "데이터 수집"
+              ],
+              "evidence": "절반쯤? 그리고 퇴근길에 우유 사려고 했는데 까먹었어."
+            },
+            "date_ok": false,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [
+          {
+            "title_keywords": [
+              "우유"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 1,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d03",
+      "category": "plain",
+      "hard": false,
+      "note": "마감은 생신(토)이 아니라 주문 기한(목)이다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요. 오늘 하루 잘 보냈어요?"
+        },
+        {
+          "role": "user",
+          "content": "응 무난했어. 근데 토요일이 엄마 생신이야."
+        },
+        {
+          "role": "assistant",
+          "content": "곧이네요. 준비는 하고 있어요?"
+        },
+        {
+          "role": "user",
+          "content": "아직. 목요일까지는 선물을 주문해야 토요일에 도착할 것 같아."
+        },
+        {
+          "role": "assistant",
+          "content": "그럼 목요일 전에 주문해야겠네요."
+        },
+        {
+          "role": "user",
+          "content": "맞아. 스카프로 하려고."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "선물|스카프",
+              "주문|구매|사"
+            ],
+            "due_date": "2026-11-19",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "토요일이 엄마 생신이다",
+          "목요일까지 선물(스카프)을 주문해야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 23.368671700009145,
+      "total_s": 85.25045140000293,
+      "raw_text": "{\"candidates\": [{\"title\": \"스카프 주문\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"스카프 주문\", \"스카프 준비\"], \"evidence\": \"스카프로 하려고\", \"confidence\": 1.0}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"스카프로 하려고\", \"confidence\": 1.0}]}",
+      "predicted": [
+        {
+          "title": "스카프 주문",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "스카프 주문",
+            "스카프 준비"
+          ],
+          "evidence": "스카프로 하려고"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "선물|스카프",
+                "주문|구매|사"
+              ],
+              "due_date": "2026-11-19",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "스카프 주문",
+              "due_date": "2026-11-18",
+              "subtasks": [
+                "스카프 주문",
+                "스카프 준비"
+              ],
+              "evidence": "스카프로 하려고"
+            },
+            "date_ok": false,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 1,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d04",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘은 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "요즘 몸이 너무 무거워. 운동을 한 달이나 쉬었거든."
+        },
+        {
+          "role": "assistant",
+          "content": "쉬다 보면 다시 시작하기가 어렵죠."
+        },
+        {
+          "role": "user",
+          "content": "그래서 모레 퇴근하고 헬스장 재등록하러 가려고."
+        },
+        {
+          "role": "assistant",
+          "content": "좋은 결심이에요 ^^"
+        },
+        {
+          "role": "user",
+          "content": "응 이번엔 꾸준히 해 봐야지."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "헬스|운동",
+              "등록"
+            ],
+            "due_date": "2026-11-19",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "운동을 한 달 쉬어 몸이 무겁다",
+          "모레 헬스장에 재등록하려 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 32.81160830002045,
+      "total_s": 88.7426738999784,
+      "raw_text": "{\"candidates\": [{\"title\": \"헬스장 재등록\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"숙소 예약\", \"기차표 예매\"], \"evidence\": \"모음\", \"confidence\": 0.5}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"모음\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "헬스장 재등록",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "숙소 예약",
+            "기차표 예매"
+          ],
+          "evidence": "모음"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "헬스|운동",
+                "등록"
+              ],
+              "due_date": "2026-11-19",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "헬스장 재등록",
+              "due_date": "2026-11-18",
+              "subtasks": [
+                "숙소 예약",
+                "기차표 예매"
+              ],
+              "evidence": "모음"
+            },
+            "date_ok": false,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 1,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d05",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘 하루 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "차에 경고등이 떠서 좀 놀랐어. 알고 보니 별거 아니었지만."
+        },
+        {
+          "role": "assistant",
+          "content": "놀랐겠어요. 괜찮아서 다행이에요."
+        },
+        {
+          "role": "user",
+          "content": "응. 그러고 보니 정기검사 기간이더라. 다음 주 월요일에 자동차 검사 받으러 가야 해."
+        },
+        {
+          "role": "assistant",
+          "content": "미리 알아서 다행이네요."
+        },
+        {
+          "role": "user",
+          "content": "그러게."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "자동차|차|정기",
+              "검사"
+            ],
+            "due_date": "2026-11-23",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "차 경고등이 떴지만 별일 아니었다",
+          "다음 주 월요일에 자동차 검사를 받아야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 31.13844940002309,
+      "total_s": 63.356546199996956,
+      "raw_text": "{\"candidates\": [{\"title\": \"차에 경고등이 떠서 차량 검사 받으러 가야 해\", \"due_date\": \"2026-11-23\", \"subtasks\": [], \"evidence\": \"정기 검사 기간이더라\", \"confidence\": 1.0}], \"completions\": []}",
+      "predicted": [
+        {
+          "title": "차에 경고등이 떠서 차량 검사 받으러 가야 해",
+          "due_date": "2026-11-23",
+          "subtasks": [],
+          "evidence": "정기 검사 기간이더라"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "자동차|차|정기",
+                "검사"
+              ],
+              "due_date": "2026-11-23",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "차에 경고등이 떠서 차량 검사 받으러 가야 해",
+              "due_date": "2026-11-23",
+              "subtasks": [],
+              "evidence": "정기 검사 기간이더라"
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d06",
+      "category": "plain",
+      "hard": false,
+      "note": "'토요일 전까지'는 2026-11-21로 본다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "대학 친구가 이번 토요일에 결혼해. 벌써 그렇게 됐네."
+        },
+        {
+          "role": "assistant",
+          "content": "축하할 일이네요 ^^ 준비할 게 있어요?"
+        },
+        {
+          "role": "user",
+          "content": "정장을 내일 세탁소에 맡겨야 해. 그리고 토요일 전까지 축의금 봉투도 준비해야 하고."
+        },
+        {
+          "role": "assistant",
+          "content": "두 가지네요. 잊지 않게 챙겨요."
+        },
+        {
+          "role": "user",
+          "content": "응 고마워."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "정장|세탁|드라이"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          },
+          {
+            "title_keywords": [
+              "축의금|봉투"
+            ],
+            "due_date": "2026-11-21",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "토요일에 친구 결혼식이 있다",
+          "정장 세탁과 축의금 봉투 준비가 필요하다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 26.621743299998343,
+      "total_s": 78.98873139999341,
+      "raw_text": "{\"candidates\": [{\"title\": \"정장을 세탁소에 맡기기\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"축의금 봉투 준비\"], \"evidence\": \"정장을 내일 세탁소에 맡겨야 해\", \"confidence\": 1.0}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": true, \"evidence\": \"정장을 내일 세탁소에 맡겨야 해\", \"confidence\": 1.0}]}",
+      "predicted": [
+        {
+          "title": "정장을 세탁소에 맡기기",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "축의금 봉투 준비"
+          ],
+          "evidence": "정장을 내일 세탁소에 맡겨야 해"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 2,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "정장|세탁|드라이"
+              ],
+              "due_date": "2026-11-18",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "정장을 세탁소에 맡기기",
+              "due_date": "2026-11-18",
+              "subtasks": [
+                "축의금 봉투 준비"
+              ],
+              "evidence": "정장을 내일 세탁소에 맡겨야 해"
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [
+          {
+            "title_keywords": [
+              "축의금|봉투"
+            ],
+            "due_date": "2026-11-21",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d07",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요. 오늘은 어떻게 보냈어요?"
+        },
+        {
+          "role": "user",
+          "content": "퇴근하고 자격증 공부 조금 했어. 진도가 잘 안 나가."
+        },
+        {
+          "role": "assistant",
+          "content": "퇴근하고 공부하는 것만으로도 대단해요."
+        },
+        {
+          "role": "user",
+          "content": "고마워. 근데 시험 접수 마감이 이번 주 금요일이라 접수부터 해야 해."
+        },
+        {
+          "role": "assistant",
+          "content": "접수를 놓치면 안 되죠."
+        },
+        {
+          "role": "user",
+          "content": "맞아. 꼭 해야지."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "시험|자격증",
+              "접수|신청"
+            ],
+            "due_date": "2026-11-20",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "퇴근 후 자격증 공부를 했다",
+          "시험 접수 마감이 금요일이다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 27.37980910000624,
+      "total_s": 60.923376699967775,
+      "raw_text": "{\"candidates\": [{\"title\": \"진도 개선\", \"due_date\": \"2026-11-19\", \"subtasks\": [], \"evidence\": \"진도가 잘 안 나가\", \"confidence\": 0.5}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"진도가 잘 나가\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "진도 개선",
+          "due_date": "2026-11-19",
+          "subtasks": [],
+          "evidence": "진도가 잘 안 나가"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [
+          {
+            "title_keywords": [
+              "시험|자격증",
+              "접수|신청"
+            ],
+            "due_date": "2026-11-20",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [
+          {
+            "title": "진도 개선",
+            "due_date": "2026-11-19",
+            "subtasks": [],
+            "evidence": "진도가 잘 안 나가"
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d08",
+      "category": "plain",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "집에 오니까 관리비 고지서가 와 있더라."
+        },
+        {
+          "role": "assistant",
+          "content": "이번 달 것도 나왔군요."
+        },
+        {
+          "role": "user",
+          "content": "응 내일까지 내야 해. 그리고 오늘 밤에 분리수거도 내놔야 하고."
+        },
+        {
+          "role": "assistant",
+          "content": "오늘 밤 분리수거, 내일 관리비네요."
+        },
+        {
+          "role": "user",
+          "content": "응 맞아."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "관리비"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          },
+          {
+            "title_keywords": [
+              "분리수거|재활용"
+            ],
+            "due_date": "2026-11-17",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "관리비 고지서가 왔다",
+          "오늘 밤 분리수거를 내놓아야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 23.76994890003698,
+      "total_s": 60.08870340004796,
+      "raw_text": "{\"candidates\": [{\"title\": \"분리수거\", \"due_date\": \"2026-11-17\", \"subtasks\": [\"분리수거\"], \"evidence\": \"분리수거도 내놔야 해.\", \"confidence\": 1.0}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"분리수거, 관리비\", \"confidence\": 1.0}]}",
+      "predicted": [
+        {
+          "title": "분리수거",
+          "due_date": "2026-11-17",
+          "subtasks": [
+            "분리수거"
+          ],
+          "evidence": "분리수거도 내놔야 해."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 2,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "분리수거|재활용"
+              ],
+              "due_date": "2026-11-17",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "분리수거",
+              "due_date": "2026-11-17",
+              "subtasks": [
+                "분리수거"
+              ],
+              "evidence": "분리수거도 내놔야 해."
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [
+          {
+            "title_keywords": [
+              "관리비"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d09",
+      "category": "plain",
+      "hard": false,
+      "note": "'정리'는 이미 끝난 일이다. 뽑아야 할 것은 '메일 보내기'뿐이다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘은 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "오후 내내 회의였어. 내가 회의록 담당이라 정리하느라 힘들었어."
+        },
+        {
+          "role": "assistant",
+          "content": "긴 회의에 기록까지, 고생했어요."
+        },
+        {
+          "role": "user",
+          "content": "정리는 다 했고, 내일 오전에 팀에 회의록 메일만 보내면 돼."
+        },
+        {
+          "role": "assistant",
+          "content": "거의 다 끝났네요."
+        },
+        {
+          "role": "user",
+          "content": "응 내일 아침에 바로 보내려고."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "회의록",
+              "메일|보내|공유|전달"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "오후 내내 회의를 했다",
+          "회의록 정리는 끝냈고 내일 오전에 메일로 보내면 된다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 25.85066499997629,
+      "total_s": 76.02268819999881,
+      "raw_text": "{\"candidates\": [{\"title\": \"팀에 회의록 메일 보내기\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"메일 작성\", \"메일 전송\"], \"evidence\": \"팀에 회의록 메일 보내려고 said.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \" almost 다 끝났네요\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "팀에 회의록 메일 보내기",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "메일 작성",
+            "메일 전송"
+          ],
+          "evidence": "팀에 회의록 메일 보내려고 said."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "회의록",
+                "메일|보내|공유|전달"
+              ],
+              "due_date": "2026-11-18",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "팀에 회의록 메일 보내기",
+              "due_date": "2026-11-18",
+              "subtasks": [
+                "메일 작성",
+                "메일 전송"
+              ],
+              "evidence": "팀에 회의록 메일 보내려고 said."
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d10",
+      "category": "plain",
+      "hard": false,
+      "note": "날짜를 정하지 않았다. 날짜는 null이어야 한다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "고양이가 오늘따라 애교가 많아서 기분이 좋았어."
+        },
+        {
+          "role": "assistant",
+          "content": "귀엽네요 ^^ 고양이 덕분에 힘이 났겠어요."
+        },
+        {
+          "role": "user",
+          "content": "응. 아, 예방접종 할 때가 돼서 동물병원 예약해야 해. 사료도 거의 다 떨어져서 주문해야 하고."
+        },
+        {
+          "role": "assistant",
+          "content": "둘 다 챙겨야겠네요. 언제까지 해야 해요?"
+        },
+        {
+          "role": "user",
+          "content": "딱히 정한 날은 없어. 조만간."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "예방접종|접종|동물병원",
+              "예약"
+            ],
+            "due_date": null,
+            "subtasks_keywords": []
+          },
+          {
+            "title_keywords": [
+              "사료",
+              "주문|구매|사"
+            ],
+            "due_date": null,
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "고양이 덕분에 기분이 좋았다",
+          "예방접종 예약과 사료 주문이 필요하다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 29.107553399982862,
+      "total_s": 68.52699360001134,
+      "raw_text": "{\"candidates\": [{\"title\": \"고양이 예방접종\", \"due_date\": \"2026-11-17\", \"subtasks\": [\"동물병원 예약\", \"사료 주문\"], \"evidence\": \"사용자: 예방접종 할 때가 돼서 동물병원 예약해야 해. 사료도 거의 다 떨어져서 주문해야 하고.\", \"confidence\": 1}], \"completions\": []}",
+      "predicted": [
+        {
+          "title": "고양이 예방접종",
+          "due_date": "2026-11-17",
+          "subtasks": [
+            "동물병원 예약",
+            "사료 주문"
+          ],
+          "evidence": "사용자: 예방접종 할 때가 돼서 동물병원 예약해야 해. 사료도 거의 다 떨어져서 주문해야 하고."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 2,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "예방접종|접종|동물병원",
+                "예약"
+              ],
+              "due_date": null,
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "고양이 예방접종",
+              "due_date": "2026-11-17",
+              "subtasks": [
+                "동물병원 예약",
+                "사료 주문"
+              ],
+              "evidence": "사용자: 예방접종 할 때가 돼서 동물병원 예약해야 해. 사료도 거의 다 떨어져서 주문해야 하고."
+            },
+            "date_ok": false,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [
+          {
+            "title_keywords": [
+              "사료",
+              "주문|구매|사"
+            ],
+            "due_date": null,
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d11",
+      "category": "none",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘 하루 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "날씨가 좋아서 점심 먹고 회사 근처를 한 바퀴 걸었어."
+        },
+        {
+          "role": "assistant",
+          "content": "산책하기 좋은 날이었군요."
+        },
+        {
+          "role": "user",
+          "content": "응 단풍이 아직 남아 있더라. 기분 전환이 됐어."
+        },
+        {
+          "role": "assistant",
+          "content": "좋은 시간이었네요."
+        },
+        {
+          "role": "user",
+          "content": "응 오늘은 편하게 자려고."
+        }
+      ],
+      "expected": {
+        "tasks": [],
+        "summary_points": [
+          "점심 후 산책을 했다",
+          "단풍을 보고 기분 전환이 됐다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 24.146459199953824,
+      "total_s": 61.147896499955095,
+      "raw_text": "{\"candidates\": [{\"title\": \"회사 근처를 한 바퀴 걸기\", \"due_date\": \"2026-11-17\", \"subtasks\": [], \"evidence\": \"나물 먹고 산책하기 좋은 날이었어.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"오늘은 편하게 자려고.\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "회사 근처를 한 바퀴 걸기",
+          "due_date": "2026-11-17",
+          "subtasks": [],
+          "evidence": "나물 먹고 산책하기 좋은 날이었어."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 0,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [],
+        "fabricated": [
+          {
+            "title": "회사 근처를 한 바퀴 걸기",
+            "due_date": "2026-11-17",
+            "subtasks": [],
+            "evidence": "나물 먹고 산책하기 좋은 날이었어."
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d12",
+      "category": "none",
+      "hard": true,
+      "note": "발표·자료 제출은 이미 끝난 일이다. 할 일로 뽑으면 안 된다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘은 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "오늘 드디어 발표했어. 엄청 떨렸는데 잘 끝났어."
+        },
+        {
+          "role": "assistant",
+          "content": "잘 끝났다니 정말 다행이에요 ^^ 준비 많이 했죠?"
+        },
+        {
+          "role": "user",
+          "content": "응 일주일 내내 준비했거든. 자료도 다 제출했고 이제 할 건 없어."
+        },
+        {
+          "role": "assistant",
+          "content": "이제 푹 쉬어도 되겠네요."
+        },
+        {
+          "role": "user",
+          "content": "응 오늘은 아무 생각 없이 쉴 거야."
+        }
+      ],
+      "expected": {
+        "tasks": [],
+        "summary_points": [
+          "발표를 잘 끝냈다",
+          "자료 제출까지 마쳐 남은 일이 없다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 25.633926399983466,
+      "total_s": 67.53425109997625,
+      "raw_text": "{\"candidates\": [{\"title\": \"presentation\", \"due_date\": \"2026-11-17\", \"subtasks\": [], \"evidence\": \"오늘 드디어 발표했어. 엄청 떨렸는데 잘 끝났어.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"오늘 드디어 발표했어. 엄청 떨렸는데 잘 끝났어.\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "presentation",
+          "due_date": "2026-11-17",
+          "subtasks": [],
+          "evidence": "오늘 드디어 발표했어. 엄청 떨렸는데 잘 끝났어."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 0,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [],
+        "fabricated": [
+          {
+            "title": "presentation",
+            "due_date": "2026-11-17",
+            "subtasks": [],
+            "evidence": "오늘 드디어 발표했어. 엄청 떨렸는데 잘 끝났어."
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d13",
+      "category": "none",
+      "hard": false,
+      "note": "",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요. 오늘 하루 잘 보냈어요?"
+        },
+        {
+          "role": "user",
+          "content": "퇴근하고 혼자 영화 봤어. 오랜만에 극장 갔네."
+        },
+        {
+          "role": "assistant",
+          "content": "오랜만의 극장이라 좋았겠어요. 영화는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "생각보다 슬퍼서 좀 울었어. 그래도 보길 잘했어."
+        },
+        {
+          "role": "assistant",
+          "content": "마음에 남는 영화였군요."
+        },
+        {
+          "role": "user",
+          "content": "응 여운이 길어."
+        }
+      ],
+      "expected": {
+        "tasks": [],
+        "summary_points": [
+          "퇴근 후 혼자 영화를 봤다",
+          "영화가 슬퍼서 울었다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 26.071871199994348,
+      "total_s": 63.4462720999727,
+      "raw_text": "{\"candidates\": [{\"title\": \"영화 보는 일\", \"due_date\": \"2026-11-17\", \"subtasks\": [\"영화 예매\", \"영화 보는 일\"], \"evidence\": \"영화 보는 일\", \"confidence\": 1}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"영화 보는 일\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "영화 보는 일",
+          "due_date": "2026-11-17",
+          "subtasks": [
+            "영화 예매",
+            "영화 보는 일"
+          ],
+          "evidence": "영화 보는 일"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 0,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [],
+        "fabricated": [
+          {
+            "title": "영화 보는 일",
+            "due_date": "2026-11-17",
+            "subtasks": [
+              "영화 예매",
+              "영화 보는 일"
+            ],
+            "evidence": "영화 보는 일"
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d14",
+      "category": "negation",
+      "hard": true,
+      "note": "'보고서 수정'은 취소됐다. 뽑으면 지어낸 할 일이다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "보고서를 다시 수정해야 하나 걱정했는데, 팀장님이 안 고쳐도 된대."
+        },
+        {
+          "role": "assistant",
+          "content": "걱정을 덜었네요 ^^"
+        },
+        {
+          "role": "user",
+          "content": "응 다행이야. 대신 내일 회의 자료만 인쇄해 가면 돼."
+        },
+        {
+          "role": "assistant",
+          "content": "그건 금방 하겠네요."
+        },
+        {
+          "role": "user",
+          "content": "응 출근해서 바로 하려고."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "자료",
+              "인쇄|출력|프린트"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "보고서를 수정하지 않아도 된다",
+          "내일 회의 자료를 인쇄해야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 19.88713510002708,
+      "total_s": 36.410903300042264,
+      "raw_text": "{\"candidates\": [{\"title\": \"보고서 수정\", \"due_date\": \"2026-11-17\", \"subtasks\": [], \"evidence\": \"팀장님이 안 고쳐도 된대\", \"confidence\": 1.0}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"대신 내일 회의 자료만 인쇄해 가면 돼\", \"confidence\": 1.0}]}",
+      "predicted": [
+        {
+          "title": "보고서 수정",
+          "due_date": "2026-11-17",
+          "subtasks": [],
+          "evidence": "팀장님이 안 고쳐도 된대"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [
+          {
+            "title_keywords": [
+              "자료",
+              "인쇄|출력|프린트"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [
+          {
+            "title": "보고서 수정",
+            "due_date": "2026-11-17",
+            "subtasks": [],
+            "evidence": "팀장님이 안 고쳐도 된대"
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d15",
+      "category": "negation",
+      "hard": true,
+      "note": "대청소는 하지 않기로 했다. 할 일이 없어야 한다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘은 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "주말에 대청소를 하려고 했거든."
+        },
+        {
+          "role": "assistant",
+          "content": "큰맘 먹었네요."
+        },
+        {
+          "role": "user",
+          "content": "근데 생각해 보니 너무 피곤해서 그냥 안 하기로 했어. 다음에 하지 뭐."
+        },
+        {
+          "role": "assistant",
+          "content": "쉬는 것도 중요하죠."
+        },
+        {
+          "role": "user",
+          "content": "응 이번 주말은 그냥 쉴래."
+        }
+      ],
+      "expected": {
+        "tasks": [],
+        "summary_points": [
+          "주말 대청소를 하지 않기로 했다",
+          "이번 주말은 쉬기로 했다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 12.28476770000998,
+      "total_s": 38.12757060001604,
+      "raw_text": "{\"candidates\": [{\"title\": \"대청소\", \"due_date\": \"2026-11-20\", \"subtasks\": [], \"evidence\": \"주말에 대청소를 하려고 했거든.\", \"confidence\": 0.5}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"근데 생각해 보니 너무 피곤해서 그냥 안 하기로 했어.\", \"confidence\": 0.5}, {\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": true, \"evidence\": \"쉬는 것도 중요하죠.\", \"confidence\": 0.5}, {\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": true, \"evidence\": \"응 이번 주말은 그냥 쉴래.\", \"confidence\": 0.5}]}",
+      "predicted": [
+        {
+          "title": "대청소",
+          "due_date": "2026-11-20",
+          "subtasks": [],
+          "evidence": "주말에 대청소를 하려고 했거든."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 0,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [],
+        "fabricated": [
+          {
+            "title": "대청소",
+            "due_date": "2026-11-20",
+            "subtasks": [],
+            "evidence": "주말에 대청소를 하려고 했거든."
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d16",
+      "category": "others",
+      "hard": true,
+      "note": "짐 싸기와 인터넷 이전은 동생의 일이다. 사용자의 할 일이 아니다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "동생이랑 통화했어. 다음 주에 이사한대."
+        },
+        {
+          "role": "assistant",
+          "content": "이사 준비로 바쁘겠네요."
+        },
+        {
+          "role": "user",
+          "content": "응 짐 싸고 인터넷 이전 신청하느라 정신없대."
+        },
+        {
+          "role": "assistant",
+          "content": "동생분이 고생이 많네요."
+        },
+        {
+          "role": "user",
+          "content": "그러게. 나는 듣기만 했는데도 피곤하더라."
+        }
+      ],
+      "expected": {
+        "tasks": [],
+        "summary_points": [
+          "동생과 통화했다",
+          "동생이 다음 주에 이사한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 10.81288499996299,
+      "total_s": 26.770926699973643,
+      "raw_text": "{\"candidates\": [{\"title\": \"이사 준비\", \"due_date\": \"2026-11-24\", \"subtasks\": [\"짐 싸고 인터넷 이전 신청하느라 정신없다\"], \"evidence\": \"응 짐 싸고 인터넷 이전 신청하느라 정신없대.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 0, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"다음 주에 이사한대.\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "이사 준비",
+          "due_date": "2026-11-24",
+          "subtasks": [
+            "짐 싸고 인터넷 이전 신청하느라 정신없다"
+          ],
+          "evidence": "응 짐 싸고 인터넷 이전 신청하느라 정신없대."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 0,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [],
+        "fabricated": [
+          {
+            "title": "이사 준비",
+            "due_date": "2026-11-24",
+            "subtasks": [
+              "짐 싸고 인터넷 이전 신청하느라 정신없다"
+            ],
+            "evidence": "응 짐 싸고 인터넷 이전 신청하느라 정신없대."
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d17",
+      "category": "others",
+      "hard": true,
+      "note": "수리 기사 부르기는 룸메이트의 일이다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요. 오늘은 어떻게 보냈어요?"
+        },
+        {
+          "role": "user",
+          "content": "집 세탁기가 고장 났어. 룸메이트가 내일 수리 기사를 부르기로 했어."
+        },
+        {
+          "role": "assistant",
+          "content": "불편했겠어요. 룸메이트가 맡아 줘서 다행이네요."
+        },
+        {
+          "role": "user",
+          "content": "응. 나는 내일 도서관 책 반납해야 해. 반납일이 내일이거든."
+        },
+        {
+          "role": "assistant",
+          "content": "연체되지 않게 챙겨요 ^^"
+        },
+        {
+          "role": "user",
+          "content": "응 출근길에 들르려고."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "책|도서",
+              "반납"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "세탁기가 고장 나 룸메이트가 수리 기사를 부르기로 했다",
+          "내일 도서관 책을 반납해야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 12.673035399988294,
+      "total_s": 34.61020819999976,
+      "raw_text": "{\"candidates\": [{\"title\": \"집 세탁기 수리\", \"due_date\": \"2026-11-18\", \"subtasks\": [\"출근길에 들러서 수리\", \"수리 기사와 대화\"], \"evidence\": \"나가 \\\"집 세탁기 고장 났어. 룸메이트가 내일 수리 기사를 부르기로 했어.\\\"고 말했어.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"나가 \\\"나는 내일 도서관 책 반납해야 해. 반납일이 내일이거든.\\\"고 말했어.\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "집 세탁기 수리",
+          "due_date": "2026-11-18",
+          "subtasks": [
+            "출근길에 들러서 수리",
+            "수리 기사와 대화"
+          ],
+          "evidence": "나가 \"집 세탁기 고장 났어. 룸메이트가 내일 수리 기사를 부르기로 했어.\"고 말했어."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 0,
+        "pairs": [],
+        "missed": [
+          {
+            "title_keywords": [
+              "책|도서",
+              "반납"
+            ],
+            "due_date": "2026-11-18",
+            "subtasks_keywords": []
+          }
+        ],
+        "fabricated": [
+          {
+            "title": "집 세탁기 수리",
+            "due_date": "2026-11-18",
+            "subtasks": [
+              "출근길에 들러서 수리",
+              "수리 기사와 대화"
+            ],
+            "evidence": "나가 \"집 세탁기 고장 났어. 룸메이트가 내일 수리 기사를 부르기로 했어.\"고 말했어."
+          }
+        ],
+        "split_subtasks": [],
+        "date_total": 0,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d18",
+      "category": "vague_date",
+      "hard": true,
+      "note": "'이번 달 말'은 2026-11-30이다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루는 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "회사에서 연말정산 안내가 나왔어."
+        },
+        {
+          "role": "assistant",
+          "content": "벌써 그 시기네요."
+        },
+        {
+          "role": "user",
+          "content": "응 이번 달 말까지 서류를 챙겨서 내야 한대."
+        },
+        {
+          "role": "assistant",
+          "content": "아직 시간이 좀 있네요."
+        },
+        {
+          "role": "user",
+          "content": "응 근데 미루다 잊을까 봐 걱정이야."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "연말정산|서류"
+            ],
+            "due_date": "2026-11-30",
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "연말정산 안내가 나왔다",
+          "이번 달 말까지 서류를 내야 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 9.917510700004641,
+      "total_s": 27.50036339997314,
+      "raw_text": "{\"candidates\": [{\"title\": \"연말정산 서류 챙기기\", \"due_date\": \"2026-11-30\", \"subtasks\": [\"서류 챙기기\", \"서류 제출\"], \"evidence\": \"응 근데 미루다 잊을까 봐 걱정이야.\", \"confidence\": 0.8}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"응 근데 미루다 잊을까 봐 걱정이야.\", \"confidence\": 0.8}]}",
+      "predicted": [
+        {
+          "title": "연말정산 서류 챙기기",
+          "due_date": "2026-11-30",
+          "subtasks": [
+            "서류 챙기기",
+            "서류 제출"
+          ],
+          "evidence": "응 근데 미루다 잊을까 봐 걱정이야."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "연말정산|서류"
+              ],
+              "due_date": "2026-11-30",
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "연말정산 서류 챙기기",
+              "due_date": "2026-11-30",
+              "subtasks": [
+                "서류 챙기기",
+                "서류 제출"
+              ],
+              "evidence": "응 근데 미루다 잊을까 봐 걱정이야."
+            },
+            "date_ok": true,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 1,
+        "dated_total": 1,
+        "dated_ok": 1,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d19",
+      "category": "vague_date",
+      "hard": true,
+      "note": "'다음 주쯤'은 날짜가 정해지지 않았다. 날짜를 지어내지 않고 null이어야 한다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "안녕하세요 ^^ 오늘은 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "모니터를 오래 봤더니 눈이 침침해."
+        },
+        {
+          "role": "assistant",
+          "content": "눈이 피곤했겠어요."
+        },
+        {
+          "role": "user",
+          "content": "안경 도수가 안 맞는 것 같아. 다음 주쯤 안경 맞추러 가야지."
+        },
+        {
+          "role": "assistant",
+          "content": "눈은 미루지 않는 게 좋아요."
+        },
+        {
+          "role": "user",
+          "content": "응 시간 날 때 가 보려고."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "안경"
+            ],
+            "due_date": null,
+            "subtasks_keywords": []
+          }
+        ],
+        "summary_points": [
+          "눈이 침침하다",
+          "안경을 새로 맞추려 한다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 11.783423900022171,
+      "total_s": 29.471831000002567,
+      "raw_text": "{\"candidates\": [{\"title\": \"안경 맞추러 가야지\", \"due_date\": \"2026-11-24\", \"subtasks\": [\"안경 맞추기\"], \"evidence\": \"안경 도수가 안 맞는 것 같아\", \"confidence\": 0.5}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"모니터를 오래 봤더니 눈이 침침해\", \"confidence\": 1}]}",
+      "predicted": [
+        {
+          "title": "안경 맞추러 가야지",
+          "due_date": "2026-11-24",
+          "subtasks": [
+            "안경 맞추기"
+          ],
+          "evidence": "안경 도수가 안 맞는 것 같아"
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "안경"
+              ],
+              "due_date": null,
+              "subtasks_keywords": []
+            },
+            "predicted": {
+              "title": "안경 맞추러 가야지",
+              "due_date": "2026-11-24",
+              "subtasks": [
+                "안경 맞추기"
+              ],
+              "evidence": "안경 도수가 안 맞는 것 같아"
+            },
+            "date_ok": false,
+            "subtasks_expected": 0,
+            "subtasks_hit": 0
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 0,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    },
+    {
+      "id": "d20",
+      "category": "subtasks",
+      "hard": true,
+      "note": "하나의 태스크(여행 준비)와 하위 태스크 3개가 기대값이다. 따로 3개를 뽑으면 구조 오류로 센다.",
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "오늘 하루 어땠어요?"
+        },
+        {
+          "role": "user",
+          "content": "다음 달 5일에 제주도 여행 가기로 했어. 생각만 해도 좋아."
+        },
+        {
+          "role": "assistant",
+          "content": "설레겠어요 ^^ 준비는 시작했어요?"
+        },
+        {
+          "role": "user",
+          "content": "아직 하나도 안 했어. 숙소 예약하고, 비행기표 끊고, 렌터카도 빌려야 해."
+        },
+        {
+          "role": "assistant",
+          "content": "할 게 세 가지네요."
+        },
+        {
+          "role": "user",
+          "content": "응 하나씩 해야지."
+        }
+      ],
+      "expected": {
+        "tasks": [
+          {
+            "title_keywords": [
+              "여행|제주"
+            ],
+            "due_date": "2026-12-05",
+            "subtasks_keywords": [
+              [
+                "숙소"
+              ],
+              [
+                "비행기|항공"
+              ],
+              [
+                "렌터카|렌트|차"
+              ]
+            ]
+          }
+        ],
+        "summary_points": [
+          "다음 달 5일에 제주도 여행을 간다",
+          "숙소, 비행기표, 렌터카 준비가 필요하다"
+        ]
+      },
+      "options_used": "json_schema+thinking_off",
+      "error": null,
+      "ttfb_s": 12.343014100042637,
+      "total_s": 29.40434110001661,
+      "raw_text": "{\"candidates\": [{\"title\": \"제주도 여행 준비\", \"due_date\": \"2026-11-17\", \"subtasks\": [\"숙소 예약\", \"비행기표 끊기\", \"렌터카 빌려오기\"], \"evidence\": \"상대: 할 게 세 가지네요. 사용자: 응 하나씩 해야지.\", \"confidence\": 1}], \"completions\": [{\"task_id\": 1, \"subtask_id\": null, \"all_subtasks\": false, \"evidence\": \"사용자: 아직 하나도 안 했어.\", \"confidence\": 0}]}",
+      "predicted": [
+        {
+          "title": "제주도 여행 준비",
+          "due_date": "2026-11-17",
+          "subtasks": [
+            "숙소 예약",
+            "비행기표 끊기",
+            "렌터카 빌려오기"
+          ],
+          "evidence": "상대: 할 게 세 가지네요. 사용자: 응 하나씩 해야지."
+        }
+      ],
+      "summary": "",
+      "json_ok": true,
+      "parsed_by": "backend-validator",
+      "score": {
+        "expected_count": 1,
+        "predicted_count": 1,
+        "matched": 1,
+        "pairs": [
+          {
+            "expected": {
+              "title_keywords": [
+                "여행|제주"
+              ],
+              "due_date": "2026-12-05",
+              "subtasks_keywords": [
+                [
+                  "숙소"
+                ],
+                [
+                  "비행기|항공"
+                ],
+                [
+                  "렌터카|렌트|차"
+                ]
+              ]
+            },
+            "predicted": {
+              "title": "제주도 여행 준비",
+              "due_date": "2026-11-17",
+              "subtasks": [
+                "숙소 예약",
+                "비행기표 끊기",
+                "렌터카 빌려오기"
+              ],
+              "evidence": "상대: 할 게 세 가지네요. 사용자: 응 하나씩 해야지."
+            },
+            "date_ok": false,
+            "subtasks_expected": 3,
+            "subtasks_hit": 3
+          }
+        ],
+        "missed": [],
+        "fabricated": [],
+        "split_subtasks": [],
+        "date_total": 1,
+        "date_ok": 0,
+        "dated_total": 1,
+        "dated_ok": 0,
+        "evidence_present": 1
+      }
+    }
+  ]
+}
