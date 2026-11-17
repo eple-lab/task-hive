@@ -2,9 +2,12 @@
 
 `task_hive_server.ipynb`는 내 구글 계정의 Colab(GPU)에서 대화 모델을 띄우고, Task Hive가 붙을 수 있는 주소를 열어 주는 노트북이다.
 
-```
-Task Hive 서버 ──(ngrok 주소 + 접속 키)──▶ 게이트웨이 ──▶ vLLM ──▶ 모델
-                                          └────────── 내 Colab ──────────┘
+```mermaid
+flowchart LR
+    S["Task Hive 서버"] -- "ngrok 주소 + 접속 키" --> G
+    subgraph C["내 Colab"]
+        G["게이트웨이"] --> V["vLLM"] --> M["모델"]
+    end
 ```
 
 > **상태**: 노트북은 작성만 했고 Colab에서 실행해 확인하지 못했다. 설명에 "확인 필요"라고 적힌 곳은 실행하면서 고쳐야 할 수 있다. 고친 내용은 이 문서와 노트북에 반영한다.
