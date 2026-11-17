@@ -1,0 +1,125 @@
+# ── 비밀값 (절대 올리지 않는다) ─────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+client_secret*.json
+credentials*.json
+token*.json
+service-account*.json
+secrets/
+ngrok.yml
+
+# ── 개인 데이터 (대화, 일기, 음성, 내려받은 파일) ────────────
+data/
+exports/
+recordings/
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.ogg
+*.flac
+# 검증용 가상 대화가 아닌 실제 대화는 올리지 않는다
+eval/private/
+eval/results/raw/
+
+# ── 로컬 DB ────────────────────────────────────────────────
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+*.dump
+*.sql.gz
+
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+.python-version
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# 테스트, 검사 도구
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+
+# ── Jupyter / Colab ────────────────────────────────────────
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# ── 모델과 캐시 (용량이 크다) ───────────────────────────────
+models/
+checkpoints/
+*.safetensors
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.bin
+.cache/
+.huggingface/
+
+# ── Node (화면 도구를 쓰게 될 경우) ─────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+.vite/
+
+# ── 로그, 임시 파일 ────────────────────────────────────────
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# ── 보안 검사 결과물 ────────────────────────────────────────
+gitleaks-report.*
+bandit-report.*
+zap-report.*
+sbom*.json
+sbom*.xml
+
+# ── 편집기 ─────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+*.code-workspace
+
+# ── Claude Code 로컬 설정 ──────────────────────────────────
+.claude/settings.local.json
+.claude/worktrees/
+
+# ── 운영체제 ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
