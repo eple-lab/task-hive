@@ -100,6 +100,8 @@ flowchart LR
 | [08 성능 검토 화면](docs/08-performance-review.md) | 운영 지표와 PoC 검증 화면 |
 | [09 확인 기록](docs/09-verification.md) | 공식 문서로 확인한 사실과 출처 |
 | [10 프론트 구성](docs/10-frontend-architecture.md) | React + Vite + TypeScript 구성 |
+| [11 API 계약](docs/11-api-contract.md) | 백엔드와 화면의 요청·응답 약속 |
+| [이어받기 노트](docs/HANDOFF.md) | 다음 작업자가 먼저 읽는 문서 |
 | [확인사항](docs/checks/README.md) | 자세히 확인한 주제별 문서 (구글 로그인 7일 만료, Docs 이미지 등) |
 | [PoC](docs/poc/README.md) | 직접 실행해 확인할 실험 계획과 기록 |
 
