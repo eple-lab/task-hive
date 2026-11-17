@@ -1,0 +1,19 @@
+<!doctype html>
+<!--
+  Task Hive 화면의 유일한 HTML 파일.
+  - 인라인 스크립트와 외부 CDN을 쓰지 않는다(CSP를 엄격하게 걸기 위해. docs/05-security.md 7장).
+  - 실제 화면은 src/main.tsx 가 #root 안에 그린다.
+-->
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Task Hive</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
