@@ -4,11 +4,11 @@
 
 > 저녁에 일기 쓰듯 AI와 이야기하면, 할 일이 벌집에 쌓인다.
 
-**지금 상태: 1단계 MVP가 로컬에서 동작한다. 모델 검증은 진행 중이다.** (2026-11-17 기준)
+**지금 상태: 1단계 MVP가 로컬에서 동작한다. Colab의 Qwen3.5 4B 모델이 할 일 추출 판정 기준을 넘었다.** (2026-11-18 기준)
 
 - 손님 모드로 대화 → AI가 할 일 후보를 뽑음 → 담기 → 벌집 등록까지 실제 서버와 로컬 LLM(Ollama llama3.2)으로 끝까지 확인했다.
 - 백엔드 테스트 214개, 화면 테스트 37개가 통과한다.
-- 첫 모델 측정(llama3.2)은 성공 기준을 **넘지 못했다.** 이유와 실패 사례는 [아래](#검증-결과)와 [PoC-01](docs/poc/poc-01-llm-summary.md)에 있다.
+- 모델 측정: 로컬 llama3.2(3B, CPU)는 성공 기준을 **넘지 못했고**, Colab GPU의 Qwen3.5 4B AWQ는 **넘었다**(재현율 0.84, 지어낸 할 일 1개). 손 입력보다 빠른지는 아직 재지 못했다. 이유와 실패 사례는 [아래](#검증-결과)와 [PoC-01](docs/poc/poc-01-llm-summary.md)에 있다.
 - 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. 배포 파일은 있지만 아직 배포하지 않았다.
 
 ## Task Hive는 무엇인가
@@ -76,7 +76,7 @@ flowchart LR
 
 | 역할 | 하는 일 | 후보 |
 |---|---|---|
-| 텍스트 생성 (LLM) | 대화, 할 일 추출, 일기 요약 | llama3.2 3B (로컬 Ollama, **측정함**), Qwen 4B AWQ (Colab, 측정 전) |
+| 텍스트 생성 (LLM) | 대화, 할 일 추출, 일기 요약 | llama3.2 3B (로컬 Ollama, **측정함**), Qwen3.5 4B AWQ (Colab, **측정함, 판정 기준 넘음**) |
 | 음성 생성 (TTS) | 답을 목소리로 읽기 | MeloTTS-Korean, Supertonic 2, XTTS-v2 |
 | 음성 인식 (STT) | 말로 입력하기 (2단계) | Whisper |
 
@@ -90,9 +90,12 @@ flowchart LR
 |---|---|---|---|---|---|---|
 | 손 입력 (`todo` 앱, 기준선) | **1.00** | 3 (일정을 할 일로) | 3 / 3 | - | - | 20건 23분, 읽는 시간 포함 (한 건당 약 69초) |
 | llama3.2 3B (로컬 Ollama, CPU) | 0.63 | 8 | 0 / 3 | 2 / 10 | 약 24초 | **못 넘음** |
-| Qwen 4B AWQ (Colab GPU) | 측정 전 | | | | | |
+| **Qwen3.5 4B AWQ (Colab GPU)** | **0.84** | **1** | **3 / 3** | 7 / 10 | 약 0.7초 | **넘음** (2026-11-18) |
 
-- 손 입력은 할 일을 하나도 놓치지 않았지만 20건에 23분이 걸렸다. llama3.2는 이 PC(CPU)에서 모델 응답만 한 건당 약 61초라 시간에서도 나아졌다고 말할 수 없다. **지금 후보로는 개선 효과를 보이지 못했다.**
+- **Qwen3.5 4B는 판정 기준 세 개를 모두 넘었다.** llama3.2가 가장 못 한 "할 일이 아닌 것 거르기"를 대부분 해냈다(지어냄 8 → 1, 없는 대화 0/3 → 3/3). 모델 응답은 한 건당 약 2초(중앙값)다.
+- 그래도 손 입력(재현율 1.00)보다는 놓친다. 19개 중 3개를 놓쳤고(d02 보고서, d09 회의록 메일, d10 사료), 날짜 계산이 약하다("목요일까지", "모레"를 하루 늦게, 날짜 정확도 0.57). 그래서 후보는 사용자가 확인하고 담아야 등록된다.
+- 손 입력보다 빠른지(네 번째 기준)는 Task Hive 화면으로 20건을 처리하는 시간을 아직 재지 않아 판정하지 못했다.
+- llama3.2(로컬 CPU)는 모델 응답만 한 건당 약 61초였고 판정 기준도 넘지 못했다.
 - llama3.2가 잘한 것: 애매한 날짜("월말까지"), 하위 태스크 구조, JSON 형식(오류 0건).
 - llama3.2가 못한 것: **할 일이 아닌 것을 거르지 못했다.** 지어낸 8개 중 7개가 지난 일·취소된 일·남의 일을 할 일로 만든 것이다. 할 일 두 개를 하나로 합치거나, 지시문의 예시 문구("숙소 예약, 기차표 예매")를 관계없는 대화에 복사하기도 했다.
 - 자세한 결과와 실패 사례: [docs/poc/poc-01-llm-summary.md](docs/poc/poc-01-llm-summary.md), 결과 파일 [eval/results/](eval/results/)
@@ -180,7 +183,7 @@ APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true .venv/Scripts/python.exe -m uv
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
 
-Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). **이 노트북은 아직 실제로 실행해 확인하지 못했다.**
+Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). 2026-11-18 Colab GPU에서 실행해 모델을 띄우고 PoC-01 측정(8번 셀)까지 확인했다. ngrok으로 여는 6·7번 셀과 앱 화면 연결은 아직 확인 전이다.
 
 ### 4. 테스트
 
@@ -219,8 +222,8 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 | 제출물 | 위치 | 상태 |
 |---|---|---|
 | 문제 정의서 | [docs/00-problem-definition.md](docs/00-problem-definition.md) | 작성함 (검증 전) |
-| PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `frontend/`, `colab/`, `eval/`, `docs/poc/` | 코드 동작함. Colab 노트북은 실행 확인 전 |
-| 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | 기준선·llama3.2 측정, 실패 사례 정리함. Qwen 남음 |
+| PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `frontend/`, `colab/`, `eval/`, `docs/poc/` | 코드 동작함. Colab 노트북으로 Qwen 측정 완료(2026-11-18) |
+| 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | 기준선·llama3.2·Qwen 측정, 실패 사례 정리함. 화면 처리 시간 비교는 남음 |
 | README (실행 방법, 시연 자료) | 이 파일 | 실행 방법, 시연 화면, 검증 결과 요약 |
 
 ## 배우며 만든 것에서 가져온 것
@@ -271,7 +274,7 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 | 이름 | 쓰는 곳 | 라이선스·조건 |
 |---|---|---|
 | Llama 3.2 3B (`llama3.2`, Ollama) | 로컬 측정 (PoC-01) | Llama 3.2 Community License. 가중치를 이 저장소에 넣거나 배포하지 않는다 |
-| Qwen 4B AWQ (`cyankiwi/Qwen3.5-4B-AWQ-4bit`) | Colab 측정 (예정) | **확인 전.** 실행할 때 모델 카드의 라이선스를 확인해 여기에 적는다 |
+| Qwen 4B AWQ (`cyankiwi/Qwen3.5-4B-AWQ-4bit`) | Colab 측정 (PoC-01) | Apache-2.0. 원본 `Qwen/Qwen3.5-4B`과 양자화본 모델 카드에서 확인(2026-11-18). 가중치를 이 저장소에 넣거나 배포하지 않는다 |
 | Open-Meteo | 인사말의 날씨 | Weather data by [Open-Meteo.com](https://open-meteo.com/), [CC BY 4.0](https://open-meteo.com/en/licence). 무료 API는 비상업 용도 |
 
 ---
