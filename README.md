@@ -1,3 +1,5 @@
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
+
 # 🐝 Task Hive
 
 > 저녁에 일기 쓰듯 AI와 이야기하면, 할 일이 벌집에 쌓인다.
