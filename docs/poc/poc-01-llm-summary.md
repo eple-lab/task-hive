@@ -113,7 +113,7 @@ Qwen3.5 4B AWQ 세부 (결과 파일 [20261118-011158_qwen4b-colab.md](../../eva
 - 뽑은 17개 중 16개가 맞았다(정밀도 0.94). JSON 형식 오류 0건, 요청 오류 0건, 하위 태스크를 따로 뽑은 구조 오류 0건, 근거 문장 100%.
 - llama3.2가 가장 못 한 **거르기**(지난 일, 취소, 남의 일)를 대부분 했다: 지어냄 8 → 1, 없는 대화 0/3 → 3/3.
 - 지시문의 예시 문구 복사(llama3.2의 ⑤)는 나오지 않았다. 지시문은 그대로다.
-- 전체 응답 시간 중앙값 2.0초. Colab GPU에서 돌렸다(GPU 종류는 기록하지 않았다).
+- 전체 응답 시간 중앙값 2.0초. Colab 무료 GPU(T4, eple 확인)에서 돌렸다.
 - 날짜 정확도는 0.57로 llama3.2(0.60)와 비슷하다. 측정은 모든 대화에 "오늘 2026-11-17"을 넘겼다(결과 파일로 확인). 따라서 아래 ⑥의 날짜 틀림은 채점 문제가 아니라 모델의 계산 문제다.
 
 ## 8. 실패 사례
@@ -190,5 +190,5 @@ llama3.2의 실패를 종류별로 묶었다.
 
 | 날짜 | 환경 | 모델·버전 | 결과 파일 |
 |---|---|---|---|
-| 2026-11-18 | Colab GPU(종류 기록 안 함), vLLM + 게이트웨이(thinking 끔), 노트북 8번 셀이 Colab 안에서 직접 호출. 온도 0.2, 최대 토큰 600, json_schema. 지시문은 `app/prompts/extract.py`(바꾸지 않음) | Qwen3.5 4B AWQ (`cyankiwi/Qwen3.5-4B-AWQ-4bit`) | [eval/results/20261118-011158_qwen4b-colab.md](../../eval/results/20261118-011158_qwen4b-colab.md) |
+| 2026-11-18 | Colab GPU(T4), vLLM + 게이트웨이(thinking 끔), 노트북 8번 셀이 Colab 안에서 직접 호출. 온도 0.2, 최대 토큰 600, json_schema. 지시문은 `app/prompts/extract.py`(바꾸지 않음) | Qwen3.5 4B AWQ (`cyankiwi/Qwen3.5-4B-AWQ-4bit`) | [eval/results/20261118-011158_qwen4b-colab.md](../../eval/results/20261118-011158_qwen4b-colab.md) |
 | 2026-11-17 | 로컬 PC, Ollama, CPU. 온도 0.2, 최대 토큰 600, json_schema, 요청 제한 300초. 지시문은 `app/prompts/extract.py` | llama3.2 (`llama3.2:latest`, 3B) | [eval/results/20261117-173927_llama32-ollama.md](../../eval/results/20261117-173927_llama32-ollama.md) |
