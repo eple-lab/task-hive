@@ -9,7 +9,7 @@
 - 손님 모드로 대화 → AI가 할 일 후보를 뽑음 → 담기 → 벌집 등록까지 실제 서버와 로컬 LLM(Ollama llama3.2)으로 끝까지 확인했다.
 - 백엔드 테스트 214개, 화면 테스트 37개가 통과한다.
 - 모델 측정: 로컬 llama3.2(3B, CPU)는 성공 기준을 **넘지 못했고**, Colab GPU의 Qwen3.5 4B AWQ는 **넘었다**(재현율 0.84, 지어낸 할 일 1개). 손 입력보다 빠른지는 아직 재지 못했다. 이유와 실패 사례는 [아래](#검증-결과)와 [PoC-01](docs/poc/poc-01-llm-summary.md)에 있다.
-- 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. 배포 파일은 있지만 아직 배포하지 않았다.
+- 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. Render 무료에 배포했다(2026-11-18, 아래 실행 방법 6).
 
 ## Task Hive는 무엇인가
 
@@ -62,7 +62,7 @@ flowchart LR
 | 서버 | Python, FastAPI |
 | 화면 | React + Vite + TypeScript, 벌집은 SVG |
 | DB | 지금은 메모리 저장소(서버를 끄면 사라짐). Neon Postgres는 2단계 |
-| 배포 | Render 무료, Docker 다단계 빌드 (`Dockerfile`, `render.yaml`. 아직 배포 전) |
+| 배포 | Render 무료, Docker 다단계 빌드 (`Dockerfile`, `render.yaml`. 2026-11-18 배포) |
 | LLM | OpenAI 호환 API면 된다: Colab + vLLM + ngrok, 또는 개발 중에는 로컬 Ollama |
 | 말하기 | 지금은 브라우저 내장 음성. Colab TTS는 자리만 (2단계) |
 | 받아쓰기 | Colab Whisper (2단계) |
@@ -143,7 +143,7 @@ flowchart LR
 | 0 | 기획: 요구사항, 아키텍처, 문제 정의서 | 끝 |
 | 1 | 대화로 벌집 쌓기 (손님 모드, 대화, 추출, 벌집, TTS) | 로컬 동작, 모델 검증 중 (TTS는 브라우저 음성) |
 | 2 | 구글 로그인, 캘린더, 일기, 말로 입력 | 예정 |
-| 3 | 배포, 성능 화면, 보안 파이프라인 | 배포 파일만 있음 |
+| 3 | 배포, 성능 화면, 보안 파이프라인 | 배포함(Render 무료, 메모리 저장소). 성능 화면·파이프라인은 아직 |
 | 4 | 3D 벌집, 칸 옮기기, 검색 | 예정 |
 | 5 | 구독·결제 | 예정 |
 
@@ -205,9 +205,11 @@ cd frontend && npm run typecheck && npm test
 - 모델 없이 채점 로직만 볼 때: `--dry-run`.
 - 결과는 `eval/results/`에 `.md`와 `.json`으로 남는다. 자료 설명: [eval/samples/README.md](eval/samples/README.md)
 
-### 6. 배포 (아직 안 함)
+### 6. 배포 (Render 무료, 2026-11-18)
 
-`render.yaml`(Render Blueprint)과 `Dockerfile`(화면 빌드 → Python 서버)이 있다. 비밀값 4개(`PUBLIC_BASE_URL`, `SESSION_SECRET`, `DATA_ENC_KEY`, `SUB_HASH_KEY`)는 Render 화면에서 넣는다. 이 PC에 Docker가 없어 Docker 빌드는 확인하지 못했다. → [docs/09-verification.md](docs/09-verification.md) 2.12
+데모 주소: **https://task-hive-3cmq.onrender.com** (15분 동안 안 쓰면 잠들어 첫 접속이 느리다. 데이터는 메모리에만 있어 잠들거나 재배포하면 사라진다)
+
+`render.yaml`(Render Blueprint)과 `Dockerfile`(화면 빌드 → Python 서버)로 배포했다. 비밀값 4개(`PUBLIC_BASE_URL`, `SESSION_SECRET`, `DATA_ENC_KEY`, `SUB_HASH_KEY`)는 Render 화면에서 넣는다. 대화는 Colab을 켜고 오른쪽 "연결"에 주소와 접속 키를 넣어야 된다. 절차와 기록: [docs/13-deploy-render.md](docs/13-deploy-render.md)
 
 ### Colab을 쓸 때 알아 둘 것
 

@@ -19,7 +19,7 @@
 | 9 | Colab 무료 GPU에 세 모델이 올라가는지 | **확인 못 함** (실행해야 앎) | 대신 **Colab 이용 정책 위험**을 새로 발견 → Q-25 |
 | 10 | mermaid 그림 | 확인함 (7개 모두 그려짐) | 없음 |
 | 11 | 읽지 않았던 참고 문서 | 읽음 | 시트 수식 방어 방식 수정, PoC 검증 방식 보강 |
-| 12 | Render 무료에서 Docker 서비스 | 확인함 (막는 문구 없음, 직접 허용 문구도 없음) | D-32 유지. 첫 배포 때 화면에서 최종 확인 |
+| 12 | Render 무료에서 Docker 서비스 | 확인함. **2026-11-18 실제 배포로 확인** | D-32 유지. [13](13-deploy-render.md) |
 
 자세한 주제별 문서는 [checks/](checks/README.md), 직접 실행해 확인할 것은 [poc/](poc/README.md)에 있다.
 
@@ -214,6 +214,8 @@
 판단: 무료 인스턴스를 런타임으로 제한하는 문구가 없으므로 Docker 웹 서비스도 무료로 만들 수 있다고 본다. 다만 "Docker도 무료"라고 직접 적은 문장은 찾지 못했다. **첫 배포 때 Render 화면에서 Docker 런타임과 Free 플랜을 함께 고를 수 있는지 확인한다.** 안 되면 대안은 (1) 화면 빌드 결과를 미리 만들어 Python 환경으로 올리기, (2) 화면은 Static Site, 서버는 Python 웹 서비스로 나누기다(이때는 쿠키·CORS 설정이 달라진다).
 
 조심할 것: 0.1 CPU에서 Docker 다단계 빌드(npm 설치 + 화면 빌드)가 느릴 수 있다. 빌드 시간은 워크스페이스의 빌드 분에 포함된다.
+
+**실제 배포로 확인 (2026-11-18)**: Blueprint로 Docker 런타임 + Free 플랜 서비스가 만들어졌고, 다단계 빌드가 성공해 `/health` 200과 화면이 나왔다. 기록은 [13 Render 배포](13-deploy-render.md) 6장.
 
 출처(2026-11-17 조회): [Deploy for Free](https://render.com/docs/free), [Docker on Render](https://render.com/docs/docker), [Blueprint YAML Reference](https://render.com/docs/blueprint-spec), 문서 전체 묶음 [llms-full.txt](https://render.com/llms-full.txt)(생성일 2026-11-17)
 
