@@ -1,6 +1,6 @@
 # 13. Render 배포 절차와 기록
 
-작성: 2026-11-18 · 상태: **배포됨** (`https://task-hive-3cmq.onrender.com`). 손님 시작 403은 `PUBLIC_BASE_URL` 수정으로 풀렸다. 대화·추출은 로컬 Ollama(ngrok)로 끝까지 확인했다. Colab(Qwen) 연결은 아직 · 관련: [D-32](02-decisions.md), [09 확인 기록 2.12](09-verification.md), [03 아키텍처 8.3](03-architecture.md), `render.yaml`, `Dockerfile`
+작성: 2026-11-18 · 상태: **배포됨** (`https://task-hive-3cmq.onrender.com`). 손님 시작 403은 `PUBLIC_BASE_URL` 수정으로 풀렸다. 대화·추출은 로컬 Ollama(ngrok)와 Colab(Qwen)으로 끝까지 확인했다 · 관련: [D-32](02-decisions.md), [09 확인 기록 2.12](09-verification.md), [03 아키텍처 8.3](03-architecture.md), `render.yaml`, `Dockerfile`
 
 배포를 다시 할 때 이 문서 하나만 보고 따라 할 수 있게 적는다. 6장은 실제로 해 본 기록이다.
 
@@ -85,6 +85,8 @@
 | 2026-11-18 | Claude: 그 ngrok 주소에 `GET /v1/models`, 작은 `POST /v1/chat/completions` | 둘 다 200. 5토큰 대화에 24.7초(모델을 처음 올리는 시간 포함으로 추측) |
 | 2026-11-18 | Claude: 배포 앱에서 주소만 넣고 "연결 확인" | "접속 키를 입력해 주세요." 화면 검사에서 멈춰 서버로 요청이 가지 않음 |
 | 2026-11-18 | Claude: 키 칸에 아무 글자를 넣고 "연결 확인" → 대화 1번("배포 테스트예요. 내일까지 과제 제출해야 해요.") | `PUT /api/settings/upstream` 200 "모델 1개 · 응답 773ms". `POST /api/chat` 200, 답이 왔다(20초 남짓). `POST /api/extract` 200까지 약 1분 반, 후보 1개 "배포 테스트 · 2026-11-18". **배포 앱 → ngrok → 모델 전체 흐름이 된다.** 후보 내용은 틀렸다(과제 제출을 "배포 테스트"로, 마감 "내일"을 오늘 날짜로). llama3.2가 PoC-01 기준을 못 넘은 것과 같은 모습 |
+| 2026-11-18 | eple: 다른 구글 계정의 Colab으로 노트북 실행(`MODEL_NAME` 그대로) 후 배포 앱에 연결. Claude: 대화 1번 | "대화 모델 연결됨". 대화·추출이 8초 안에 끝남. 해요체 답. 후보 "집 청소"는 맞았으나 "모레"를 11-25로(틀림) |
+| 2026-11-18 | Claude: 같은 세션 페이지에서 20건 측정 | 대화 중앙값 1.6초, 추출 2.3초, 재현율 0.68. [eval/results/20261118-171033_app-render-colab.md](../eval/results/20261118-171033_app-render-colab.md) |
 
 이 기록으로 확인된 것:
 - **Docker 다단계 빌드가 실제로 된다.** 이 PC에 Docker가 없어 그동안 한 번도 빌드해 보지 못했다.

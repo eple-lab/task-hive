@@ -1,0 +1,568 @@
+{
+ "summary": {
+  "recall": 0.6842105263157895,
+  "precision": 0.9285714285714286,
+  "matched": 13,
+  "expected": 19,
+  "predicted": 14,
+  "fabricated": 1,
+  "none_clean": "3/3",
+  "chat_ms_median": 1608.0,
+  "chat_ms_max": 2144,
+  "ttfb_ms_median": 1163.0,
+  "extract_ms_median": 2339.0,
+  "extract_ms_max": 3743,
+  "wall_ms_median": 11385.0,
+  "wall_s_total": 227.158,
+  "api_s_total": 146.751
+ },
+ "rows": [
+  {
+   "id": "d01",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "치과|병원",
+      "예약|전화"
+     ],
+     "due": "2026-11-18"
+    }
+   ],
+   "predicted": [
+    [
+     "치과 예약 전화",
+     "2026-11-19",
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1715/1153 1608/1231 1566/1204",
+   "extract_ms": 2317,
+   "bulk_ms": 176,
+   "wall_ms": 11282
+  },
+  {
+   "id": "d02",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "보고서",
+      "제출|마무리|작성|완성"
+     ],
+     "due": "2026-11-20"
+    },
+    {
+     "kw": [
+      "우유"
+     ],
+     "due": "2026-11-18"
+    }
+   ],
+   "predicted": [
+    [
+     "우유 사기",
+     "2026-11-19",
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [
+    [
+     "보고서",
+     "제출|마무리|작성|완성"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1584/985 1693/1154 1451/1206",
+   "extract_ms": 2679,
+   "bulk_ms": 191,
+   "wall_ms": 11548
+  },
+  {
+   "id": "d03",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "선물|스카프",
+      "주문|구매|사"
+     ],
+     "due": "2026-11-19"
+    }
+   ],
+   "predicted": [],
+   "matched": 0,
+   "missed": [
+    [
+     "선물|스카프",
+     "주문|구매|사"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1507/1001 1442/1196 1608/1134",
+   "extract_ms": 1617,
+   "bulk_ms": 0,
+   "wall_ms": 10435
+  },
+  {
+   "id": "d04",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "헬스|운동",
+      "등록"
+     ],
+     "due": "2026-11-19"
+    }
+   ],
+   "predicted": [
+    [
+     "헬스장 재등록",
+     "2026-11-25",
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1841/989 1537/1152 1353/1193",
+   "extract_ms": 2364,
+   "bulk_ms": 176,
+   "wall_ms": 11488
+  },
+  {
+   "id": "d05",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "자동차|차|정기",
+      "검사"
+     ],
+     "due": "2026-11-23"
+    }
+   ],
+   "predicted": [
+    [
+     "자동차 검사",
+     "2026-11-24",
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1733/985 1504/1131 1404/1155",
+   "extract_ms": 2688,
+   "bulk_ms": 169,
+   "wall_ms": 11961
+  },
+  {
+   "id": "d06",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "정장|세탁|드라이"
+     ],
+     "due": "2026-11-18"
+    },
+    {
+     "kw": [
+      "축의금|봉투"
+     ],
+     "due": "2026-11-21"
+    }
+   ],
+   "predicted": [
+    [
+     "정장 세탁",
+     "2026-11-19",
+     []
+    ],
+    [
+     "축의금 봉투 준비",
+     "2026-11-16",
+     []
+    ]
+   ],
+   "matched": 2,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1309/1018 1668/1150 1444/1193",
+   "extract_ms": 3365,
+   "bulk_ms": 161,
+   "wall_ms": 12315
+  },
+  {
+   "id": "d07",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "시험|자격증",
+      "접수|신청"
+     ],
+     "due": "2026-11-20"
+    }
+   ],
+   "predicted": [
+    [
+     "시험 접수",
+     "2026-11-20",
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1450/1020 2126/1165 1503/1251",
+   "extract_ms": 2372,
+   "bulk_ms": 161,
+   "wall_ms": 11255
+  },
+  {
+   "id": "d08",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "관리비"
+     ],
+     "due": "2026-11-18"
+    },
+    {
+     "kw": [
+      "분리수거|재활용"
+     ],
+     "due": "2026-11-17"
+    }
+   ],
+   "predicted": [
+    [
+     "관리비 고지서 납부",
+     "2026-11-19",
+     []
+    ],
+    [
+     "분리수거",
+     "2026-11-18",
+     []
+    ]
+   ],
+   "matched": 2,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1577/1039 1897/1218 1394/1268",
+   "extract_ms": 3590,
+   "bulk_ms": 162,
+   "wall_ms": 12370
+  },
+  {
+   "id": "d09",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "회의록",
+      "메일|보내|공유|전달"
+     ],
+     "due": "2026-11-18"
+    }
+   ],
+   "predicted": [],
+   "matched": 0,
+   "missed": [
+    [
+     "회의록",
+     "메일|보내|공유|전달"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1813/1069 2144/1171 1660/1275",
+   "extract_ms": 1553,
+   "bulk_ms": 0,
+   "wall_ms": 10427
+  },
+  {
+   "id": "d10",
+   "category": "plain",
+   "expected": [
+    {
+     "kw": [
+      "예방접종|접종|동물병원",
+      "예약"
+     ],
+     "due": null
+    },
+    {
+     "kw": [
+      "사료",
+      "주문|구매|사"
+     ],
+     "due": null
+    }
+   ],
+   "predicted": [
+    [
+     "동물병원 예약",
+     null,
+     [
+      "사료 주문"
+     ]
+    ]
+   ],
+   "matched": 1,
+   "missed": [
+    [
+     "사료",
+     "주문|구매|사"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1485/1136 1578/1148 1357/1190",
+   "extract_ms": 2611,
+   "bulk_ms": 161,
+   "wall_ms": 11741
+  },
+  {
+   "id": "d11",
+   "category": "none",
+   "expected": [],
+   "predicted": [],
+   "matched": 0,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "2030/1131 2016/1257 1608/1327",
+   "extract_ms": 1566,
+   "bulk_ms": 0,
+   "wall_ms": 10384
+  },
+  {
+   "id": "d12",
+   "category": "none",
+   "expected": [],
+   "predicted": [],
+   "matched": 0,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1917/1108 2079/1222 1908/1225",
+   "extract_ms": 2475,
+   "bulk_ms": 0,
+   "wall_ms": 12025
+  },
+  {
+   "id": "d13",
+   "category": "none",
+   "expected": [],
+   "predicted": [],
+   "matched": 0,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1595/1050 2046/1196 1689/1222",
+   "extract_ms": 1571,
+   "bulk_ms": 0,
+   "wall_ms": 10468
+  },
+  {
+   "id": "d14",
+   "category": "negation",
+   "expected": [
+    {
+     "kw": [
+      "자료",
+      "인쇄|출력|프린트"
+     ],
+     "due": "2026-11-18"
+    }
+   ],
+   "predicted": [
+    [
+     "회의 자료 인쇄",
+     null,
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1687/1027 1583/1251 1696/1231",
+   "extract_ms": 2341,
+   "bulk_ms": 164,
+   "wall_ms": 11774
+  },
+  {
+   "id": "d15",
+   "category": "negation",
+   "expected": [],
+   "predicted": [],
+   "matched": 0,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1523/1049 1880/1250 1746/1170",
+   "extract_ms": 1561,
+   "bulk_ms": 0,
+   "wall_ms": 10525
+  },
+  {
+   "id": "d16",
+   "category": "others",
+   "expected": [],
+   "predicted": [],
+   "matched": 0,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1243/989 1397/1123 1733/1535",
+   "extract_ms": 1449,
+   "bulk_ms": 0,
+   "wall_ms": 10697
+  },
+  {
+   "id": "d17",
+   "category": "others",
+   "expected": [
+    {
+     "kw": [
+      "책|도서",
+      "반납"
+     ],
+     "due": "2026-11-18"
+    }
+   ],
+   "predicted": [],
+   "matched": 0,
+   "missed": [
+    [
+     "책|도서",
+     "반납"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1745/1067 1663/1197 1601/1193",
+   "extract_ms": 1535,
+   "bulk_ms": 0,
+   "wall_ms": 10781
+  },
+  {
+   "id": "d18",
+   "category": "vague_date",
+   "expected": [
+    {
+     "kw": [
+      "연말정산|서류"
+     ],
+     "due": "2026-11-30"
+    }
+   ],
+   "predicted": [],
+   "matched": 0,
+   "missed": [
+    [
+     "연말정산|서류"
+    ]
+   ],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1423/1073 1456/1156 1477/1180",
+   "extract_ms": 1576,
+   "bulk_ms": 0,
+   "wall_ms": 10740
+  },
+  {
+   "id": "d19",
+   "category": "vague_date",
+   "expected": [
+    {
+     "kw": [
+      "안경"
+     ],
+     "due": null
+    }
+   ],
+   "predicted": [
+    [
+     "안경 맞추러 가기",
+     null,
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [],
+   "split": [],
+   "chat_ms": "1601/1049 1863/1207 1573/1161",
+   "extract_ms": 2337,
+   "bulk_ms": 417,
+   "wall_ms": 12080
+  },
+  {
+   "id": "d20",
+   "category": "subtasks",
+   "expected": [
+    {
+     "kw": [
+      "여행|제주"
+     ],
+     "due": "2026-12-05"
+    }
+   ],
+   "predicted": [
+    [
+     "제주도 여행 숙소 예약",
+     null,
+     [
+      "비행기표 끊기",
+      "렌터카 빌리기"
+     ]
+    ],
+    [
+     "제주도 여행 계획",
+     null,
+     []
+    ]
+   ],
+   "matched": 1,
+   "missed": [],
+   "fabricated": [
+    "제주도 여행 계획"
+   ],
+   "split": [],
+   "chat_ms": "1865/1036 2000/1367 1732/1232",
+   "extract_ms": 3743,
+   "bulk_ms": 177,
+   "wall_ms": 12862
+  }
+ ],
+ "meta": {
+  "date": "2026-11-18 17:10~17:14 KST",
+  "path": "브라우저(eple 세션 페이지) → Render 배포 앱 https://task-hive-3cmq.onrender.com → ngrok → Colab vLLM",
+  "model": "cyankiwi/Qwen3.5-4B-AWQ-4bit (노트북 MODEL_NAME 그대로, eple 확인)",
+  "gpu": "확인 안 함",
+  "samples": "eval/samples/dialogs.jsonl 20건, 사용자 말만 보내고 답은 실제 모델 답",
+  "extract": "대화마다 마지막에 /api/extract 1번(화면은 답마다 추출함)",
+  "pacing": "분당 대화 20회 제한 때문에 /api/chat 사이 3.6초 간격",
+  "today": "서버 기준 2026-11-18 (자료는 2026-11-17 기준)"
+ }
+}
