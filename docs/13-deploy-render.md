@@ -88,6 +88,8 @@
 | 2026-11-18 | eple: 다른 구글 계정의 Colab으로 노트북 실행(`MODEL_NAME` 그대로) 후 배포 앱에 연결. Claude: 대화 1번 | "대화 모델 연결됨". 대화·추출이 8초 안에 끝남. 해요체 답. 후보 "집 청소"는 맞았으나 "모레"를 11-25로(틀림) |
 | 2026-11-18 | Claude: 같은 세션 페이지에서 20건 측정 | 대화 중앙값 1.6초, 추출 2.3초, 재현율 0.68. [eval/results/20261118-171033_app-render-colab.md](../eval/results/20261118-171033_app-render-colab.md) |
 
+화면 캡처와 내려받은 MD: [test-records/20261118-deploy](test-records/20261118-deploy/README.md)
+
 이 기록으로 확인된 것:
 - **Docker 다단계 빌드가 실제로 된다.** 이 PC에 Docker가 없어 그동안 한 번도 빌드해 보지 못했다.
 - **Render 무료 플랜에서 Docker 런타임 웹 서비스가 된다.** [09](09-verification.md) 2.12에서 "첫 배포 때 확인"으로 남긴 항목이다.

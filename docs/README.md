@@ -21,6 +21,7 @@ Task Hive는 저녁에 일기 쓰듯 AI와 대화하면서 할 일을 끌어내�
 | [12 고친 것과 개선 기록](12-fixes.md) | 실행하다 드러난 버그와 개선, 원인과 확인 결과 (2026-11-18부터) |
 | [13 Render 배포](13-deploy-render.md) | 비밀값 만들기, 배포 순서, 배포 뒤 확인, 막혔을 때, 실행 기록 (2026-11-18) |
 | [14 실행 안내](14-run-guide.md) | 배포 앱으로 쓰기(Colab, Ollama+ngrok), 로컬에서 띄우기, 테스트, 모델 측정 |
+| [테스트 기록 (test-records/)](test-records/20261118-deploy/README.md) | 배포 앱을 직접 써 본 화면 캡처와 내려받은 MD (2026-11-18) |
 | [이어받기 노트](HANDOFF.md) | 다음 세션이 가장 먼저 읽는 문서: 역할(Opus·Sonnet), 코드 상태, 다음 할 일 |
 | [확인사항 (checks/)](checks/README.md) | 주제별로 자세히 확인한 문서: 구글 로그인 7일 만료, Docs 이미지 넣기, Colab 이용 조건 |
 | [PoC (poc/)](poc/README.md) | 직접 실행해 확인할 실험 5개의 계획과 기록 틀 |
