@@ -1,6 +1,6 @@
 # 이어받기 노트
 
-마지막 갱신: 2026-11-18 (Opus 이어받기 세션, 제출 직전) · 다음 세션이 이 파일부터 읽는다.
+마지막 갱신: 2026-11-18 (Opus 이어받기 세션, 제출 뒤. 다음 세션: 구글 로그인 A안) · 다음 세션이 이 파일부터 읽는다.
 
 ## 0. 누가 무엇을 하나 (eple 지정)
 
@@ -141,18 +141,27 @@
 
 ### 6.0 제출 뒤 남은 일 (2026-11-18 기준, 최신)
 
-6.1 ~ 6.4는 끝났다(지난 기록). 지금 남은 것:
+6.1 ~ 6.4는 끝났다(지난 기록). 다음 세션은 6.5부터. 지금 남은 것:
 
 | 순서 | 할 일 | 메모 |
 |---|---|---|
-| 1 | **구글폼 제출** | eple이 직접. 저장소 주소 `https://github.com/eple-lab/task-hive` |
+| 1 | ~~구글폼 제출~~ | **끝**(2026-11-18, eple 제출) |
 | 2 | 드라이런 테스트 방법 문서 + 예시 파일 | eple 요청, "나중에"(2026-11-18). `eval/samples/`에 둔다. 예시는 `eval/results/20261117-154705_dry-run.*`(커밋 안 함)을 쓰거나 새로 만든다 |
 | 3 | 1단계 기본 모델 결정 | Qwen3.5 4B AWQ로 할 근거가 생겼다(PoC-01 9.1). `docs/02-decisions.md`에 적는 것은 eple 확인 뒤 |
 | 4 | 등록 시간 비교 (PoC-01 판정 4번째 기준) | 기계 몫은 쟀다(배포 앱 20건, 한 건당 약 7.3초, `eval/results/20261118-171033_app-render-colab.md`). 남은 것: eple이 화면에서 몇 건을 직접 처리한 사람 시간. 그리고 앱 흐름 재현율 0.68(PoC-01 0.84)의 원인 가리기: 정해진 대화를 앱 `/api/extract`에 넣어 비교 |
 | 5 | 날짜 계산 약점 | Qwen이 "목요일까지", "모레"를 하루 늦게 계산. 서버가 요일을 계산하는 방법 검토(PoC-01 9.1, 추측) |
 | 6 | 작은 것 | 화면에 Open-Meteo 출처 표시(CC BY 4.0), `python-dotenv`를 requirements에 넣을지(`--env-file` 안내), 요청 크기 검사가 `Content-Length`만 봄, 지시문 예시 복사(llama3.2에서만 보임) |
 | 7 | Colab 노트북 결과 올리기 셀 | eple이 Colab에서 바로 push하길 원함. 토큰은 보안 비밀, `pull --rebase` 먼저, 올리기 전 패턴 검사. 하면 12-fixes에 다음 F-번호로 적는다 |
-| 8 | 2단계 | 구글 1시간 토큰 로그인(`honey-voice-log` 본받기), 7장 |
+| 8 | **다음 세션: 구글 로그인 A안** | 아래 6.5 |
+
+### 6.5 다음 세션: 구글 로그인 A안 (2026-11-18 eple 요청 "구글로그인하자", 이슈 #3)
+
+- 범위(A안, 추천으로 제시): "구글로 시작" → 구글 동의 → 로그인 사용자로 이름 표시, 로그아웃. 1시간 토큰만(D-19, `GOOGLE_TOKEN_MODE=access_only`), refresh token 받지 않음. 저장은 지금처럼 메모리(Neon 저장소는 B안, Q-02 미정이라 이번에 하지 않음). 캘린더 권한(C안)도 이번에 하지 않음.
+- 지금 코드: `/auth/login`, `/auth/callback`은 `app/routers/stubs.py`의 자리만 있음. `app/config.py`가 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_TOKEN_MODE`를 이미 읽음. 화면의 "구글로 시작"은 막혀 있음(`frontend/src/features/auth/StartScreen.tsx`).
+- 참고: `docs/checks/google-oauth-7day-expiry.md`(7장 설계에 반영할 것), `docs/05-security.md`(토큰은 암호화 쿠키, 이메일 대신 가린 ID `SUB_HASH_KEY`), D-19·D-27, 이웃 프로젝트 `honey-voice-log`의 1시간 토큰 로그인.
+- eple이 할 것(Claude가 대신 못 함): Google Cloud Console에서 OAuth 동의 화면(테스트 상태, 테스트 사용자)과 웹 클라이언트 ID 만들기, 리디렉션 URI(`http://localhost:8000/auth/callback`, `https://task-hive-3cmq.onrender.com/auth/callback`, 경로는 구현 때 확정) 등록, 값은 로컬 환경변수와 Render 화면에만(채팅 금지).
+- 다 됐다의 기준: 로컬에서 구글 로그인 → 이름 표시 → 로그아웃이 브라우저로 확인됨, state·PKCE·리디렉션 검사 테스트 추가, 기존 백엔드·화면 테스트 모두 통과, `render.yaml`에 키 이름만 추가(주석 해제), 12-fixes 또는 결정 기록 갱신. 배포 확인은 eple이 Render에 키를 넣은 뒤.
+- 이번 세션(11-18)에 한 것 요약: Render 배포(13), 실행 안내(14), 배포 앱 20건 측정(재현율 0.68, 기계 시간 한 건당 약 7초), 테스트 기록(`docs/test-records/20261118-deploy/`), 이슈 #1~#4.
 
 ### 6.1 먼저 eple에게 확인받을 것 (끝, 지난 기록)
 
