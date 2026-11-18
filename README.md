@@ -183,7 +183,7 @@ APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true .venv/Scripts/python.exe -m uv
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
 
-Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). 2026-11-18 Colab GPU에서 실행해 모델을 띄우고 PoC-01 측정(8번 셀)까지 확인했다. ngrok으로 여는 6·7번 셀과 앱 화면 연결은 아직 확인 전이다.
+Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). 2026-11-18 Colab 무료 GPU(T4)에서 0~8번 셀을 모두 실행해 확인했다(ngrok 주소로 대화 200, PoC-01 측정). 앱 화면에서 이 주소로 연결하는 것은 아직 확인 전이다.
 
 ### 4. 테스트
 
