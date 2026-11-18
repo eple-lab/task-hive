@@ -9,7 +9,7 @@
 - 손님 모드로 대화 → AI가 할 일 후보를 뽑음 → 담기 → 벌집 등록까지 실제 서버와 로컬 LLM(Ollama llama3.2)으로 끝까지 확인했다.
 - 백엔드 테스트 214개, 화면 테스트 37개가 통과한다.
 - 모델 측정: 로컬 llama3.2(3B, CPU)는 성공 기준을 **넘지 못했고**, Colab GPU의 Qwen3.5 4B AWQ는 **넘었다**(재현율 0.84, 지어낸 할 일 1개). 손 입력보다 빠른지는 아직 재지 못했다. 이유와 실패 사례는 [아래](#검증-결과)와 [PoC-01](docs/poc/poc-01-llm-summary.md)에 있다.
-- 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. Render 무료에 배포했다(2026-11-18, 아래 실행 방법 6).
+- 구글 로그인·캘린더·일기 저장, Colab TTS는 2단계다. Render 무료에 배포했다(2026-11-18, 아래 [실행 방법](#실행-방법)).
 
 ## Task Hive는 무엇인가
 
@@ -132,6 +132,9 @@ flowchart LR
 | [09 확인 기록](docs/09-verification.md) | 공식 문서로 확인한 사실과 출처 |
 | [10 프론트 구성](docs/10-frontend-architecture.md) | React + Vite + TypeScript 구성 |
 | [11 API 계약](docs/11-api-contract.md) | 백엔드와 화면의 요청·응답 약속 |
+| [12 고친 것과 개선 기록](docs/12-fixes.md) | 실행하다 드러난 버그와 개선 |
+| [13 Render 배포](docs/13-deploy-render.md) | 배포 절차, 막혔을 때, 실행 기록 |
+| [14 실행 안내](docs/14-run-guide.md) | 배포 앱으로 쓰기, 로컬에서 띄우기, 테스트, 모델 측정 |
 | [이어받기 노트](docs/HANDOFF.md) | 다음 작업자가 먼저 읽는 문서 |
 | [확인사항](docs/checks/README.md) | 자세히 확인한 주제별 문서 (구글 로그인 7일 만료, Docs 이미지 등) |
 | [PoC](docs/poc/README.md) | 직접 실행해 확인할 실험 계획과 기록 |
@@ -151,71 +154,19 @@ flowchart LR
 
 ## 실행 방법
 
-Windows 기준이다(Git Bash). 필요한 것: Python 3.14, Node 24.
+두 가지 길이 있다. 자세한 명령과 막혔을 때는 **[docs/14-run-guide.md](docs/14-run-guide.md)**.
 
-### 1. 설치
-
-```bash
-python -m venv .venv
-.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
-cd frontend && npm ci && npm run build && cd ..
-```
-
-### 2. 서버 켜기
-
-```bash
-APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true .venv/Scripts/python.exe -m uvicorn app.main:app --port 8000
-```
-
-- `http://localhost:8000`을 연다. 서버가 빌드한 화면(`frontend/dist`)도 함께 내준다.
-- 개발 환경에서는 비밀값이 없으면 실행할 때마다 임시값을 만든다. `.env` 파일은 없어도 된다. 다른 설정은 위처럼 명령 앞에 환경변수로 붙인다(이름과 뜻은 `.env.example`). uvicorn의 `--env-file`은 `python-dotenv`가 필요한데 `requirements.txt`에 없어서 지금은 쓰지 않는다.
-- `UPSTREAM_ALLOW_LOCALHOST=true`는 개발에서만 `http://localhost` LLM 주소를 받게 하는 설정이다. 운영에서는 ngrok `https` 주소만 받는다.
-- 화면을 고치면서 볼 때: `cd frontend && npm run dev` (Vite가 `/api`를 8000으로 넘긴다). 서버 없이 화면만: `npm run dev:mock`.
-
-### 3. LLM 연결
-
-이름을 적고 "로그인 없이 시작" → 오른쪽 상태창 "연결"에 주소와 접속 키를 넣는다.
-
-| LLM | 주소 | 접속 키 |
+| 길 | 어떻게 | LLM 연결 (오른쪽 상태창 "연결") |
 |---|---|---|
-| 로컬 Ollama (개발용) | `http://localhost:11434` (`ollama pull llama3.2` 필요) | 아무 값 |
-| 내 Colab | 노트북 마지막 셀이 보여 주는 `https://….ngrok-free.app` | 노트북이 보여 준 키 |
+| **배포 앱으로 쓰기** | **https://task-hive-3cmq.onrender.com** 을 열고 "로그인 없이 시작" | 내 Colab의 ngrok 주소 + 노트북이 준 키 (권장). Colab이 안 되면 내 PC Ollama를 `ngrok http 11434`로 열어 그 주소 + 아무 글자 키 |
+| **로컬에서 띄우기** | 설치 → `APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true`로 uvicorn 실행 → `http://localhost:8000` | `http://localhost:11434`(Ollama) + 아무 글자 키, 또는 내 Colab |
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
 
-Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). 2026-11-18 Colab 무료 GPU(T4)에서 0~8번 셀을 모두 실행해 확인했다(ngrok 주소로 대화 200, PoC-01 측정). 앱 화면에서 이 주소로 연결하는 것은 아직 확인 전이다.
-
-### 4. 테스트
-
-```bash
-.venv/Scripts/python.exe -m pytest -q
-```
-
-```bash
-cd frontend && npm run typecheck && npm test
-```
-
-### 5. 모델 측정 (PoC-01)
-
-```bash
-.venv/Scripts/python.exe eval/run_eval.py --base-url http://localhost:11434 --model llama3.2 --label llama32-ollama --timeout 300 --completions eval/samples/completions.jsonl
-```
-
-- Colab이면 `--base-url`에 ngrok 주소, 접속 키는 환경변수 `TASK_HIVE_EVAL_API_KEY`로 넘긴다.
-- 모델 없이 채점 로직만 볼 때: `--dry-run`.
-- 결과는 `eval/results/`에 `.md`와 `.json`으로 남는다. 자료 설명: [eval/samples/README.md](eval/samples/README.md)
-
-### 6. 배포 (Render 무료, 2026-11-18)
-
-데모 주소: **https://task-hive-3cmq.onrender.com** (15분 동안 안 쓰면 잠들어 첫 접속이 느리다. 데이터는 메모리에만 있어 잠들거나 재배포하면 사라진다)
-
-`render.yaml`(Render Blueprint)과 `Dockerfile`(화면 빌드 → Python 서버)로 배포했다. 비밀값 4개(`PUBLIC_BASE_URL`, `SESSION_SECRET`, `DATA_ENC_KEY`, `SUB_HASH_KEY`)는 Render 화면에서 넣는다. 대화는 Colab을 켜고 오른쪽 "연결"에 주소와 접속 키를 넣어야 된다. 절차와 기록: [docs/13-deploy-render.md](docs/13-deploy-render.md)
-
-### Colab을 쓸 때 알아 둘 것
-
-- Colab은 **과제용 실험 환경**으로 쓴다. LLM이 한국어 대화를 요약하고 할 일을 뽑을 수 있는지 확인하는 것이 목적이다.
-- Colab 무료는 자원이 보장되지 않고 세션이 끊길 수 있다. 계속 켜 두는 서비스의 기반으로 쓰지 않는다.
-- 본인이 띄운 Colab 주소만 넣는다. 남의 주소를 넣으면 대화가 그 사람에게 간다.
+- **Render 서버**: 무료라 15분 동안 안 쓰면 잠들어 첫 접속이 느리다. 데이터는 메모리에만 있어 잠들거나 재배포하면 사라진다. 배포는 `render.yaml` + `Dockerfile`로 했다(2026-11-18). 배포 절차와 기록: [docs/13-deploy-render.md](docs/13-deploy-render.md)
+- **Colab 노트북**: 사용법은 [colab/README.md](colab/README.md). 2026-11-18 무료 GPU(T4)에서 0~8번 셀을 확인했다. 배포 앱에 Colab을 연결해 대화하는 것은 아직 확인 전이고, 로컬 Ollama(ngrok)로는 대화·할 일 추출까지 확인했다.
+- **Colab은 과제용 실험 환경이다.** 본인이 띄운 주소만 넣는다. 남의 주소를 넣으면 대화가 그 사람에게 간다.
+- 테스트(`pytest`, `npm test`)와 모델 측정(PoC-01) 명령도 [14](docs/14-run-guide.md) 4·5장에 있다.
 
 ## 과제 정보
 
@@ -226,7 +177,7 @@ AIFFEL 「AI 이해하고 사용하기」 메인 퀘스트 2 "내 도메인에�
 | 문제 정의서 | [docs/00-problem-definition.md](docs/00-problem-definition.md) | 작성함 (검증 전) |
 | PoC 코드·노트북 (모델 선정 근거 포함) | `app/`, `frontend/`, `colab/`, `eval/`, `docs/poc/` | 코드 동작함. Colab 노트북으로 Qwen 측정 완료(2026-11-18) |
 | 개선 효과 검증 (기존 방식 비교, 실패 사례) | `eval/`, `docs/poc/` | 기준선·llama3.2·Qwen 측정, 실패 사례 정리함. 화면 처리 시간 비교는 남음 |
-| README (실행 방법, 시연 자료) | 이 파일 | 실행 방법, 시연 화면, 검증 결과 요약 |
+| README (실행 방법, 시연 자료) | 이 파일, [docs/14-run-guide.md](docs/14-run-guide.md) | 데모 주소, 실행 방법, 시연 화면, 검증 결과 요약 |
 
 ## 배우며 만든 것에서 가져온 것
 
