@@ -26,7 +26,7 @@ flowchart LR
 |---|---|
 | 구글 계정 | [Colab](https://colab.research.google.com)에 로그인한다 |
 | ngrok 계정 | [ngrok](https://ngrok.com)에 가입하고 대시보드에서 Authtoken을 복사한다 |
-| 보안 비밀 | Colab 왼쪽 **열쇠 아이콘** → 이름 `NGROK_AUTHTOKEN`, 값에 토큰 → "노트북 액세스"를 켠다 |
+| 보안 비밀 | Colab 왼쪽 **열쇠 아이콘** → 이름 `NGROK_AUTHTOKEN`(앞뒤 공백 없이), 값에 ngrok 대시보드 **Your Authtoken**의 토큰만(Copy 버튼으로) → "노트북 액세스"를 켠다. 고정 도메인이 있으면 `NGROK_DOMAIN`도 같은 방법으로 넣는다 |
 
 토큰을 노트북 셀에 직접 붙여 넣지 않는다. 파일에 남아 저장소에 올라갈 수 있다.
 
@@ -65,11 +65,12 @@ flowchart LR
 | Task Hive에 "Colab에 연결되지 않았어요" | 세션이 끊겼거나 터널이 닫혔다 | Colab 화면을 확인하고 2번 셀부터(런타임이 초기화됐으면 0번부터) 다시 실행한다. 접속 키가 바뀌었으면 다시 넣는다 |
 | 3번 셀에서 "vLLM 이 종료됐다" | 메모리 부족, 설치 버전 문제 | 로그를 보고 `MAX_MODEL_LEN`이나 `GPU_MEMORY_UTILIZATION`을 낮춘다 |
 | 5번 셀에서 "키 넣고: 200"이 안 나온다 | 게이트웨이가 뜨지 못했다 | `gateway.log`를 본다 |
-| 6번 셀에서 인증 오류 | 보안 비밀 이름이 다르거나 액세스가 꺼져 있다 | 이름이 `NGROK_AUTHTOKEN`인지, 노트북 액세스가 켜져 있는지 본다 |
+| 0번 셀에서 "보안 비밀 'NGROK_AUTHTOKEN'을 읽지 못했다" | 보안 비밀 이름이 다르거나(앞뒤 공백 포함) 노트북 액세스가 꺼져 있다 | 이름이 정확히 `NGROK_AUTHTOKEN`인지, 노트북 액세스 스위치가 켜져 있는지 본다 |
+| 6번 셀에서 `ERR_NGROK_105` (authtoken 모양이 아니다) | 토큰이 아닌 값(API Key 등)이나 명령어 줄을 통째로 넣었다 | 대시보드 Your Authtoken 페이지의 Copy 버튼으로 다시 넣고 6번 셀을 다시 실행한다. 같은 오류가 남으면 새 셀에서 `from pyngrok import ngrok; ngrok.kill()` 후 다시 실행한다 |
 | 답이 비어 있다 | 생각 과정(thinking)이 켜져 있다 | 게이트웨이가 기본으로 끈다. 요청에 `chat_template_kwargs`를 직접 넣었다면 `enable_thinking: false`인지 본다 |
 | GPU를 받지 못한다 | 무료 사용 한도 | 시간을 두고 다시 시도한다 |
 
-ngrok 무료 계정은 고정 도메인을 하나 준다. 0번 셀의 `NGROK_DOMAIN`에 넣으면 다시 켜도 주소가 같다. 비워 두면 ngrok이 정한 주소를 쓴다.
+ngrok 무료 계정은 고정 도메인을 하나 준다. 보안 비밀 `NGROK_DOMAIN`에 넣으면 다시 켜도 주소가 같다. 비워 두면 ngrok이 정한 주소를 쓴다.
 
 ## 저장소에 올리기 전에
 
