@@ -2,6 +2,8 @@
 
 `task_hive_server.ipynb`는 내 구글 계정의 Colab(GPU)에서 대화 모델을 띄우고, Task Hive가 붙을 수 있는 주소를 열어 주는 노트북이다.
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
+
 ```mermaid
 flowchart LR
     S["Task Hive 서버"] -- "ngrok 주소 + 접속 키" --> G
@@ -30,7 +32,7 @@ flowchart LR
 
 ## 실행 순서
 
-1. Colab에서 `파일 → 노트북 업로드`로 `task_hive_server.ipynb`를 연다. (또는 GitHub 탭에서 저장소 주소로 연다)
+1. 위 **Open in Colab** 배지를 누른다. GitHub의 노트북이 Colab에서 바로 열린다. 고친 내용을 남기려면 `파일 → 드라이브에 사본 저장`을 한다. (배지 대신 `파일 → 노트북 업로드`로 `task_hive_server.ipynb`를 열어도 된다)
 2. `런타임 → 런타임 유형 변경`에서 하드웨어 가속기를 **GPU**로 바꾼다.
 3. 셀을 위에서부터 차례로 실행한다.
 

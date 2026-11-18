@@ -176,6 +176,8 @@ APP_ENV=development UPSTREAM_ALLOW_LOCALHOST=true .venv/Scripts/python.exe -m uv
 | 로컬 Ollama (개발용) | `http://localhost:11434` (`ollama pull llama3.2` 필요) | 아무 값 |
 | 내 Colab | 노트북 마지막 셀이 보여 주는 `https://….ngrok-free.app` | 노트북이 보여 준 키 |
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eple-lab/task-hive/blob/main/colab/task_hive_server.ipynb)
+
 Colab 노트북(`colab/task_hive_server.ipynb`) 사용법: [colab/README.md](colab/README.md). **이 노트북은 아직 실제로 실행해 확인하지 못했다.**
 
 ### 4. 테스트
